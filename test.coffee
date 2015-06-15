@@ -13,5 +13,3 @@ DB.SyncEvernote.sync(
 
     }
 )
-res.send 'hi'
-
