@@ -1,18 +1,17 @@
 app = require 'app'
-
+require 'cloud/db/sync'
+DB = require 'cloud/_db'
 
 app.get '/test', (req, res) ->
-    AV.Cloud.run(
-        "SyncEvernote.sync"
+    DB.SyncEvernote.sync(
         {
             id:"557ea6cae4b019eef746e5c6"
         }
         {
             success:(li)->
-                for i in li
-                    console.log i
+                console.log li
 
         }
     )
-    return
+    res.send 'hi'
 

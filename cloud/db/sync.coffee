@@ -20,10 +20,10 @@ DB class SyncEvernote
             store.listNotebooks(
                 token
                 (error, li) ->
-                    #console.log li
-                    #for i in li
-                        #console.log i
-                    options.success ''
+                    console.log li
+                    for i in li
+                        console.log i
+                    options.success li
             )
         )
 
