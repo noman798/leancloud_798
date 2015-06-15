@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+<language>zh-cn</language>
+<title><%= rss_title %></title>
+<link><%= rss_link %></link>
+  <% if(pubdate) { %> 
+      <pubDate><%= pubdate %></pubDate>
+  <% } %>
+<% for(var i = 0; i < items.length; ++i) { %>
+  <item>
+  <title><%= items[i].get('title') %></title>
+  <dc:creator><%= items[i].get('author') %></dc:creator>
+  <description><%= items[i].get('html') %></description>
+  <pubDate><%= items[i].createdAt %></pubDate>
+  <link><%= rss_link %>/<%= items[i].get('ID') %></link>
+  <guid isPermaLink="true"><%= rss_link %>/<%= items[i].get('ID')%></guid>
+  </item>
+<% } %>
+</channel>
+</rss>

@@ -1,0 +1,5 @@
+PREFIX=$(cd "$(dirname "$0")"; pwd)
+cd $PREFIX
+#coffee -o cloud -c coffee
+avoscloud deploy
+avoscloud publish

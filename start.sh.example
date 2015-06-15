@@ -1,0 +1,8 @@
+export LC_APP_PORT=13000
+
+export LC_APP_ID=
+export LC_APP_KEY=
+export LC_APP_MASTER_KEY=
+
+
+node-dev server.js 
