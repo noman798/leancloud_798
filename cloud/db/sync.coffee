@@ -1,24 +1,24 @@
 require "cloud/db/oauth"
 DB = require "cloud/_db"
 Evernote = require('evernote').Evernote
-{Thrift,NoteStoreClient} = Evernote
+{Thrift,NoteStoreClient, Client} = Evernote
 
 _oauth_get = (params, callback)->
     DB.Oauth.$.get(params.id, {
         success: (oauth) ->
-            meta = oauth.get('meta')
-            transport = new Thrift.NodeBinaryHttpTransport(meta.store_url)
-            protocol = new Thrift.BinaryProtocol(transport)
-            store = new NoteStoreClient(protocol)
-            callback(oauth.get('token'), store)
+            client = new Client(
+                token:oauth.get('token')
+                serviceHost:'sandbox.evernote.com'
+            )
+            store = client.getNoteStore()
+            callback store
     })
 
 DB class SyncEvernote
     @sync:(params, options) ->
-        _oauth_get(params, (token, store)->
+        _oauth_get(params, (store)->
             #标签 SITE.NAME 不区分大小写
             store.listNotebooks(
-                token
                 (error, li) ->
                     console.log li
                     for i in li
@@ -27,20 +27,18 @@ DB class SyncEvernote
             )
         )
 
-    @search:(params, options) ->
-        _oauth_get(params, (token, store)->
-            console.log '1'
+    @by_tag:(params, options) ->
+        site_id = params.site_id
+        delete params.site_id
+        _oauth_get(params, (store)->
             filter = new Evernote.NoteFilter()
-            filter.words = 'tag:"test 1"'
+            filter.words = 'tag:"tech2ipo" tag:"发布"'
 
-            console.log '2'
             spec = new Evernote.NotesMetadataResultSpec()
-            spec.includeTitle = true
+            #spec.includeTitle = true
 
-            console.log '3'
-            store.findNotesMetadata(token, filter, 0, 100, spec,
+            store.findNotesMetadata(filter, 0, 100, spec,
                 (err, li) ->
-                    console.log err
                     console.log li
                     for note in li.notes
                         console.log note.title
