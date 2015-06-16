@@ -33,12 +33,13 @@ DB class SyncEvernote
         _oauth_get(params, (store)->
             filter = new Evernote.NoteFilter()
             filter.words = 'tag:"tech2ipo" tag:"发布"'
+            filter.order = Evernote.NoteSortOrder.UPDATE_SEQUENCE_NUMBER
 
             spec = new Evernote.NotesMetadataResultSpec()
             spec.includeUpdateSequenceNum = true
             spec.includeUpdated = true
             spec.includeDeleted = true
-            #spec.includeTitle = true
+            spec.includeTitle = true
 
             store.findNotesMetadata(filter, 0, 100, spec,
                 (err, li) ->
