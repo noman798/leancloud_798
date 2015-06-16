@@ -4,6 +4,7 @@ require 'cloud/db/sync'
 DB = require 'cloud/_db'
 
 main = ->
+    console.log "hi"
     DB.SyncEvernote.by_tag(
         {
             id:"557ea6cae4b019eef746e5c6"
