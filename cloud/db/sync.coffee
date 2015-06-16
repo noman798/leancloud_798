@@ -32,7 +32,7 @@ DB class SyncEvernote
         delete params.site_id
         _oauth_get(params, (store)->
             filter = new Evernote.NoteFilter()
-            filter.words = 'tag:"tech2ipo" tag:"发布"'
+            filter.words = 'tag:"tech2ipo" tag:"发布" updated:1434437899001'
             filter.order = Evernote.NoteSortOrder.UPDATE_SEQUENCE_NUMBER
 
             spec = new Evernote.NotesMetadataResultSpec()
@@ -40,10 +40,11 @@ DB class SyncEvernote
             spec.includeUpdated = true
             spec.includeDeleted = true
             spec.includeTitle = true
-
+            console.log 3
             store.findNotesMetadata(filter, 0, 100, spec,
                 (err, li) ->
-                    console.log li
+                    console.log 4
+                    console.log err, li
                     for note in li.notes
                         console.log note.title
                     options.success ''
