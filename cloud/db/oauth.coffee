@@ -37,11 +37,13 @@ DB class Oauth
         )
 
     @by_user: (params, options) ->
-        #user = AV.User.current()
+        user = AV.User.current()
+        ###    for test
         user = AV.Object.createWithoutData(
             '_User'
             params.user_id
         )
+        ###
         query = Oauth.$
         query.equalTo('user', user)
         query.descending('updatedAt')
@@ -56,13 +58,16 @@ DB class Oauth
 
     @rm: (params, options) ->
         query = Oauth.$
-        query.get(params.oauth_id, {
+        query.get(params.id, {
             success: (o) ->
                 o.destroy({
                     success: (o) ->
                         options.success 'deleted'
                 })
         })
+
+    @sync: (params, options) ->
+        
 
 
 DB class OauthSecret

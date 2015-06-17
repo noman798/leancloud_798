@@ -1,4 +1,5 @@
 require "cloud/db/oauth"
+require "cloud/db/post"
 DB = require "cloud/_db"
 Evernote = require('evernote').Evernote
 {Thrift, NoteStoreClient, Client} = Evernote
@@ -14,7 +15,14 @@ _oauth_get = (params, callback)->
             callback store
     })
 
-DB class SyncEvernote
+
+DB class EvernoteSync
+    constructor : (
+        @oauth_id
+        @update_count
+    ) ->
+        super
+
     @sync:(params, options) ->
         _oauth_get(params, (store)->
             #标签 SITE.NAME 不区分大小写
@@ -81,25 +89,21 @@ DB class SyncEvernote
                                 updatedSequenceNum: full_note.updatedSequenceNum
                             }
                             console.log params.guid
-                            PostEvernote.new(params)
+                            EvernotePost.new(params)
                         )
                         options.success 'updateded'
                 )
         )
 
-DB class PostEvernote
+DB class EvernotePost
     constructor : (
         @guid
         @post
-        @site
-        @tag_list
-        @updated
-        @updatedSequenceNum
     ) ->
         super
 
     @new: (params) ->
-        PostEvernote.$.get_or_create({
+        EvernotePost.$.get_or_create({
             params
         }, {
             create: (o) ->

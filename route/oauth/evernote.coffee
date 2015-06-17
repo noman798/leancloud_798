@@ -17,10 +17,11 @@ _sync_username = (token, callback)->
         callback name
 
 
-app.get('/oauth/evernote/:host/:user_id', (request, response) ->
+app.get('/oauth/:oauthstr/:host/:user_id', (request, response) ->
     host = request.params.host.toLowerCase()
     http = "https://sandbox.evernote.com/"
-    kind = DB.Oauth.KIND["evernote"]
+    evernote_url = request.params.oauthstr
+    kind = DB.Oauth.KIND[evernote_url]
 
     query = request.query
     oauth = new OAuth.OAuth(
@@ -29,7 +30,7 @@ app.get('/oauth/evernote/:host/:user_id', (request, response) ->
         CONFIG.EVERNOTE.KEY,
         CONFIG.EVERNOTE.SECRET,
         '1.0A',
-        "#{request.protocol}://#{request.headers.host}/oauth/evernote/#{host}/#{request.params.user_id}",
+        "#{request.protocol}://#{request.headers.host}/oauth/#{evernote_url}/#{host}/#{request.params.user_id}",
         'HMAC-SHA1'
     )
 
@@ -62,7 +63,7 @@ app.get('/oauth/evernote/:host/:user_id', (request, response) ->
                                     }
                                 }
                                 (o)->
-                                    response.redirect "http://#{host}/-Oauth/bind"
+                                    response.redirect "http://#{host}/-minisite/bind.syncing"
                             )
                         )
                 )

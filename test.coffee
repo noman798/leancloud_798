@@ -5,19 +5,7 @@ DB = require 'cloud/_db'
 
 main = ->
     ###
-    DB.SyncEvernote.by_tag(
-        {
-            id:"557ea6cae4b019eef746e5c6"
-            site_id:'555d759fe4b06ef0d72ce8e7'
-        }
-        {
-            success:(li)->
-                console.log li
-
-        }
-    )
-
-    DB.SyncEvernote.update(
+    DB.EvernoteSync.by_tag(
         {
             id:"557ea6cae4b019eef746e5c6"
             site_id:'555d759fe4b06ef0d72ce8e7'
@@ -30,28 +18,20 @@ main = ->
     )
     ###
 
-    DB.Oauth.by_user(
+    DB.EvernoteSync.update(
         {
-            user_id: "5566f0cee4b09f185e943711"
+            id:"55811852e4b0a573eb7a46bb"
+            site_id:'555d759fe4b06ef0d72ce8e7'
         }
         {
-            success: (li) ->
+            success:(li)->
                 console.log li
-        }
 
+        }
     )
 
-    DB.Oauth.rm(
-        {
-            oauth_id: "5580ef47e4b007f322d39e18"
-        }
-        {
-            success: (li) ->
-                console.log li
-        }
+    #DB.Oauth.by_user( { user_id: "5566f0cee4b09f185e943711" } { success: (li) -> console.log li } )
 
-    )
+    #DB.Oauth.rm( { oauth_id: "5580ef47e4b007f322d39e18" } { success: (li) -> console.log li } )
 
 main()
-
-
