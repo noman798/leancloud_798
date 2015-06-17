@@ -36,6 +36,35 @@ DB class Oauth
                 )
         )
 
+    @by_user: (params, options) ->
+        #user = AV.User.current()
+        user = AV.Object.createWithoutData(
+            '_User'
+            params.user_id
+        )
+        query = Oauth.$
+        query.equalTo('user', user)
+        query.descending('updatedAt')
+        query.find({
+            success: (oauth_list) ->
+                res_list = []
+                for i in oauth_list
+                    res = [i.id, i.get('kind'), i.get('name'), i.updatedAt]
+                    res_list.push res
+                options.success res_list
+        })
+
+    @rm: (params, options) ->
+        query = Oauth.$
+        query.get(params.oauth_id, {
+            success: (o) ->
+                o.destroy({
+                    success: (o) ->
+                        options.success 'deleted'
+                })
+        })
+
+
 DB class OauthSecret
 
     constructor: (
