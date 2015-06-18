@@ -63,7 +63,7 @@ app.get('/oauth/:oauthstr/:host/:user_id', (request, response) ->
                                     }
                                 }
                                 (o)->
-                                    response.redirect "http://#{host}/-minisite/bind.syncing"
+                                    response.redirect "http://#{host}/-minisite/bind.syncing!\"#{o.id}\""
                             )
                         )
                 )

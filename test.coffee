@@ -20,7 +20,7 @@ main = ->
 
     DB.EvernoteSync.update(
         {
-            id:"55811852e4b0a573eb7a46bb"
+            id:"55813e90e4b007f322d8874e"
             site_id:'555d759fe4b06ef0d72ce8e7'
         }
         {

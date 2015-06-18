@@ -1,4 +1,5 @@
 require "cloud/db/site"
+require "cloud/db/sync"
 DB = require "cloud/_db"
 
 DB class Oauth
@@ -67,7 +68,18 @@ DB class Oauth
         })
 
     @sync: (params, options) ->
-        
+        query = Oauth.$
+        query.get(params.id, {
+            success: (o) ->
+                o.save()
+                options.success ''
+        })
+        DB.EvernoteSync.update(
+            {
+                id: params.id
+                site_id: params.site_id
+            }
+        )
 
 
 DB class OauthSecret
