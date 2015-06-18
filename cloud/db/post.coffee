@@ -190,13 +190,36 @@ DB class PostHtml extends Post
         super
 
     @new : (params, options) ->
-        params.kind = Post.KIND.HTML
-        params.owner = AV.User.current()
-        blog = new PostHtml()
-        blog.$set('star_count', 0)
-        blog.$set params
-        blog.$setACL()
-        blog.$save options
+        _ = (blog)->
+            changed = 0
+            for k,v of params
+                if v != blog[k]
+                    changed = 1
+                    break
+            if changed
+                blog.$set params
+                blog.$save options
+
+        id = params.id
+        if 'id' of params
+            delete params.id
+
+        if id
+            Post.$.get(
+                id
+                success:(post)->
+                    post = new DB.Post post
+                    _ post
+            )
+        else
+            params.kind = Post.KIND.HTML
+            params.owner = AV.User.current()
+            blog = new PostHtml()
+            blog.$setACL()
+            blog.$set star_count:0
+            _ blog
+
+
 
 DB class PostChat extends Post
     @new : (params, options) ->

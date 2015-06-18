@@ -25,6 +25,7 @@
     "rootpath":">=0.1.2",
     "qiniu":">=6.1.8",
     "underscore.string":">= 3.1.1",
+    "dateformat":">= 1.0.11",
     "underscore":">= 1.8.3"
   }
 }
