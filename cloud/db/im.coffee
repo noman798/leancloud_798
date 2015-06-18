@@ -77,8 +77,7 @@ DB class ImFriend
         })
 
     @hide: (params, options) ->
-        from_user = params.from_user
-        to_user = params.to_user
+        {from_user,to_user} = params
         query = ImFriend.$
         query.equalTo({from_user, to_user})
         query.first({
