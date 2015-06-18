@@ -31,55 +31,24 @@ DB class EvernoteSync
             oauth_id:params.id
         }, {
             create:(o) ->
-                o.set('oauth_id', params.id)
-                o.set('update_count', 0)
-                o.set('updated', 0)
-                o.set('count', 0)
+                o.set(
+                    oauth_id:params.id
+                    update_count: 0
+                    updated: 0
+                    count: 0
+                )
             success:(o) ->
-                o.set('update_count', params.update_count)
-                o.set('updated', params.updated)
+                o.set(
+                    update_count : params.update_count
+                    updated : params.updated
+                )
                 o.save()
         })
 
-    @sync:(params, options) ->
-        _oauth_get(params, (store)->
-            #标签 SITE.NAME 不区分大小写
-            store.listNotebooks(
-                (error, li) ->
-                    console.log li
-                    for i in li
-                        console.log i
-                    options.success li
-            )
-        )
-
-    @by_tag:(params, options) ->
+    @sync: (params, options) ->
         site_id = params.site_id
         delete params.site_id
-        _oauth_get(params, (store)->
-            filter = new Evernote.NoteFilter()
-            filter.words = """tag:"tech2ipo" tag:"发布" updated:#{xxxx.updated-1}"""
-            #filter.words = 'tag:"tech2ipo" tag:"发布" '
-            filter.order = Evernote.NoteSortOrder.UPDATE_SEQUENCE_NUMBER
 
-            spec = new Evernote.NotesMetadataResultSpec()
-            spec.includeUpdateSequenceNum = true
-            spec.includeUpdated = true
-            spec.includeDeleted = true
-            spec.includeTitle = true
-            store.findNotesMetadata(filter, 0, 100, spec,
-                (err, li) ->
-                    console.log err, li
-                    for note in li.notes
-                        console.log note.title
-
-                    options.success ''
-                )
-        )
-
-    @update: (params, options) ->
-        site_id = params.site_id
-        delete params.site_id
         _oauth_get(params, (store)->
             query = EvernoteSync.$
             query.equalTo('oauth_id', params.id)
