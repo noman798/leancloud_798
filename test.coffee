@@ -18,7 +18,7 @@ main = ->
     )
     ###
 
-    DB.EvernoteSync.update(
+    DB.EvernoteSync.sync(
         {
             id:"55813e90e4b007f322d8874e"
             site_id:'555d759fe4b06ef0d72ce8e7'

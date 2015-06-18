@@ -16,6 +16,12 @@ _oauth_get = (params, callback)->
             callback store
     })
 
+DB class EvernoteSyncCount
+    constructor : (
+        @oauth_id
+        @count
+    ) ->
+        super
 
 
 DB class EvernoteSync
@@ -23,20 +29,14 @@ DB class EvernoteSync
         @oauth_id
         @update_count
         @updated
-        @count
     ) ->
         super
 
     @new: (params) ->
+        oauth_id = params.id
         EvernoteSync.$.get_or_create({
-            oauth_id:params.id
+            oauth_id
         }, {
-            create:(o) ->
-                o.set(
-                    update_count: 0
-                    updated: 0
-                    count: 0
-                )
             success:(o) ->
                 o.set(
                     update_count : params.update_count
@@ -48,7 +48,8 @@ DB class EvernoteSync
     @sync: (params, options) ->
         _oauth_get(params, (store)->
             query = EvernoteSync.$
-            query.equalTo oauth_id:params.id
+            oauth_id = params.id
+            query.equalTo {oauth_id}
             _sync = (evernote_sync) ->
                 if evernote_sync
                     words = """updated:#{evernote_sync.get('updated')-1}"""
@@ -66,53 +67,65 @@ DB class EvernoteSync
                 spec.includeDeleted = true
                 spec.includeTitle= true
 
-                limit = 100
+                limit = 1
                 updated = 0
-                _ = (offset)->
-                    store.findNotesMetadata(
-                        filter, offset, limit, spec
-                        (err, li) ->
-                            if err or not li
-                                console.log err
-                                return
+                counter = EvernoteSyncCount.$.get_or_create(
+                    {
+                        oauth_id
+                    }
+                    success:(counter)->
+                        _ = (offset)->
+                            counter.set count:0
+                            counter.save()
 
-                            to_update_count = 0
-                            for note in li.notes
-                                if not updated
-                                    updated = note.updated
-                                if note.updateSequenceNum <= update_count
-                                    to_update_count = 0
-                                    break
-                                ++ to_update_count
-
-                                store.getNote(note.guid, true, true, false, false, (err, full_note) ->
-                                    if err
+                            store.findNotesMetadata(
+                                filter, offset, limit, spec
+                                (err, li) ->
+                                    if err or not li
                                         console.log err
                                         return
-                                    guid = full_note.guid
 
-                                    DB.PostHtml.new(
-                                        {
-                                            title: full_note.title
-                                            html: full_note.content
+                                    to_update_count = 0
+                                    for note in li.notes
+                                        if not updated
+                                            updated = note.updated
+                                        if note.updateSequenceNum <= update_count
+                                            to_update_count = 0
+                                            break
+                                        ++ to_update_count
+
+                                        store.getNote(note.guid, true, true, false, false, (err, full_note) ->
+                                            if err
+                                                console.log err
+                                                return
+                                            guid = full_note.guid
+
+                                            EvernotePost.new(
+                                                guid
+                                                (success)->
+                                                    DB.PostHtml.new(
+                                                        {
+                                                            title: full_note.title
+                                                            html: full_note.content
+                                                        }
+                                                        success:(post)->
+                                                            success post
+                                                            counter.increment('count')
+                                                            counter.save()
+                                                    )
+                                            )
+                                        )
+                                    if to_update_count
+                                        _(offset+limit)
+                                    else
+                                        EvernoteSync.new {
+                                            oauth_id:params.oauth_id
+                                            update_count:li.updateCount
+                                            updated:updated
                                         }
-                                        success:(post)->
-                                            EvernotePost.new(guid, post)
-                                            evernote_sync.increment('count')
-                                            evernote_sync.save()
-                                    )
-                                )
-                            if to_update_count
-                                _(offset+limit)
-                            else
-                                EvernoteSync.new {
-                                    oauth_id:params.oauth_id
-                                    update_count:li.updateCount
-                                    updated:updated
-                                    count:0
-                                }
+                            )
+                        _ 0
                     )
-                _ 0
 
             query.first(
                 success: _sync
@@ -148,8 +161,13 @@ DB class EvernotePost
     ) ->
         super
 
-    @new: (guid, post) ->
+    @new: (guid, post_new) ->
         EvernotePost.$.get_or_create({
             guid
-            post
+        },{
+            success:(o)->
+                if not o.get('post')
+                    post_new (post)->
+                        o.set {post}
+                        o.save()
         })
