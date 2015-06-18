@@ -7,6 +7,7 @@ Evernote = require('evernote').Evernote
 _oauth_get = (params, callback)->
     DB.Oauth.$.get(params.id, {
         success: (oauth) ->
+            #TODO , 根据oauth的类型决定访问的域名serviceHost
             client = new Client(
                 token:oauth.get('token')
                 serviceHost:'sandbox.evernote.com'
@@ -32,7 +33,6 @@ DB class EvernoteSync
         }, {
             create:(o) ->
                 o.set(
-                    oauth_id:params.id
                     update_count: 0
                     updated: 0
                     count: 0
@@ -46,70 +46,82 @@ DB class EvernoteSync
         })
 
     @sync: (params, options) ->
-        site_id = params.site_id
-        delete params.site_id
-
         _oauth_get(params, (store)->
             query = EvernoteSync.$
-            query.equalTo('oauth_id', params.id)
+            query.equalTo oauth_id:params.id
+            _sync = (evernote_sync) ->
+                if evernote_sync
+                    words = """updated:#{evernote_sync.get('updated')-1}"""
+                    update_count = evernote_sync.get('update_count')
+                else
+                    update_count = 0
+                    words = ''
 
-            query.first({
-                success:(evernote_sync) ->
-                    if evernote_sync
-                        #words = """updated:#{evernote_sync.get('updated') - 1}"""
-                        words = """"""
-                        update_count = evernote_sync.get('update_count')
-                        console.log 'everid', evernote_sync.id
-                    else
-                        update_count = 0
-                        words = ''
+                filter = new Evernote.NoteFilter()
+                filter.words = words + """any: tag:发布 tag:publish"""
+                filter.order = Evernote.NoteSortOrder.UPDATE_SEQUENCE_NUMBER
+                spec = new Evernote.NotesMetadataResultSpec()
+                spec.includeUpdateSequenceNum = true
+                spec.includeUpdated = true
+                spec.includeDeleted = true
+                spec.includeTitle= true
 
-                    filter = new Evernote.NoteFilter()
-                    filter.words = words + """any: tag:发布 tag:publish"""
-                    filter.order = Evernote.NoteSortOrder.UPDATE_SEQUENCE_NUMBER
-                    spec = new Evernote.NotesMetadataResultSpec()
-                    spec.includeUpdateSequenceNum = true
-                    spec.includeUpdated = true
-                    spec.includeDeleted = true
-                    spec.includeTitle= true
-                    limit = 100
-                    _ = (offset)->
-                        store.findNotesMetadata(filter, offset, limit, spec, (err, li) ->
-                            to_update_count = 0
-                            if err
+                limit = 100
+                updated = 0
+                _ = (offset)->
+                    store.findNotesMetadata(
+                        filter, offset, limit, spec
+                        (err, li) ->
+                            if err or not li
                                 console.log err
                                 return
+
+                            to_update_count = 0
                             for note in li.notes
-                                if note.updateSequenceNum > update_count
-                                    to_update_count += 1
-                                    store.getNote(note.guid, true, true, false, false, (err, full_note) ->
-                                        if err
-                                            console.log err
-                                            return
-                                        else
-                                            guid = full_note.guid
-                                            console.log guid
-                                            post = new DB.PostHtml()
-                                            post.$set('title', full_note.title)
-                                            post.$set('html', full_note.content)
-                                            post.$save()
+                                if not updated
+                                    updated = note.updated
+                                if note.updateSequenceNum <= update_count
+                                    to_update_count = 0
+                                    break
+                                ++ to_update_count
+
+                                store.getNote(note.guid, true, true, false, false, (err, full_note) ->
+                                    if err
+                                        console.log err
+                                        return
+                                    guid = full_note.guid
+
+                                    DB.PostHtml.new(
+                                        {
+                                            title: full_note.title
+                                            html: full_note.content
+                                        }
+                                        success:(post)->
                                             EvernotePost.new(guid, post)
                                             evernote_sync.increment('count')
                                             evernote_sync.save()
                                     )
+                                )
                             if to_update_count
                                 _(offset+limit)
                             else
-                                console.log 'todo!!'
-                                #todo
-                                #EvernoteSync.new(params)
-                            )
-                    _ 0
+                                EvernoteSync.new {
+                                    oauth_id:params.oauth_id
+                                    update_count:li.updateCount
+                                    updated:updated
+                                    count:0
+                                }
+                    )
+                _ 0
 
-            error:(err) ->
-                console.log 'EvernoteSync'
-                EvernoteSync.new(params)
-            })
+            query.first(
+                success: _sync
+                error:(err) ->
+                    if err.code == 101
+                        _sync()
+                    else
+                        console.log err
+            )
         )
             
      @by_count: (params, options) ->
@@ -140,16 +152,4 @@ DB class EvernotePost
         EvernotePost.$.get_or_create({
             guid
             post
-        }, {
-            create: (o) ->
-                console.log 'create'
-                o.set('guid', guid)
-                o.set('post', post)
-            success: (o) ->
-                o.get('post').fetch({
-                    success: (p) ->
-                        p.set('title', post.title)
-                        p.set('html', post.html)
-                })
-                o.save()
         })
