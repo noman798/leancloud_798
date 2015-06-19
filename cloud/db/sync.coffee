@@ -83,7 +83,7 @@ DB class EvernoteSync
                                         console.log "UpdateCount",li.notes.length, update_count, li.updateCount
 
                                         for note in li.notes
-                                            console.log note.title , note.updateSequenceNum 
+                                            console.log note.title , note.updateSequenceNum
 
                                             if note.updateSequenceNum <= update_count
                                                 the_end = 1
@@ -110,6 +110,7 @@ DB class EvernoteSync
                                                                 -- to_update_count
                                                                 if to_update_count
                                                                     counter.increment('count')
+                                                                    console.log counter.get('count')
                                                                 else
                                                                     counter.set count:-1
                                                                     EvernoteSync.new {
@@ -145,20 +146,19 @@ DB class EvernoteSync
         )
             
      @by_count: (params, options) ->
-        query.get(params.sync_id, {
+        query.get(params.id, {
             success:(evernote_sync) ->
                 date = new Date()
+                count = evernote_sync.get('count')
                 if date - evernote_sync.updatedAt > 30 * 1000
-                    if evernote_sync.count == count
+                    if evernote_sync.get('count') == count
                         evernote_sync.set('count', -1)
                         evernote_sync.save()
                     else
-                        evernote_sync.set('count', count)
                         evernote_sync.set('updatedAt', date)
                         evernote_sync.save()
                 options.success evernote.get('count')
         })
-
 
 
 DB class EvernotePost
