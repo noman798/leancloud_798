@@ -18,6 +18,7 @@ main = ->
     )
     ###
 
+    ###
     DB.EvernoteSync.sync(
         {
             id:"55813e90e4b007f322d8874e"
@@ -30,6 +31,17 @@ main = ->
         }
     )
     DB.EvernoteSync.count(
+        {
+            id:"55813e90e4b007f322d8874e"
+        }
+        {
+            success:(li)->
+                console.log 'count is', li
+
+        }
+    )
+    ###
+    DB.EvernoteSyncCount.rm(
         {
             id:"55813e90e4b007f322d8874e"
         }

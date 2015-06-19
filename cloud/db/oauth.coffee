@@ -61,25 +61,12 @@ DB class Oauth
         query = Oauth.$
         query.get(params.id, {
             success: (o) ->
-                o.destroy({
+                o?.destroy({
                     success: (o) ->
-                        options.success 'deleted'
+                        options.success ''
                 })
         })
 
-    @sync: (params, options) ->
-        query = Oauth.$
-        query.get(params.id, {
-            success: (o) ->
-                o.save()
-                options.success ''
-        })
-        DB.EvernoteSync.update(
-            {
-                id: params.id
-                site_id: params.site_id
-            }
-        )
 
 
 DB class OauthSecret
