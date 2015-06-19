@@ -37,6 +37,11 @@ DB class Oauth
                 )
         )
 
+    @touch: (id) ->
+        Oauth.$.get(id, success:(o)->
+            o.save()
+        )
+
     @by_user: (params, options) ->
         user = AV.User.current()
         ###    for test

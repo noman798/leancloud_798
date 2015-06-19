@@ -53,7 +53,7 @@ DB class EvernoteSync
 
     @new: (params) ->
         EvernoteSync.$.get_or_create({
-            oauth_id:params.oauth_id
+            oauth_id:params.id
         }, {
             success:(o) ->
                 o.set(
@@ -82,6 +82,7 @@ DB class EvernoteSync
         )
 
     @sync: (params, options) ->
+        options.success ''
         _oauth_get(params, (store)->
             _sync = (evernote_sync) ->
                 update_count = 0
@@ -119,7 +120,6 @@ DB class EvernoteSync
 
                                         the_end = 0
 
-                                        console.log "UpdateCount",li.notes.length, update_count, li.updateCount
                                         if not li.notes.length
                                             the_end = 1
                                             return
@@ -129,7 +129,6 @@ DB class EvernoteSync
                                             if note.updateSequenceNum <= update_count
                                                 the_end = 1
                                                 break
-                                            console.log note.title , note.updateSequenceNum
                                             ++ to_update_count
 
                                             store.getNote(note.guid, true, true, false, false, (err, full_note) ->
@@ -152,20 +151,19 @@ DB class EvernoteSync
                                                                 -- to_update_count
                                                                 if to_update_count
                                                                     counter.increment 'count'
+                                                                    counter.save()
                                                                 else
-                                                                    counter.set count:-1
+                                                                    EvernoteSyncCount.rm oauth_id
                                                                     EvernoteSync.new {
                                                                         oauth_id
                                                                         update_count:li.updateCount
                                                                     }
-                                                                counter.save() 
                                                         )
                                                 )
                                             )
                                         if the_end
                                             if not to_update_count
-                                                counter.set count:-1
-                                                counter.save()
+                                                EvernoteSyncCount.rm oauth_id
                                         else
                                             _(offset+limit)
                                 )
@@ -193,19 +191,18 @@ DB class EvernoteSync
         }
         q.first({
             success:(counter) ->
-                count = counter.get('count')
-                pre_count = counter.get('pre_count')
+                if counter
+                    count = counter.get('count')
+                    pre_count = counter.get('pre_count')
 
-                if count < 0 or (pre_count == count and ((new Date())-counter.updatedAt)/1000 > 30)
-                    counter.set 'count', -1
-                    counter.set 'pre_count', -1
-                    counter.save()
-                    return
-
-                if count != pre_count
-                    counter.set 'pre_count', count
-                    counter.save()
-
+                    if count < 0 or (pre_count == count and ((new Date())-counter.updatedAt)/1000 > 30)
+                        EvernoteSyncCount.rm params.id
+                        count = -1
+                    else if count != pre_count
+                        counter.set 'pre_count', count
+                        counter.save()
+                else
+                    count = -1
                 options.success count
         })
 

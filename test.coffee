@@ -1,10 +1,10 @@
+###
 app = require 'app'
 require 'cloud/db/sync'
 require 'cloud/db/oauth'
 DB = require 'cloud/_db'
 
 main = ->
-    ###
     DB.EvernoteSync.by_tag(
         {
             id:"557ea6cae4b019eef746e5c6"
@@ -16,9 +16,6 @@ main = ->
 
         }
     )
-    ###
-
-    ###
     DB.EvernoteSync.sync(
         {
             id:"55813e90e4b007f322d8874e"
@@ -40,7 +37,6 @@ main = ->
 
         }
     )
-    ###
     DB.EvernoteSyncCount.rm(
         {
             id:"55813e90e4b007f322d8874e"
@@ -57,3 +53,4 @@ main = ->
     #DB.Oauth.rm( { oauth_id: "5580ef47e4b007f322d39e18" } { success: (li) -> console.log li } )
 
 main()
+###
