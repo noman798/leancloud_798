@@ -29,6 +29,16 @@ main = ->
 
         }
     )
+    DB.EvernoteSync.count(
+        {
+            id:"55813e90e4b007f322d8874e"
+        }
+        {
+            success:(li)->
+                console.log 'count is', li
+
+        }
+    )
 
     #DB.Oauth.by_user( { user_id: "5566f0cee4b09f185e943711" } { success: (li) -> console.log li } )
 

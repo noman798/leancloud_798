@@ -59,13 +59,14 @@ DB class EvernoteSync
                 spec.includeDeleted = true
                 spec.includeTitle= true
 
-                counter = EvernoteSyncCount.$.get_or_create(
+                EvernoteSyncCount.$.get_or_create(
                     {
                         oauth_id
                     }
-                    success:(counter)->
-                        counter.set count:0
-                        counter.save success:->
+                    success:(_c)->
+                        _c.set "count",0
+                        _c.save success:(counter)->
+                            to_update_count = 0
                             _ = (offset)->
                                 if offset > 0
                                     limit = 3
@@ -78,17 +79,19 @@ DB class EvernoteSync
                                             console.log err
                                             return
 
-                                        to_update_count = 0
                                         the_end = 0
 
                                         console.log "UpdateCount",li.notes.length, update_count, li.updateCount
+                                        if not li.notes.length
+                                            the_end = 1
+                                            return
 
                                         for note in li.notes
-                                            console.log note.title , note.updateSequenceNum
 
                                             if note.updateSequenceNum <= update_count
                                                 the_end = 1
                                                 break
+                                            console.log note.title , note.updateSequenceNum
                                             ++ to_update_count
 
                                             store.getNote(note.guid, true, true, false, false, (err, full_note) ->
@@ -110,24 +113,23 @@ DB class EvernoteSync
                                                                 success post
                                                                 -- to_update_count
                                                                 if to_update_count
-                                                                    counter.increment('count')
-                                                                    console.log counter.get('count')
+                                                                    counter.increment 'count'
                                                                 else
                                                                     counter.set count:-1
                                                                     EvernoteSync.new {
                                                                         oauth_id
                                                                         update_count:li.updateCount
                                                                     }
-                                                                counter.save()
+                                                                counter.save() 
                                                         )
                                                 )
                                             )
-                                        if to_update_count and not the_end
-                                            _(offset+limit)
-                                        else
+                                        if the_end
                                             if not to_update_count
                                                 counter.set count:-1
                                                 counter.save()
+                                        else
+                                            _(offset+limit)
                                 )
                             _ 0
                     )
@@ -151,21 +153,25 @@ DB class EvernoteSync
         q.equalTo {
             oauth_id:params.id
         }
-        q.first success:(counter) ->
-            count = counter.get('count')
-            pre_count = count.get('pre_count')
+        q.first({
+            success:(counter) ->
+                count = counter.get('count')
+                pre_count = counter.get('pre_count')
 
-            if count < 0 or (pre_count == count and ((new Date())-counter.updateAt)/1000 > 30)
-                counter.set 'count', -1
-                counter.set 'pre_count', -1
-                counter.save()
-                return
+                if count < 0 or (pre_count == count and ((new Date())-counter.updatedAt)/1000 > 30)
+                    counter.set 'count', -1
+                    counter.set 'pre_count', -1
+                    counter.save()
+                    return
 
-            if count != pre_count
-                counter.set 'pre_count', count
-                counter.save()
+                if count != pre_count
+                    counter.set 'pre_count', count
+                    counter.save()
 
-            options.success count
+                options.success count
+        })
+
+
 
 
 DB class EvernotePost
