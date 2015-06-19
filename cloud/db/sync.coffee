@@ -20,6 +20,7 @@ DB class EvernoteSyncCount
     constructor : (
         @oauth_id
         @count
+        @pre_count
     ) ->
         super
 
@@ -145,20 +146,26 @@ DB class EvernoteSync
             )
         )
             
-     @by_count: (params, options) ->
-        query.get(params.id, {
-            success:(evernote_sync) ->
-                date = new Date()
-                count = evernote_sync.get('count')
-                if date - evernote_sync.updatedAt > 30 * 1000
-                    if evernote_sync.get('count') == count
-                        evernote_sync.set('count', -1)
-                        evernote_sync.save()
-                    else
-                        evernote_sync.set('updatedAt', date)
-                        evernote_sync.save()
-                options.success evernote.get('count')
-        })
+     @count: (params, options) ->
+        q = EvernoteSyncCount.$
+        q.equalTo {
+            oauth_id:params.id
+        }
+        q.first success:(counter) ->
+            count = counter.get('count')
+            pre_count = count.get('pre_count')
+
+            if count < 0 or (pre_count == count and ((new Date())-counter.updateAt)/1000 > 30)
+                counter.set 'count', -1
+                counter.set 'pre_count', -1
+                counter.save()
+                return
+
+            if count != pre_count
+                counter.set 'pre_count', count
+                counter.save()
+
+            options.success count
 
 
 DB class EvernotePost
