@@ -28,12 +28,15 @@ _equalTo = AV.Query.prototype.equalTo
 
 AV.Query.prototype.equalTo = (params...)->
     if $.isString params[0]
-        return _equalTo.apply @, params
+        _equalTo.apply @, params
     else
         for k,v of params[0]
-            result = _equalTo.call @,k,v
-        return result
+            _equalTo.call @,k,v
+    @
 
+AV.Query.prototype.destroy = (params, options)->
+    @equalTo(params).destroyAll(options)
+    @
 
     
 

@@ -63,14 +63,10 @@ DB class Oauth
         })
 
     @rm: (params, options) ->
-        query = Oauth.$
-        query.get(params.id, {
-            success: (o) ->
-                o?.destroy({
-                    success: (o) ->
-                        options.success ''
-                })
-        })
+        kwds =  oauth_id:params.id
+        DB.EvernoteSync.$.destroy kwds
+        DB.EvernoteSyncCount.$.destroy kwds
+        DB.Oauth.$.destroy {objectId:params.id}, options
 
 
 

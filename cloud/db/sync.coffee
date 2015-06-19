@@ -24,23 +24,6 @@ DB class EvernoteSyncCount
     ) ->
         super
 
-    @rm: (params, options) ->
-        query = EvernoteSyncCount.$
-        query.equalTo('oauth_id', params.id)
-        query.first(
-            success: (o) ->
-                if o
-                    o.destroy({
-                        success: (obj)->
-                            options.success 'deleted EvernoteSync'
-                        error: (obj, err) ->
-                            console.log err
-                            return
-                    })
-            error: (err) ->
-                console.log err
-                return
-        )
 
 DB class EvernoteSync
     constructor : (
@@ -61,25 +44,6 @@ DB class EvernoteSync
                 )
                 o.save()
         })
-
-    @rm: (params, options) ->
-        DB.EvernoteSyncCount.rm(params.id)
-        query = EvernoteSync.$
-        query.equalTo('oauth_id', params.id)
-        query.first(
-            success: (o) ->
-                if o
-                    o.destroy({
-                        success: (obj)->
-                            options.success ''
-                        error: (obj, err) ->
-                            console.log err
-                            return
-                    })
-            error: (err) ->
-                console.log err
-                return
-        )
 
     @sync: (params, options) ->
         options.success ''
