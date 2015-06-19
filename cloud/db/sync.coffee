@@ -24,6 +24,8 @@ DB class EvernoteSyncCount
     ) ->
         super
 
+    @rm : (id)->
+        DB.EvernoteSyncCount.$.rm {oauth_id:id}
 
 DB class EvernoteSync
     constructor : (

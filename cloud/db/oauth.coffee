@@ -64,9 +64,9 @@ DB class Oauth
 
     @rm: (params, options) ->
         kwds =  oauth_id:params.id
-        DB.EvernoteSync.$.destroy kwds
-        DB.EvernoteSyncCount.$.destroy kwds
-        DB.Oauth.$.destroy {objectId:params.id}, options
+        DB.EvernoteSync.$.rm kwds
+        DB.EvernoteSyncCount.$.rm kwds
+        DB.Oauth.$.rm {objectId:params.id}, options
 
 
 

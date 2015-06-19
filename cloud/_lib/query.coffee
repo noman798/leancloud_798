@@ -34,7 +34,7 @@ AV.Query.prototype.equalTo = (params...)->
             _equalTo.call @,k,v
     @
 
-AV.Query.prototype.destroy = (params, options)->
+AV.Query.prototype.rm = (params, options)->
     @equalTo(params).destroyAll(options)
     @
 
