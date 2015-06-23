@@ -1,6 +1,8 @@
 $ = require "underscore"
 DB = require "cloud/_db"
 redis = require "cloud/_redis"
+{R} = redis
+R "PostStar"
 
 PAGE_LIMIT = 20
 DB class PostStar
@@ -83,17 +85,20 @@ DB class PostStar
                 post_star.set('tag_list', new_tag_list)
                 post_star.save()
             success(post_star)
-
-        PostStar.$.get_or_create(
-            kwds
-            options
-        )
+        kwds.post.fetch success:(o)->
+            redis.sadd R.PostStar + "." + kwds.user.id, o.get("ID")
+            PostStar.$.get_or_create(
+                kwds
+                options
+            )
 
     @rm : (params, options) ->
         query = PostStar.$
         kwds  = PostStar._params_site_post(params)
-        query.equalTo kwds
-        query.destroyAll options
+        kwds.post.fetch success:(o)->
+            redis.srem R.PostStar + "." + kwds.user.id, o.get("ID")
+            query.equalTo kwds
+            query.destroyAll options
             
 
     @_params_site_post:(params)->
