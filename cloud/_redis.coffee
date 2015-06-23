@@ -1,30 +1,27 @@
 _redis = require("redis")
 CONFIG = require('cloud/config')
+{num_b62} = require 'cloud/_lib/b64'
 
-console.log CONFIG.REDIS.IP
 redis = _redis.createClient CONFIG.REDIS.PORT, CONFIG.REDIS.IP, {
     socket_keepalive:true
 }
 module.exports = redis
 
 redis.auth CONFIG.REDIS.PASSWORD
-redis.set("foo_rand000000000000", "OK")
-redis.get("foo_rand000000000000", ->
-    consoloe.log 111111
-)
 
-
-redis.hgetall "_#{CONFIG.REDIS.KEY}_KEY", (err, obj)->
-    console.log obj
 
 
 redis.KEY = KEY = (key)->
-    console.log "t1"
+    _key = "_#{CONFIG.REDIS.KEY}_KEY"
 
-    redis.get "_#{CONFIG.REDIS.KEY}_ID",(err, obj)->
-        console.log err, obj
+    redis.hget _key, key,(err,r)->
+        if r
+            KEY[key] = r
+        else
+            redis.incr "_#{CONFIG.REDIS.KEY}_ID", (err, r)->
+                r = num_b62 r
+                redis.hset _key, key, r, ->
+                    KEY[key] = r
 
-    redis.incr "_#{CONFIG.REDIS.KEY}_ID", (err, obj)->
-        console.log err, obj
-
+    
 

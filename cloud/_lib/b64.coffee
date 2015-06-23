@@ -11,5 +11,5 @@ module.exports =
     b64_id : (str) ->
         new Buffer(str, 'base64').toString('hex')
 
-    num_b64: (num)->
+    num_b62: (num)->
         b62.encode(b10.decode(num+''))

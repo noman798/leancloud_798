@@ -5,9 +5,6 @@
 #console.log num_b64 1000
 
 redis = require "cloud/_redis"
-redis.KEY "test"
-
-console.log redis.KEY.test
 
 
 ###
