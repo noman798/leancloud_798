@@ -56,7 +56,7 @@ DB class EvernoteSync
                     update_count = evernote_sync.get('update_count')
 
                 filter = new Evernote.NoteFilter()
-                filter.words = """any: tag:发布 tag:publish"""
+                filter.words = """any: tag:发布 tag:publish tag:tech2ipo"""
                 filter.order = Evernote.NoteSortOrder.UPDATE_SEQUENCE_NUMBER
                 spec = new Evernote.NotesMetadataResultSpec()
                 spec.includeUpdateSequenceNum = true
