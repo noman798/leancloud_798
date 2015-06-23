@@ -5,7 +5,6 @@ CONFIG = require('cloud/config')
 redis = _redis.createClient CONFIG.REDIS.PORT, CONFIG.REDIS.IP, {
     socket_keepalive:true
 }
-module.exports = redis
 
 redis.auth CONFIG.REDIS.PASSWORD
 
@@ -25,3 +24,4 @@ redis.KEY = KEY = (key)->
 
     
 
+module.exports = redis
