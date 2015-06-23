@@ -1,7 +1,7 @@
 
-{hex2base64} = require 'cloud/_lib/base64'
+{hex_base64, base64_hex} = require 'cloud/_lib/base64'
 
-console.log hex2base64('a')
+console.log base64_hex hex_base64('55892bafe4b0416bdfc44c89')
 
 ###
 app = require 'app'
