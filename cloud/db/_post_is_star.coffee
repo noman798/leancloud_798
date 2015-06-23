@@ -9,7 +9,7 @@ module.exports = (post_list, success)->
             redis.R.PostStar
             i.get('ID') for i in post_list
             (is_star_list)->
-                for i,_ in star_list
+                for i,_ in is_star_list
                     if i
                         post_list[_].set('is_star', 1)
         )
