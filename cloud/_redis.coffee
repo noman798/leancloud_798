@@ -7,3 +7,18 @@ client.auth CONFIG.REDIS.PASSWORD
 module.exports = client
 
 
+_KEY = {}
+
+client.KEY = KEY = (key)->
+    Object.defineProperty(
+        KEY
+        key
+        {
+            get:->
+                r = _KEY[key]
+                if not r
+                    r = redis.hget '_KEY'
+                r
+        }
+    )
+    

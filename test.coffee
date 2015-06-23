@@ -4,6 +4,12 @@
 console.log b64_id id_b64('55892bafe4b0416bdfc44c89')
 console.log num_b64 1000
 
+redis = require "cloud/_redis"
+redis.KEY "test"
+
+console.log redis.KEY.test
+
+
 ###
 app = require 'app'
 require 'cloud/db/sync'
