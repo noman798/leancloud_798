@@ -9,13 +9,13 @@ redis = _redis.createClient CONFIG.REDIS.PORT, CONFIG.REDIS.IP, {
 redis.auth CONFIG.REDIS.PASSWORD
 
 redis.R = R = (key)->
-    _key = "_#{CONFIG.REDIS.R}_R"
+    _key = "_#{CONFIG.REDIS.NAMESPACE}_R"
 
     redis.hget _key, key,(err,r)->
         if r
             R[key] = r
         else
-            redis.incr "_#{CONFIG.REDIS.R}_ID", (err, r)->
+            redis.incr "_REDIS_KEY_ID", (err, r)->
                 r = num_b62 r
                 redis.hset _key, key, r, ->
                     R[key] = r
