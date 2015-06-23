@@ -8,7 +8,7 @@ module.exports =
 
     REDIS :
         PASSWORD : "testpassword"
-        IP : "120.132.56.211"
+        IP : "133.133.33.21"
 
     EVERNOTE :
         KEY : "noman"
