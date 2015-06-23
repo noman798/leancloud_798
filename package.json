@@ -28,6 +28,7 @@
     "dateformat":">= 1.0.11",
     "underscore":">= 1.8.3",
     "redis":">=0.12.1",
-    "hiredis":">=0.4.0"
+    "hiredis":">=0.4.0",
+    "base-x":">=1.0.1",
   }
 }
