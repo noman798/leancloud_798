@@ -1,7 +1,8 @@
 
-{hex_base64, base64_hex} = require 'cloud/_lib/base64'
+{id_b64, b64_id, num_b64} = require 'cloud/_lib/b64'
 
-console.log base64_hex hex_base64('55892bafe4b0416bdfc44c89')
+console.log b64_id id_b64('55892bafe4b0416bdfc44c89')
+console.log num_b64, 1 
 
 ###
 app = require 'app'
