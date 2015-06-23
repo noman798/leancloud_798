@@ -1,9 +1,14 @@
 
-module.exports.QINIU = class QINIU
-    @KEY = 'XK95mSOgU8LBa8Q1YhcmnEmCO2oXnEILvzuyhNDg'
-    @SECRET = 'EQPT2JwiJNPXDGtkrv0qIHG4HB1mn4nrqcl0jWpJ'
-    @BUCKET = "test"
+module.exports =
 
-module.exports.EVERNOTE = class EVERNOTE
-    @KEY = "noman"
-    @SECRET = "db29f833ffd9937b"
+    QINIU :
+        KEY : 'XK95mSOgU8LBa8Q1YhcmnEmCO2oXnEILvzuyhNDg'
+        SECRET : 'EQPT2JwiJNPXDGtkrv0qIHG4HB1mn4nrqcl0jWpJ'
+        BUCKET : "test"
+
+    REDIS :
+        PASSWORD : "testpassword"
+
+    EVERNOTE :
+        KEY = "noman"
+        SECRET = "db29f833ffd9937b"
