@@ -5,7 +5,15 @@
 #console.log num_b64 1000
 
 redis = require "cloud/_redis"
-
+{R} = redis
+R "test"
+setTimeout(
+    ->
+        redis.sadd R.test,1
+        redis.smismember R.test, [1, 2,1,3], (err, result)->
+            console.log err, result
+    1000
+)
 
 ###
 app = require 'app'
