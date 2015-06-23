@@ -86,7 +86,7 @@ DB class PostStar
                 post_star.save()
             success(post_star)
         kwds.post.fetch success:(o)->
-            redis.sadd R.PostStar + "." + kwds.user.id, o.get("ID")
+            redis.sadd R.PostStar + "-" + kwds.user.id, o.get("ID")
             PostStar.$.get_or_create(
                 kwds
                 options
@@ -96,7 +96,7 @@ DB class PostStar
         query = PostStar.$
         kwds  = PostStar._params_site_post(params)
         kwds.post.fetch success:(o)->
-            redis.srem R.PostStar + "." + kwds.user.id, o.get("ID")
+            redis.srem R.PostStar + "-" + kwds.user.id, o.get("ID")
             query.equalTo kwds
             query.destroyAll options
             
