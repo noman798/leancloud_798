@@ -10,5 +10,5 @@ module.exports =
         PASSWORD : "testpassword"
 
     EVERNOTE :
-        KEY = "noman"
-        SECRET = "db29f833ffd9937b"
+        KEY : "noman"
+        SECRET : "db29f833ffd9937b"
