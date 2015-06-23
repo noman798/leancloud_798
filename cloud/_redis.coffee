@@ -1,24 +1,30 @@
-redis = require("redis")
+_redis = require("redis")
 CONFIG = require('cloud/config')
-client = redis.createClient 6379, CONFIG.REDIS.IP, {
+
+console.log CONFIG.REDIS.IP
+redis = _redis.createClient CONFIG.REDIS.PORT, CONFIG.REDIS.IP, {
     socket_keepalive:true
 }
-client.auth CONFIG.REDIS.PASSWORD
-module.exports = client
+module.exports = redis
+
+redis.auth CONFIG.REDIS.PASSWORD
+redis.set("foo_rand000000000000", "OK")
+redis.get("foo_rand000000000000", ->
+    consoloe.log 111111
+)
 
 
-_KEY = {}
+redis.hgetall "_#{CONFIG.REDIS.KEY}_KEY", (err, obj)->
+    console.log obj
 
-client.KEY = KEY = (key)->
-    Object.defineProperty(
-        KEY
-        key
-        {
-            get:->
-                r = _KEY[key]
-                if not r
-                    r = redis.hget '_KEY'
-                r
-        }
-    )
-    
+
+redis.KEY = KEY = (key)->
+    console.log "t1"
+
+    redis.get "_#{CONFIG.REDIS.KEY}_ID",(err, obj)->
+        console.log err, obj
+
+    redis.incr "_#{CONFIG.REDIS.KEY}_ID", (err, obj)->
+        console.log err, obj
+
+
