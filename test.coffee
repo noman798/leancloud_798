@@ -1,3 +1,8 @@
+
+{hex2base64} = require 'cloud/_lib/base64'
+
+console.log hex2base64('a')
+
 ###
 app = require 'app'
 require 'cloud/db/sync'

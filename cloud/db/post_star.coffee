@@ -1,5 +1,6 @@
 $ = require "underscore"
 DB = require "cloud/_db"
+redis = require "cloud/_redis"
 
 PAGE_LIMIT = 20
 DB class PostStar
