@@ -60,6 +60,11 @@ DB class Oauth
                     res = [i.id, i.get('kind'), i.get('name'), i.updatedAt]
                     res_list.push res
                 options.success res_list
+            error: (_error)->
+                if _error.code == 101
+                    options.success []
+                else
+                    console.log _error
         })
 
     @rm: (params, options) ->
