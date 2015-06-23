@@ -1,5 +1,6 @@
 rtrim = require("underscore.string/rtrim")
 b10 = require('base-x')("0123456789")
+b62 = require('base-x')('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
 
 
 
@@ -11,4 +12,4 @@ module.exports =
         new Buffer(str, 'base64').toString('hex')
 
     num_b64: (num)->
-        rtrim b10.decode(num+'').toString('base64'),"="
+        b62.encode(b10.decode(num+''))
