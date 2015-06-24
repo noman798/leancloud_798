@@ -6,8 +6,12 @@ qiniu.conf.SECRET_KEY = CONFIG.QINIU.SECRET
 
 
 module.exports = (
-    returnBody='{"name":$(fname),"size":$(fsize),"w":$(imageInfo.width),"h":$(imageInfo.height),"key":$(key)}'
+    returnBody='{"w":$(imageInfo.width),"h":$(imageInfo.height),"key":$(key)}'
 )->
-    putPolicy = new qiniu.rs.PutPolicy(CONFIG.QINIU.BUCKET)
-    putPolicy.returnBody = returnBody
+    putPolicy = new qiniu.rs.PutPolicy2 {
+        scope:CONFIG.QINIU.BUCKET
+        returnBody
+        #saveKey:"332322"
+    }
+
     return putPolicy.token()
