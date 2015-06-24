@@ -10,17 +10,18 @@ redis = _redis.createClient CONFIG.REDIS.PORT, CONFIG.REDIS.IP, {
 
 redis.auth CONFIG.REDIS.PASSWORD
 
-redis.R = R = (key)->
+redis.R = R = (key, suffix='')->
     _key = "_#{CONFIG.REDIS.NAMESPACE}_R"
 
     redis.hget _key, key,(err,r)->
         if r
-            R[key] = r
+            R[key] = r + suffix
         else
             redis.incr "_REDIS_KEY_ID", (err, r)->
                 r = num_b62 r
                 redis.hset _key, key, r, ->
-                    R[key] = r
+                    R[key] = r + suffix
+        
 
 redis.smismember = (key, id_list, callback)->
     evalsha.exec(

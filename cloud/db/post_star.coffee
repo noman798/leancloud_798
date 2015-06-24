@@ -3,7 +3,7 @@ DB = require "cloud/_db"
 redis = require "cloud/_redis"
 {id_b64} = require "cloud/_lib/b64"
 {R} = redis
-R "PostStar"
+R "PostStar",":"
 
 PAGE_LIMIT = 20
 DB class PostStar
@@ -87,7 +87,7 @@ DB class PostStar
                 post_star.save()
             success(post_star)
         kwds.post.fetch success:(o)->
-            redis.sadd R.PostStar + "-" + id_b64(kwds.user.id), o.get("ID")
+            redis.sadd R.PostStar + id_b64(kwds.user.id), o.get("ID")
             PostStar.$.get_or_create(
                 kwds
                 options
@@ -97,7 +97,7 @@ DB class PostStar
         query = PostStar.$
         kwds  = PostStar._params_site_post(params)
         kwds.post.fetch success:(o)->
-            redis.srem R.PostStar + "-" + id_b64(kwds.user.id), o.get("ID")
+            redis.srem R.PostStar + id_b64(kwds.user.id), o.get("ID")
             query.equalTo kwds
             query.destroyAll options
             

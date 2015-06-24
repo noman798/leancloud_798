@@ -7,7 +7,7 @@ module.exports = (post_list, success)->
     user = AV.User.current()
     if user
         redis.smismember(
-            redis.R.PostStar + "-" + id_b64(user.id)
+            redis.R.PostStar + id_b64(user.id)
             i.get('ID') for i in post_list
             (err, is_star_list)->
                 for i,_ in is_star_list
