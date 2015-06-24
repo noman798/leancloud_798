@@ -1,5 +1,6 @@
 require "cloud/db/oauth"
 require "cloud/db/post"
+require "enml-js"
 DB = require "cloud/_db"
 Evernote = require('evernote').Evernote
 {Thrift, NoteStoreClient, Client} = Evernote
@@ -102,6 +103,7 @@ DB class EvernoteSync
                                                     console.log err
                                                     return
                                                 guid = full_note.guid
+                                                #console.log full_note.content    # for test
 
                                                 EvernotePost.new(
                                                     guid
