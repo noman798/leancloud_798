@@ -16,46 +16,12 @@ setTimeout(
 )
 
 ###
-app = require 'app'
-require 'cloud/db/sync'
-require 'cloud/db/oauth'
-qiniu_token = require 'cloud/db/qiniu_token'
-qiniu = require 'qiniu'
-enml = require 'enml-js'
-Q = require "q"
-Evernote = require('evernote').Evernote
-{Thrift, NoteStoreClient, Client} = Evernote
 
-main = ->
-    qiniu_upload = (body, mime)  ->
-        Q.Promise (resolve)->
-            token = qiniu_token()
-            extra = new qiniu.io.PutExtra()
-            extra.mimeType = mime
-            qiniu.io.put(
-                token
-                null
-                body
-                extra
-                (err, ret) ->
-                    resolve(ret)
-            )
-
-    client = new Client(
-        token:"S=s1:U=90fbf:E=1556329e2aa:C=14e0b78b568:P=185:A=noman:V=2:H=24ade0617d86afd0634793770fd6ddc7"
-        serviceHost:'sandbox.evernote.com'
-    )
-    store = client.getNoteStore()
-    guid = "c8f8d8c0-ac9d-4a18-8ac0-00ac11d0c7c1"
-    store.getNote(guid, true, true, true, false, (err, full_note) ->
-        to_fetch = []
-        for i,_ in full_note.resources
-            to_fetch.push qiniu_upload(i.data.body,i.mime)
-
-        Q.when(to_fetch).then (params...)->
-            console.log params
-    )
-    
-
-
-main()
+require "cloud/db/sync"
+DB = require "cloud/_db"
+console.log "test"
+DB.EvernoteSync.sync(
+    {id:"5583f5fae4b0ef6154d6e2d4"}
+    success:->
+        console.log(2)
+)

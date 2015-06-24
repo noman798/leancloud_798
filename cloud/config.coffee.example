@@ -5,10 +5,11 @@ module.exports =
         KEY : 'XK95mSOgU8LBa8Q1YhcmnEmCO2oXnEILvzuyhNDg'
         SECRET : 'EQPT2JwiJNPXDGtkrv0qIHG4HB1mn4nrqcl0jWpJ'
         BUCKET : "test"
+        HTTP : "//7xjfna.com1.z0.glb.clouddn.com/"
 
     REDIS :
         PASSWORD : "testpassword"
-        IP : "133.133.33.21"
+        IP : "120.132.56.211"
         NAMESPACE : "798.space"
         PORT : 10050
 

@@ -1,4 +1,5 @@
 require "cloud/db/oauth"
+evernote2html = require "cloud/db/evernote2html"
 require "cloud/db/post"
 require "enml-js"
 DB = require "cloud/_db"
@@ -39,7 +40,7 @@ DB class EvernoteSync
 
     @new: (params) ->
         EvernoteSync.$.get_or_create({
-            oauth_id:params.id
+            oauth_id:params.oauth_id
         }, {
             success:(o) ->
                 o.set(
@@ -90,9 +91,8 @@ DB class EvernoteSync
                                         if not li.notes.length
                                             the_end = 1
                                             return
-
+    
                                         for note in li.notes
-
                                             if note.updateSequenceNum <= update_count
                                                 the_end = 1
                                                 break
@@ -102,33 +102,32 @@ DB class EvernoteSync
                                                 if err
                                                     console.log err
                                                     return
-                                                guid = full_note.guid
-                                                #console.log full_note.content    # for test
-
-                                                EvernotePost.new(
-                                                    guid
-                                                    (id, success)->
-                                                        DB.PostHtml.new(
-                                                            {
-                                                                id
-                                                                title: full_note.title
-                                                                html: full_note.content
-                                                            }
-                                                            success:(post)->
-                                                                success post
-                                                                -- to_update_count
-                                                                if to_update_count
-                                                                    counter.increment 'count'
-                                                                    counter.save()
-                                                                else
-                                                                    EvernoteSyncCount.rm oauth_id
-                                                                    EvernoteSync.new {
-                                                                        oauth_id
-                                                                        update_count:li.updateCount
-                                                                    }
-                                                        )
+                                                console.log full_note.title, full_note.updateSequenceNum
+                                                evernote2html full_note, (html)->
+                                                    EvernotePost.new(
+                                                        note.guid
+                                                        (id, success)->
+                                                            DB.PostHtml.new(
+                                                                {
+                                                                    id
+                                                                    title: full_note.title
+                                                                    html
+                                                                }
+                                                                success:(post)->
+                                                                    success post
+                                                                    -- to_update_count
+                                                                    if to_update_count
+                                                                        counter.increment 'count'
+                                                                        counter.save()
+                                                                    else
+                                                                        EvernoteSyncCount.rm oauth_id
+                                                                        EvernoteSync.new {
+                                                                            oauth_id
+                                                                            update_count:li.updateCount
+                                                                        }
+                                                            )
+                                                    )
                                                 )
-                                            )
                                         if the_end
                                             if not to_update_count
                                                 EvernoteSyncCount.rm oauth_id
