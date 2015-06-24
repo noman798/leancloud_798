@@ -1,8 +1,9 @@
 $ = require "underscore"
 DB = require "cloud/_db"
 redis = require "cloud/_redis"
+{id_b64} = require "cloud/_lib/b64"
 {R} = redis
-R "PostStar"
+R "PostStar",":"
 
 PAGE_LIMIT = 20
 DB class PostStar
@@ -15,13 +16,9 @@ DB class PostStar
         super
 
 
-    @is_star: (user, post)->
-        query = PostStar.$
-        query.equalTo {
-            user
-            post
-        }
-        query.first()
+    @is_star: (user, post_id, callback)->
+        redis.sismember R.PostStar + id_b64(user.id), post_id, (err, is_star)->
+            callback is_star
 
     @by_user: (params, options) ->
         user = params.user or AV.User.current()
@@ -86,7 +83,7 @@ DB class PostStar
                 post_star.save()
             success(post_star)
         kwds.post.fetch success:(o)->
-            redis.sadd R.PostStar + "-" + kwds.user.id, o.get("ID")
+            redis.sadd R.PostStar + id_b64(kwds.user.id), o.get("ID")
             PostStar.$.get_or_create(
                 kwds
                 options
@@ -96,7 +93,7 @@ DB class PostStar
         query = PostStar.$
         kwds  = PostStar._params_site_post(params)
         kwds.post.fetch success:(o)->
-            redis.srem R.PostStar + "-" + kwds.user.id, o.get("ID")
+            redis.srem R.PostStar + id_b64(kwds.user.id), o.get("ID")
             query.equalTo kwds
             query.destroyAll options
             
