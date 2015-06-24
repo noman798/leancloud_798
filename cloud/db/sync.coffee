@@ -102,7 +102,6 @@ DB class EvernoteSync
                                                 if err
                                                     console.log err
                                                     return
-                                                console.log full_note.title, full_note.updateSequenceNum
                                                 evernote2html full_note, (html)->
                                                     EvernotePost.new(
                                                         note.guid
