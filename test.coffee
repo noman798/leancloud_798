@@ -22,22 +22,25 @@ require 'cloud/db/oauth'
 qiniu_token = require 'cloud/db/qiniu_token'
 qiniu = require 'qiniu'
 enml = require 'enml-js'
+Q = require "q"
 Evernote = require('evernote').Evernote
 {Thrift, NoteStoreClient, Client} = Evernote
 
 main = ->
     qiniu_upload = (body, mime)  ->
-        token = qiniu_token()
-        extra = new qiniu.io.PutExtra()
-        extra.mimeType = mime
-        qiniu.io.put(
-            token
-            null
-            body
-            extra
-            (err, ret) ->
-                console.log err, ret
-        )
+        Q.Promise (resolve)->
+            token = qiniu_token()
+            extra = new qiniu.io.PutExtra()
+            extra.mimeType = mime
+            qiniu.io.put(
+                token
+                null
+                body
+                extra
+                (err, ret) ->
+                    resolve(ret)
+            )
+
     client = new Client(
         token:"S=s1:U=90fbf:E=1556329e2aa:C=14e0b78b568:P=185:A=noman:V=2:H=24ade0617d86afd0634793770fd6ddc7"
         serviceHost:'sandbox.evernote.com'
@@ -45,11 +48,12 @@ main = ->
     store = client.getNoteStore()
     guid = "c8f8d8c0-ac9d-4a18-8ac0-00ac11d0c7c1"
     store.getNote(guid, true, true, true, false, (err, full_note) ->
-        #console.log enml.HTMLOfENML(full_note.content)
-        console.log full_note.content
+        to_fetch = []
         for i,_ in full_note.resources
-            console.log new Buffer(i.data.bodyHash).toString 'hex'
-            qiniu_upload(i.data.body,i.mime)
+            to_fetch.push qiniu_upload(i.data.body,i.mime)
+
+        Q.when(to_fetch).then (params...)->
+            console.log params
     )
     
 
