@@ -16,13 +16,8 @@ DB class PostStar
         super
 
 
-    @is_star: (user, post)->
-        query = PostStar.$
-        query.equalTo {
-            user
-            post
-        }
-        query.first()
+    @is_star: (user, post_id, callback)->
+        redis.sismember R.PostStar + id_b64(user.id), post_id, callback
 
     @by_user: (params, options) ->
         user = params.user or AV.User.current()

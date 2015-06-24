@@ -72,15 +72,14 @@ DB class Post
                         success:(post) ->
                             if post
                                 post.set('site_id',site.id)
-                                DB.PostStar.is_star(user, site, post).done(
+                                DB.PostStar.is_star(
+                                    user
+                                    params.ID
                                     (is_star)->
                                         if is_star
                                             post.set('is_star', 1)
                                         options.success post
-                                ).fail (_error)->
-                                    if _error?.code == 101
-                                        options.success post
-
+                                )
                             else
                                 options.success 0
                     }
