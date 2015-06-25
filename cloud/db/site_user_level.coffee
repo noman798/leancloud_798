@@ -33,17 +33,18 @@ class SiteUserLevel
             callback level or 0
 
     @set:(username,site_id,level)->
-        User.search username, (user)->
-            if user
-                (site_id, level)->
-                    SiteUserLevel.level(
-                        AV.User.current().id
-                        site_id
-                        (_level)->
-                            if _level < SITE_USER_LEVEL.ROOT
-                                return
-                            SITE_USER_LEVEL._set user.get('ID'), site_id, level
-                    )
+        AV.User.current().fetch (admin)->
+            if admin
+                SiteUserLevel.level(
+                    admin.get('ID')
+                    site_id
+                    (_level)->
+                        if _level < SITE_USER_LEVEL.ROOT
+                            return
+                        USER.search username, (user)->
+                            if user
+                                SITE_USER_LEVEL._set user.get('ID'), site_id, level
+                )
 
     @by_site_id:(site_id)->
         key = R.SITE_USER_LEVEL+site_id
