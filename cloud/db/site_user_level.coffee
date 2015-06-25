@@ -30,7 +30,7 @@ class SiteUserLevel
         redis.hget R.SITE_USER_LEVEL, user_id, (err, level)->
             callback level or 0
 
-    @set:(user_id,site_id,level)->
+    @set:(username,site_id,level)->
         SiteUserLevel.level(user_id, site_id, (_level)->
             if _level < SITE_USER_LEVEL.ROOT
                 return
