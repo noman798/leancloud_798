@@ -20,17 +20,23 @@ SITE_USER_LEVEL_VAL = []
 
 (->
     extend = {}
-    has_permission = (level)->
+    has_permission = (_level)->
         (func)->
             (params, options)->
+                error = {
+                    code:403
+                    message:403
+                }
+
                 user = AV.User.current()
                 if user
-                    SiteUserLevel._level
+                    SiteUserLevel._level user.id, params.site_id, (level)=>
+                        if level >= _level
+                            func.call @, params, options
+                        else
+                            options.error error
                 else
-                    options.error {
-                        code:403
-                        message:403
-                    }
+                    options.error error
 
     for k,v of SITE_USER_LEVEL
         SITE_USER_LEVEL_VAL.push v
