@@ -10,6 +10,12 @@ module.exports =
     
     b64_id : (str) ->
         new Buffer(str, 'base64').toString('hex')
+    
+    id_bin : (str) ->
+        new Buffer(str, 'hex').toString('binary')
+    
+    bin_id : (str) ->
+        new Buffer(str, 'binary').toString('hex')
 
     num_b62: (num)->
         b62.encode(b10.decode(num+''))

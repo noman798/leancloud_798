@@ -18,10 +18,7 @@ setTimeout(
 ###
 
 require "cloud/db/sync"
-DB = require "cloud/_db"
-console.log "test"
-DB.EvernoteSync.sync(
-    {id:"5583f5fae4b0ef6154d6e2d4"}
-    success:->
-        console.log(2)
-)
+{id_bin,bin_id} = require "cloud/_lib/b64"
+
+console.log id_bin("5588d9e4e4b0c15a0c69b6c6").length
+console.log bin_id id_bin("5588d9e4e4b0c15a0c69b6c6")
