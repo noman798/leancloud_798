@@ -5,47 +5,11 @@ redis = require "cloud/_redis"
 R "SITE_USER_LEVEL",":"
 {id_bin,bin_id} = require "cloud/_lib/b64"
 
-
-
-
 module.exports = SITE_USER_LEVEL =
     ROOT : 1000     #管理员，可以管理团队成员
     EDITOR : 900    #可以审核投稿
     WRITER : 800    #投稿可以自动发布
     BAN : -100
-
-# SITE_USER_LEVEL = requre 'cloud/db/site_user_level'
-
-SITE_USER_LEVEL_VAL = []
-
-(->
-    extend = {}
-    has_permission = (_level)->
-        (func)->
-            (params, options)->
-                error = {
-                    code:403
-                    message:403
-                }
-
-                user = AV.User.current()
-                if user
-                    SiteUserLevel._level user.id, params.site_id, (level)=>
-                        if level >= _level
-                            func.call @, params, options
-                        else
-                            options.error error
-                else
-                    options.error error
-
-    for k,v of SITE_USER_LEVEL
-        SITE_USER_LEVEL_VAL.push v
-        extend["$#{k}"] = has_permission(v)
-    
-)()
-
-
-
 
 DB class SiteUserLevel
     @_set : (user_id, site_id, level) ->
@@ -100,4 +64,32 @@ DB class SiteUserLevel
                         user_level_dict[i.id]
                     ]
                 options.success result
+
+SITE_USER_LEVEL_VAL = []
+
+(->
+    extend = {}
+    has_permission = (_level)->
+        (func)->
+            (params, options)->
+                error = {
+                    code:403
+                    message:403
+                }
+
+                user = AV.User.current()
+                if user
+                    SiteUserLevel._level user.id, params.site_id, (level)=>
+                        if level >= _level
+                            func.call @, params, options
+                        else
+                            options.error error
+                else
+                    options.error error
+
+    for k,v of SITE_USER_LEVEL
+        SITE_USER_LEVEL_VAL.push v
+        extend["$#{k}"] = has_permission(v)
+    
+)()
 
