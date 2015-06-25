@@ -36,8 +36,10 @@ DB class PostStar
                 post_list = []
                 for i in star_list
                     post = i.get('post')
-                    post.set 'tag_list', i.get('tag_list')
-                    post.set 'is_star', 1
+                    post.set(
+                        tag_list: i.get('tag_list')
+                        is_star: 1
+                    )
                     post_list.push post
 
                 if post_list.length >= PAGE_LIMIT
