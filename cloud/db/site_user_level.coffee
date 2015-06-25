@@ -21,7 +21,13 @@ SITE_USER_LEVEL_VAL = []
 (->
     extend = {}
     has_permission = (level)->
-        SiteUserLevel._level
+        (func)->
+            (params, options)->
+                user = AV.User.current()
+                if user
+                    SiteUserLevel._level
+                else
+                    options.error {code:-1,message:error}
 
     for k,v of SITE_USER_LEVEL
         SITE_USER_LEVEL_VAL.push v
