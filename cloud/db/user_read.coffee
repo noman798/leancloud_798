@@ -94,21 +94,21 @@ DB class UserRead
             query.lessThan('updatedAt', params.since)
         query.equalTo {user, site}
         query.descending('updatedAt')
+        query.include 'post'
         query.limit PAGE_LIMIT
         query.find(
             success:(read_list) ->
-                to_fetch = []
+                post_list = []
                 for i in read_list
-                    to_fetch.push i.get('post').fetch()
+                    post_list.push i.get('post')
 
-                AV.Promise.when(to_fetch).done (post_list...) ->
-                    _post_is_star post_list, ->
-                        _set_tag_list site, post_list, ->
-                            if post_list.length >= PAGE_LIMIT
-                                last_id = post_list[post_list.length-1].updatedAt
-                                options.success [post_list, last_id]
-                            else
-                                options.success [post_list, 0]
+                _post_is_star post_list, ->
+                    _set_tag_list site, post_list, ->
+                        if post_list.length >= PAGE_LIMIT
+                            last_id = post_list[post_list.length-1].updatedAt
+                            options.success [post_list, last_id]
+                        else
+                            options.success [post_list, 0]
 
         )
 
