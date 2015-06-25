@@ -27,7 +27,10 @@ SITE_USER_LEVEL_VAL = []
                 if user
                     SiteUserLevel._level
                 else
-                    options.error {code:-1,message:error}
+                    options.error {
+                        code:403
+                        message:403
+                    }
 
     for k,v of SITE_USER_LEVEL
         SITE_USER_LEVEL_VAL.push v
