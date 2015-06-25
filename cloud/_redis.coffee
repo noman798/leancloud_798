@@ -16,7 +16,7 @@ redis.R = R = (key, suffix='')->
     _key = "_#{CONFIG.REDIS.NAMESPACE}_R"
     if not (key of R)
         if key of _KEY
-            R[key] = r + suffix
+            R[key] = _KEY[key] + suffix
         else
             _save = (r)->
                 R[key] = r + suffix
