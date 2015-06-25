@@ -7,3 +7,5 @@ SITE_ID = "555d759fe4b06ef0d72ce8e7"
 DB.SiteUserLevel._level USER_ID, SITE_ID, (level)->
     console.log USER_ID, SITE_ID, level
 
+DB.SiteUserLevel._set USER_ID, SITE_ID, SITE_USER_LEVEL.ROOT
+

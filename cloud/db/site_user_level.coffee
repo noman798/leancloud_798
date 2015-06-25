@@ -52,7 +52,7 @@ DB class SiteUserLevel
         key = R.SITE_USER_LEVEL+site_id
         user_id = id_bin user_id
         if level
-            if SITE_USER_LEVEL_VAL.indexOf level > 0
+            if SITE_USER_LEVEL_VAL.indexOf(level) >= 0
                 redis.hset key, user_id, level
         else
             redis.hdel key, user_id, level
@@ -60,7 +60,7 @@ DB class SiteUserLevel
     @_level : (user_id, site_id, callback) ->
         user_id = id_bin user_id
         key = R.SITE_USER_LEVEL+site_id
-        redis.hget R.SITE_USER_LEVEL, user_id, (err, level)->
+        redis.hget key, user_id, (err, level)->
             callback level or 0
 
     @set: ({username,site_id,level}, options) ->
