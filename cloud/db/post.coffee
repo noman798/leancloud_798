@@ -140,20 +140,6 @@ DB class PostTxt extends Post
         query.ascending 'createdAt'
         query.find (
             success:(post_list) ->
-               # to_fetch = []
-               # for i in post_list
-               #     to_fetch.push i.get('owner').fetch()
-               #     rmer = i.get('rmer')
-               #     if rmer
-               #         to_fetch.push rmer.fetch()
-
-               # AV.Promise.when( to_fetch ).done (owner_list...)->
-               #     id2user = {}
-               #     for i in owner_list
-               #         id2user[i.id] = [
-               #             i.id
-               #             i.get 'username'
-               #         ]
                 result = []
                 for i in post_list
                     rmer = i.get 'rmer'
