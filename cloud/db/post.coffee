@@ -135,40 +135,42 @@ DB class PostTxt extends Post
         )
         query = PostTxt.$
         query.equalTo {post}
+        query.include 'owner'
+        query.include 'rmer'
         query.ascending 'createdAt'
         query.find (
             success:(post_list) ->
-                to_fetch = []
+               # to_fetch = []
+               # for i in post_list
+               #     to_fetch.push i.get('owner').fetch()
+               #     rmer = i.get('rmer')
+               #     if rmer
+               #         to_fetch.push rmer.fetch()
+
+               # AV.Promise.when( to_fetch ).done (owner_list...)->
+               #     id2user = {}
+               #     for i in owner_list
+               #         id2user[i.id] = [
+               #             i.id
+               #             i.get 'username'
+               #         ]
+                result = []
                 for i in post_list
-                    to_fetch.push i.get('owner').fetch()
-                    rmer = i.get('rmer')
+                    rmer = i.get 'rmer'
+                    o = {
+                        owner : i.get('owner').username
+                        createdAt:i.createdAt
+                        id:i.id
+                    }
                     if rmer
-                        to_fetch.push rmer.fetch()
+                        o.rmer = rmer.username
+                    else
+                        o.txt = i.get 'txt'
 
-                AV.Promise.when( to_fetch ).done (owner_list...)->
-                    id2user = {}
-                    for i in owner_list
-                        id2user[i.id] = [
-                            i.id
-                            i.get 'username'
-                        ]
-                    result = []
-                    for i in post_list
-                        rmer = i.get 'rmer'
-                        o = {
-                            owner : id2user[i.get('owner').id]
-                            createdAt:i.createdAt
-                            id:i.id
-                        }
-                        if rmer
-                            o.rmer = id2user[rmer.id]
-                        else
-                            o.txt = i.get 'txt'
+                    result.push o
 
-                        result.push o
-
-                    options.success(result)
-                    DB.UserRead.begin(params.site_id, params.post_id)
+                options.success(result)
+                DB.UserRead.begin(params.site_id, params.post_id)
         )
 
     
