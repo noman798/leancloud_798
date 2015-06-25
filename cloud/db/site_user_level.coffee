@@ -82,13 +82,19 @@ DB class SiteUserLevel
             user_level_dict = {}
             for user_id,level of user_id_level
                 user_id = bin_id user_id
-                user_list.push user_id
-                user_level_dict[user_id]=level
+                user_id_list.push user_id
+                user_level_dict[user_id]=level-0
 
             query = new AV.Query(AV.User)
             query.containedIn "objectId", user_id_list
+            query.select "username"
             query.find (user_list)->
+                result = []
                 for i in user_list
-                    i.set('level',user_level_dict[i.id])
-                options.success user_list
+                    result.push [
+                        i.id
+                        i.get 'username'
+                        user_level_dict[i.id]
+                    ]
+                options.success result
 
