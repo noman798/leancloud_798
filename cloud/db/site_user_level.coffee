@@ -1,3 +1,5 @@
+USER = require "cloud/db/user"
+
 
 module.exports = SITE_USER_LEVEL =
     ROOT : 1000     #管理员，可以管理团队成员
@@ -31,11 +33,17 @@ class SiteUserLevel
             callback level or 0
 
     @set:(username,site_id,level)->
-        SiteUserLevel.level(user_id, site_id, (_level)->
-            if _level < SITE_USER_LEVEL.ROOT
-                return
-            SITE_USER_LEVEL._set user_id, site_id, level
-        )
+        User.search username, (user)->
+            if user
+                (site_id, level)->
+                    SiteUserLevel.level(
+                        AV.User.current().id
+                        site_id
+                        (_level)->
+                            if _level < SITE_USER_LEVEL.ROOT
+                                return
+                            SITE_USER_LEVEL._set user.get('ID'), site_id, level
+                    )
 
     @by_site_id:(site_id)->
         key = R.SITE_USER_LEVEL+site_id
