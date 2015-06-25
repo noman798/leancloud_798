@@ -45,12 +45,25 @@ class SiteUserLevel
                             if user
                                 SITE_USER_LEVEL._set user.get('ID'), site_id, level
                 )
+            options.success ''
 
-    @by_site_id:(site_id)->
+    @by_site_id:({site_id}, options)->
         key = R.SITE_USER_LEVEL+site_id
         redis.hgetall key, (err, user_id_level)->
-            user_list = []
+            user_id_list = []
+            user_level_dict = {}
             for user_id,level of user_id_level
-                level.push [user_id, level-0]
-           
+                user_id = user_id-0
+                user_list.push user_id
+                user_level_dict[user_id]=level
 
+            query = new AV.Query(AV.User)
+            query.containedIn "ID", user_id_list
+            query.find (user_list)->
+                for i in user_list
+                    i.set('level',user_level_dict[i.get('ID')])
+                options.success user_list
+
+
+           
+        
