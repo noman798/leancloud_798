@@ -19,8 +19,8 @@ SITE_USER_LEVEL_VAL = []
 (->
     extend = {}
     has_permission = (level)->
-        AV.User.current().fetch (admin)->
-        SiteUserLevel._level ""
+        SiteUserLevel._level
+
     for k,v of SITE_USER_LEVEL
         SITE_USER_LEVEL_VAL.push v
         extend["$#{k}"] = has_permission(v)
