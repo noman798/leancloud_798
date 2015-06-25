@@ -32,7 +32,7 @@ class SiteUserLevel
         redis.hget R.SITE_USER_LEVEL, user_id, (err, level)->
             callback level or 0
 
-    @set:(username,site_id,level)->
+    @set: ({username,site_id,level}, options) ->
         AV.User.current().fetch (admin)->
             if admin
                 SiteUserLevel.level(
