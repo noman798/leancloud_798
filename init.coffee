@@ -30,8 +30,11 @@ app.use (req, res, next) ->
 
 
 if app.get('env') == 'development'
-    require 'test'
-
+    setTimeout(
+        ->
+            require 'test'
+        1000
+    )
     app.use (err, req, res, next) ->
         res.status err.status or 500
         res.render 'error',
