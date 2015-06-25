@@ -1,7 +1,12 @@
 USER = require "cloud/db/user"
+DB = require "cloud/_db"
+redis = require "cloud/_redis"
+{R} = redis
+R "SITE_USER_LEVEL",":"
 
 
-module.exports = SITE_USER_LEVEL =
+
+module.exports.SITE_USER_LEVEL =
     ROOT : 1000     #管理员，可以管理团队成员
     EDITOR : 900    #可以审核投稿
     WRITER : 800    #投稿可以自动发布
@@ -16,9 +21,8 @@ SITE_USER_LEVEL_VAL = []
         SITE_USER_LEVEL_VAL.push v
 )()
 
-R "SITE_USER_LEVEL",":"
 
-class SiteUserLevel
+DB class SiteUserLevel
     @_set : (user_id, site_id, level) ->
         key = R.SITE_USER_LEVEL+site_id
         if level
@@ -27,7 +31,7 @@ class SiteUserLevel
         else
             redis.hdel key, user_id, level
 
-    @level : (user_id, site_id, callback) ->
+    @_level : (user_id, site_id, callback) ->
         key = R.SITE_USER_LEVEL+site_id
         redis.hget R.SITE_USER_LEVEL, user_id, (err, level)->
             callback level or 0
@@ -35,7 +39,7 @@ class SiteUserLevel
     @set: ({username,site_id,level}, options) ->
         AV.User.current().fetch (admin)->
             if admin
-                SiteUserLevel.level(
+                SiteUserLevel._level(
                     admin.get('ID')
                     site_id
                     (_level)->
