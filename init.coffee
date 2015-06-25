@@ -8,6 +8,7 @@ AV.initialize(APP_ID, APP_KEY, MASTER_KEY)
 AV.Cloud.useMasterKey()
 
 require('rootpath')()
+require("cloud/_redis")
 require('cloud/init')
 require('route/init')
 app = require('app')
@@ -30,11 +31,7 @@ app.use (req, res, next) ->
 
 
 if app.get('env') == 'development'
-    setTimeout(
-        ->
-            require 'test'
-        1000
-    )
+    require 'test'
     app.use (err, req, res, next) ->
         res.status err.status or 500
         res.render 'error',

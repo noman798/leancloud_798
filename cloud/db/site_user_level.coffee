@@ -59,17 +59,15 @@ DB class SiteUserLevel
 
     @_level : (user_id, site_id, callback) ->
         key = R.SITE_USER_LEVEL+site_id
-        console.log "--get",key, user_id
         user_id = id_bin user_id
         redis.hget key, user_id, (err, level)->
             callback level or 0
 
     @set: ({username,site_id,level}, options) ->
-        USER_ID = "555ec11ee4b032867864e735"
         current = AV.User.current()
-        if current or 1
+        if current
             SiteUserLevel._level(
-                USER_ID#current.id
+                current.id
                 site_id
                 (_level)->
                     if _level < SITE_USER_LEVEL.ROOT
