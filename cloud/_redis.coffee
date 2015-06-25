@@ -15,7 +15,7 @@ redis.auth CONFIG.REDIS.PASSWORD
 redis.R = R = (key, suffix='')->
     _key = "_#{CONFIG.REDIS.NAMESPACE}_R"
     if not (key of R)
-        if key of KEY
+        if key of _KEY
             R[key] = r + suffix
         else
             _save = (r)->
@@ -31,7 +31,7 @@ redis.R = R = (key, suffix='')->
                         redis.hset _key, key, r, ->
                             _save r
     else
-        console.log "ERROR : KEY IS EXIST ", key
+        console.log "ERROR : REDIS KEY IS EXIST ", key
 
 redis.smismember = (key, id_list, callback)->
     evalsha.exec(
