@@ -1,2 +1,2 @@
-require "cloud/test/site_user_level"
+require "test/site_user_level"
 
