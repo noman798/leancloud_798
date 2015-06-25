@@ -51,6 +51,5 @@ class SiteUserLevel
             user_list = []
             for user_id,level of user_id_level
                 level.push [user_id, level-0]
-
            
 
