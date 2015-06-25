@@ -2,15 +2,20 @@ module.exports = {
 
     search:(word, callback)->
         query = new AV.Query(AV.User)
+
         if word.indexOf("@")>0
-            query.equalTo("email", word)
+            key = "email"
         else if word-0
-            query.equalTo("mobilePhoneNumber", word)
+            key = "mobilePhoneNumber"
+        else
+            key = "username"
+        
+        query.equalTo key, word
 
         query.first success:(o)->
-            if o
+            if o or key == 'username'
                 callback o
-            if o
+            else
                 query = new AV.Query(AV.User)
                 query.equalTo "username",word
                 query.first success:callback

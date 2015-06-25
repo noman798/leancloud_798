@@ -58,24 +58,25 @@ DB class SiteUserLevel
             redis.hdel key, user_id, level
 
     @_level : (user_id, site_id, callback) ->
-        user_id = id_bin user_id
         key = R.SITE_USER_LEVEL+site_id
+        console.log "--get",key, user_id
+        user_id = id_bin user_id
         redis.hget key, user_id, (err, level)->
             callback level or 0
 
     @set: ({username,site_id,level}, options) ->
-        user = AV.User.current()
-        if user
+        USER_ID = "555ec11ee4b032867864e735"
+        current = AV.User.current()
+        if current or 1
             SiteUserLevel._level(
-                user.id
+                USER_ID#current.id
                 site_id
                 (_level)->
-                    console.log _level
                     if _level < SITE_USER_LEVEL.ROOT
                         return
                     USER.search username, (user)->
                         if user
-                            SITE_USER_LEVEL._set user.id, site_id, level
+                            SiteUserLevel._set user.id, site_id, level
             )
         options.success ''
 
