@@ -64,15 +64,19 @@ DB class SiteUserLevel
             callback level or 0
 
     @set: ({username,site_id,level}, options) ->
-        SiteUserLevel._level(
-            AV.User.current().id
-            (_level)->
-                if _level < SITE_USER_LEVEL.ROOT
-                    return
-                USER.search username, (user)->
-                    if user
-                        SITE_USER_LEVEL._set user.id, site_id, level
-        )
+        user = AV.User.current()
+        if user
+            SiteUserLevel._level(
+                user.id
+                site_id
+                (_level)->
+                    console.log _level
+                    if _level < SITE_USER_LEVEL.ROOT
+                        return
+                    USER.search username, (user)->
+                        if user
+                            SITE_USER_LEVEL._set user.id, site_id, level
+            )
         options.success ''
 
     @by_site_id:({site_id}, options)->
