@@ -30,23 +30,21 @@ DB class PostStar
             )
         query.descending('updatedAt')
         query.limit PAGE_LIMIT
+        query.include 'post'
         query.find(
             success:(star_list) ->
-                tag_dict = {}
-                to_fetch = []
+                post_list = []
                 for i in star_list
                     post = i.get('post')
-                    to_fetch.push post.fetch()
-                    tag_dict[post.id] = i.get 'tag_list'
-                AV.Promise.when(to_fetch).done (post_list...)->
-                    for i in post_list
-                        i.set 'tag_list', tag_dict[i.id]
-                        i.set 'is_star', 1
-                    if post_list.length >= PAGE_LIMIT
-                        last_id = post_list[post_list.length-1].updatedAt
-                        options.success [post_list, last_id]
-                    else
-                        options.success [post_list, 0]
+                    post.set 'tag_list', i.get('tag_list')
+                    post.set 'is_star', 1
+                    post_list.push post
+
+                if post_list.length >= PAGE_LIMIT
+                    last_id = post_list[post_list.length-1].updatedAt
+                    options.success [post_list, last_id]
+                else
+                    options.success [post_list, 0]
 
         )
 
