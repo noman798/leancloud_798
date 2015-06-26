@@ -1,4 +1,6 @@
 PREFIX=$(cd "$(dirname "$0")"; pwd)
 cd $PREFIX
-> test.coffee
+mv test.coffee .test.coffee
+echo '' > test.coffee
 avoscloud deploy
+mv .test.coffee test.coffee
