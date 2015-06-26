@@ -13,12 +13,10 @@ module.exports = SITE_USER_LEVEL =
 
 DB class SiteUserLevel
     @_set : (user_id, site_id, level) ->
-        console.log "site_id", site_id, level
         key = R.SITE_USER_LEVEL+site_id
         user_id = id_bin user_id
         if level
             if SITE_USER_LEVEL_VAL.indexOf(level) >= 0
-                console.log level,"!!!!!", key,site_id
                 redis.hset key, user_id, level
         else
             redis.hdel key, user_id, level
@@ -46,7 +44,7 @@ DB class SiteUserLevel
                 (_level)->
                     USER.search username, (user)->
                         if user
-                            if _level > SITE_USER_LEVEL.ROOT
+                            if _level >= SITE_USER_LEVEL.ROOT
                                 SiteUserLevel._set user.id, site_id, level
                             options.success [user.id, user.get('username')]
                         else
