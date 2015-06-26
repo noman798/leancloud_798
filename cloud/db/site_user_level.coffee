@@ -62,7 +62,7 @@ DB class SiteUserLevel
                 user_id = bin_id user_id
                 user_id_list.push user_id
                 user_level_dict[user_id]=level-0
-
+            
             query = new AV.Query(AV.User)
             query.containedIn "objectId", user_id_list
             query.select "username"
