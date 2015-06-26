@@ -21,6 +21,14 @@ DB class SiteUserLevel
         else
             redis.hdel key, user_id, level
 
+    @_level_current_user:(site_id, callback)->
+        current = AV.User.current()
+        if current
+            SiteUserLevel._level current.id, site_id, callback
+        else
+            callback 0
+
+
     @_level : (user_id, site_id, callback) ->
         key = R.SITE_USER_LEVEL+site_id
         user_id = id_bin user_id
