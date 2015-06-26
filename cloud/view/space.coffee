@@ -37,7 +37,7 @@ View class Space
                 if not _site
                     return response.error({})
                 site = DB.Site(_site)
-                DB.SiteUserLevel._level_current_user (level)->
+                DB.SiteUserLevel._level_current_user _site.id, (level)->
                     response.success(
                         [
                             site.id
