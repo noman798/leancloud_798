@@ -42,13 +42,11 @@ DB class SiteUserLevel
                 current.id
                 site_id
                 (_level)->
-                    if _level < SITE_USER_LEVEL.ROOT
-                        options.success ''
-                        return
                     USER.search username, (user)->
                         if user
+                        if _level > SITE_USER_LEVEL.ROOT
                             SiteUserLevel._set user.id, site_id, level
-                            options.success ''
+                        options.success [user.id, user.get(username)]
                         else
                             options.fail {
                                 username:"查无此人"
