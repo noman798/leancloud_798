@@ -43,12 +43,17 @@ DB class SiteUserLevel
                 site_id
                 (_level)->
                     if _level < SITE_USER_LEVEL.ROOT
+                        options.success ''
                         return
                     USER.search username, (user)->
                         if user
                             SiteUserLevel._set user.id, site_id, level
+                            options.success ''
+                        else
+                            options.fail {
+                                username:"查无此人"
+                            }
             )
-        options.success ''
 
     @by_site_id:({site_id}, options)->
         key = R.SITE_USER_LEVEL+site_id
