@@ -71,7 +71,11 @@ DB class Post
         query.descending('ID')
         query.limit PAGE_LIMIT
         query.find(
-            success:(site_tag_list)->
+            success:(post_list)->
+                result = []
+                for i in post_list
+                    result.push []
+                options.success result
         )
 
     @by_id: (params, options) ->
