@@ -1,10 +1,12 @@
 DB = require "cloud/_db"
 
+#待审核， 已退回，已发布
 DB class PostSubmit
     constructor : (
         @site
         @post
         @publisher
+        @rmer
     )->
         super
 
@@ -29,8 +31,9 @@ DB class PostSubmit
             success:(post_list)->
                 result = []
                 for i in post_list
-                    result.push [
-                        post
-                    ]
+                    result.push post
                 options.success result
         )
+
+
+

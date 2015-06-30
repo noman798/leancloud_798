@@ -26,27 +26,27 @@ DB class SiteTagPost
         query.equalTo(params)
         query.descending('ID')
         query.limit PAGE_LIMIT
+        query.include 'post'
         query.find(
             success:(site_tag_list)->
-                post_list = []
+                post_list = [i.get('post') for i in site_tag_list]
                 post2tag = {}
 
                 for i in site_tag_list
                     post = i.get('post')
                     post_list.push post
                     post2tag[post.id] = i.get('tag_list')
+                
+                for i in post_list
+                    i.set 'tag_list', post2tag[i.id]
 
-                AV.Promise.when(i.fetch() for i in post_list).done ->
-                    for i in post_list
-                        i.set 'tag_list', post2tag[i.id]
-
-                    success = (li)->
-                        if site_tag_list.length >= PAGE_LIMIT
-                            last_id = site_tag_list[site_tag_list.length-1].get 'ID'
-                        else
-                            last_id = 0
-                        options.success [li, last_id]
-                    _post_is_star post_list, success
+                success = (li)->
+                    if site_tag_list.length >= PAGE_LIMIT
+                        last_id = site_tag_list[site_tag_list.length-1].get 'ID'
+                    else
+                        last_id = 0
+                    options.success [li, last_id]
+                _post_is_star post_list, success
         )
 
 
