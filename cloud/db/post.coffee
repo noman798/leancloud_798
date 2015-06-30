@@ -59,7 +59,15 @@ DB class Post
         @kind
     )->
         super
-    
+   
+    @by_owner:(params, options)->
+        query = Post.$
+        query.equalTo(
+            owner:params.owner
+            kind:params.kind
+        )
+
+
     @by_id: (params, options) ->
         DB.Site.by_host(
             {host:params.host}
