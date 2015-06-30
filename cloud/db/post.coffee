@@ -64,9 +64,15 @@ DB class Post
         query = Post.$
         query.equalTo(
             owner:params.owner
-            kind:params.kind
+            kind:params.kind or Post.KIND.HTML
         )
-
+        if params.since
+            query.lessThan('ID', params.since)
+        query.descending('ID')
+        query.limit PAGE_LIMIT
+        query.find(
+            success:(site_tag_list)->
+        )
 
     @by_id: (params, options) ->
         DB.Site.by_host(
