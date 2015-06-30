@@ -76,7 +76,7 @@ DB class Post
                 result = []
                 for i in post_list
                     result.push [
-                    
+                        post 
                     ]
 
                 options.success result
