@@ -49,6 +49,7 @@ DB class SiteTagPost
                     _post_is_star post_list, success
         )
 
+
 DB class Post
     @KIND :
         HTML : 10
@@ -60,10 +61,10 @@ DB class Post
     )->
         super
    
-    @by_owner:(params, options)->
+    @by_self:(params, options)->
         query = Post.$
         query.equalTo(
-            owner:params.owner
+            owner:AV.User.current()
             kind:params.kind or Post.KIND.HTML
         )
         if params.since
@@ -74,7 +75,10 @@ DB class Post
             success:(post_list)->
                 result = []
                 for i in post_list
-                    result.push []
+                    result.push [
+                    
+                    ]
+
                 options.success result
         )
 
