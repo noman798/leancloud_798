@@ -9,7 +9,8 @@ DB class PostSubmit
         super
 
     @submit:(params, options)->
-        # 如果是管理员/编辑就直接发布，否则是等待审核
+        # 如果是管理员/编辑就直接发布，否则是投稿等待审核， 如果已经存在就不重复投稿
+        0
 
     @by_site:(params, options)->
         0
