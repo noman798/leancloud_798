@@ -8,6 +8,9 @@ DB class PostSubmit
     )->
         super
 
+    @submit:(params, options)->
+        # 如果是管理员/编辑就直接发布，否则是等待审核
+
     @by_site:(params, options)->
         0
 
