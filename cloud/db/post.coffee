@@ -29,16 +29,12 @@ DB class SiteTagPost
         query.include 'post'
         query.find(
             success:(site_tag_list)->
-                post_list = [i.get('post') for i in site_tag_list]
-                post2tag = {}
+                post_list = []
 
                 for i in site_tag_list
                     post = i.get('post')
+                    post.set 'tag_list', i.get('tag_list')
                     post_list.push post
-                    post2tag[post.id] = i.get('tag_list')
-                
-                for i in post_list
-                    i.set 'tag_list', post2tag[i.id]
 
                 success = (li)->
                     if site_tag_list.length >= PAGE_LIMIT
