@@ -1,18 +1,17 @@
-
-require "cloud/db/site_tag_post_count"
-require "cloud/db/user_read"
-
-
+DB = require "cloud/_db"
 
 DB class PostSubmit
     constructor : (
         @site
         @post
+        @publisher
     )->
         super
 
-    @by_site
-    @by_self:(params, options)->
+    @by_site:(params, options)->
+        0
+
+    @by_current:(params, options)->
         query = Post.$
         query.equalTo(
             owner:AV.User.current()
