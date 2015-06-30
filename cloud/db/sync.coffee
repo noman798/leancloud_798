@@ -15,7 +15,7 @@ _oauth_get = (params, callback)->
                 serviceHost:'sandbox.evernote.com'
             )
             store = client.getNoteStore()
-            callback store
+            callback oauth, store
     })
 
 DB class EvernoteSyncCount
@@ -51,7 +51,7 @@ DB class EvernoteSync
 
     @sync: (params, options) ->
         options.success ''
-        _oauth_get(params, (store)->
+        _oauth_get(params, (oauth, store)->
             _sync = (evernote_sync) ->
                 update_count = 0
                 if evernote_sync
@@ -111,6 +111,7 @@ DB class EvernoteSync
                                                                     id
                                                                     title: full_note.title
                                                                     html
+                                                                    owner:oauth.user
                                                                 }
                                                                 success:(post)->
                                                                     success post
