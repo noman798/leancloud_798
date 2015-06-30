@@ -27,6 +27,7 @@ DB class SiteTagPost
         query.descending('ID')
         query.limit PAGE_LIMIT
         query.include 'post'
+        query.include 'post.owner'
         query.find(
             success:(site_tag_list)->
                 post_list = []
