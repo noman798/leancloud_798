@@ -78,7 +78,6 @@ DB class Post
                     result.push [
                         post
                     ]
-
                 options.success result
         )
 
