@@ -61,7 +61,7 @@ DB class Post
     )->
         super
    
-    @by_self:(params, options)->
+    @by_self:View.logined (params, options)->
         query = Post.$
         query.equalTo(
             owner:AV.User.current()
@@ -80,6 +80,14 @@ DB class Post
                     ]
                 options.success result
         )
+    
+    @rm : View.logined (params, options) ->
+        query = Post.$
+        query.get(params.id, {
+            success:(o) ->
+                o.set('rmer', AV.User.current())
+                o.save options
+        })
 
     @by_id: (params, options) ->
         DB.Site.by_host(
@@ -140,13 +148,6 @@ DB class PostTxt extends Post
         else
             options.success()
 
-    @rm : View.logined (params, options) ->
-        query = PostTxt.$
-        query.get(params.id, {
-            success:(o) ->
-                o.set('rmer', AV.User.current())
-                o.save options
-        })
 
     @by_post : (params, options) ->
 
