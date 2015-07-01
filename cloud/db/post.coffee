@@ -173,6 +173,7 @@ DB class PostHtml extends Post
         @link
         @reply_count
         @star_count
+        @tag_list
     )->
         super
 
