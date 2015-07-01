@@ -88,18 +88,21 @@ app.get('/oauth/:oauthstr/:host/:user_id', (request, response) ->
     )
 
 app.get('/webhook/evernote', (request, response) ->
-    console.log 'webhook'
     {userId, guid} = request.query
-    console.log 'userId:', userId
-    console.log 'guid', guid
     query = DB.Oauth.$
     query.equalTo('app_user_id', userId)
     query.first(
         success: (oauth) ->
-            console.log oauth.id
-            DB.EvernoteSync.sync({id:oauth.id}, {
-                success: (o) ->
-                    console.log o
-            })
+            DB.EvernoteSync.sync(
+                {id:oauth.id}
+                {
+                    success: (o) ->
+                        0
+                }
+            )
     )
+    response.send ''
+
+
+
 )
