@@ -1,7 +1,11 @@
 DB = require "cloud/_db"
 SITE_USER_LEVEL = require("cloud/db/site_user_level")
+require("cloud/db/post")
 PAGE_LIMIT = 20
+
+#TODO tag_list by site
 #待审核， 已退回，已发布
+#
 DB class PostSubmit
     constructor : (
         @site
@@ -12,26 +16,35 @@ DB class PostSubmit
         super
 
     @_get: (params, callback)->
+        data = {
+            post : AV.Object.createWithoutData("Post", params.post_id)
+            site : AV.Object.createWithoutData("Site", params.site_id)
+        }
         PostSubmit.get_or_create(
-            {
-                post : AV.Object.createWithoutData("Post", params.post_id)
-                site : AV.Object.createWithoutData("Site", params.site_id)
-            }
+            data
             {
                 success:callback
             }
         )
+        data
+
     @publish:(params, options)->
         #管理员发布的时候可以设置标签
-        PostSubmit._get params,(o)->
+        data = PostSubmit._get params,(o)->
             DB.SiteUserLevel._level_current_user params.site_id,(level)->
-                if level >= SITE_USER_LEVEL.WRITER
-                    PostSubmit.get_or_create(
-                        {
-                            post : AV.Object.createWithoutData("Post", params.post_id)
-                            site : AV.Object.createWithoutData("Site", params.site_id)
-                        }
-                    }
+                if level < SITE_USER_LEVEL.WRITER
+                    return
+                o.get('post').fetch (post)->
+                    DB.SiteTagPost.get_or_create(
+                        data
+                        (site_tag_post)->
+                            site_tag_post.set 'tag_list', params.tag_list or post.get('tag_list')
+                            site_tag_post.save()
+                    )
+
+                o.set 'publisher', AV.User.current()
+                o.save()
+        options.success ''
 
     @submit:(params, options)->
         # 如果已经存在就不重复投稿
