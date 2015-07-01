@@ -42,7 +42,23 @@ DB class PostSubmit
 
     @rm:(params, options)->
         # 管理员/编辑 或者 投稿者本人可以删除
-        0
+        data = {
+            post : AV.Object.createWithoutData("Post", params.post_id)
+            site : AV.Object.createWithoutData("Site", params.site_id)
+        }
+        PostSubmit.get_or_create(
+            data
+            {
+                success:(o)->
+                    if not o.rmer
+                        DB.SiteUserLevel._level_current_user params.site_id,(level)->
+                            # 如果是管理员/编辑就直接发布，否则是投稿等待审核
+                            if level >= SITE_USER_LEVEL.WRITER
+                                PostSubmit.$.rm data, options
+                            else
+                                options.success ''
+            }
+        )
 
     @by_site:(params, options)->
         query = DB.PostSubmit.$
