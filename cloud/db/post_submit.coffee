@@ -50,13 +50,16 @@ DB class PostSubmit
             data
             {
                 success:(o)->
-                    if not o.rmer
-                        DB.SiteUserLevel._level_current_user params.site_id,(level)->
-                            # 如果是管理员/编辑就直接发布，否则是投稿等待审核
-                            if level >= SITE_USER_LEVEL.WRITER
-                                PostSubmit.$.rm data, options
-                            else
-                                options.success ''
+                    if o
+                        post = o.get('post').fetch ->
+                            if not o.rmer
+                                DB.SiteUserLevel._level_current_user params.site_id,(level)->
+                                    # 如果是管理员/编辑就直接发布，否则是投稿等待审核
+                                    if level >= SITE_USER_LEVEL.EDITOR
+                                        PostSubmit.$.rm data, options
+                                    else
+                                        options.success ''
+                    options.success ''
             }
         )
 
