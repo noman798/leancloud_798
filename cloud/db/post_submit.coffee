@@ -51,14 +51,16 @@ DB class PostSubmit
             {
                 success:(o)->
                     if o
-                        post = o.get('post').fetch ->
-                            if not o.rmer
-                                DB.SiteUserLevel._level_current_user params.site_id,(level)->
-                                    # 如果是管理员/编辑就直接发布，否则是投稿等待审核
-                                    if level >= SITE_USER_LEVEL.EDITOR
-                                        PostSubmit.$.rm data, options
-                                    else
-                                        options.success ''
+                        if not o.rmer
+                            o.get('post').fetch (post)->
+                                current = AV.User.current()
+                                if post.get('owner').id == current.id
+                                    o.destroy()
+                                else
+                                    DB.SiteUserLevel._level_current_user params.site_id,(level)->
+                                        if level >= SITE_USER_LEVEL.EDITOR
+                                            o.set 'rmer',current
+                                            o.save()
                     options.success ''
             }
         )
