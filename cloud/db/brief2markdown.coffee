@@ -4,7 +4,6 @@ module.exports = (html) ->
     regexp = """</div><div>\\s*===\\s*</div><div>"""
     split = new RegExp(regexp,"g")
     result = split.exec(html)
-    console.log result
     if result
         r = result[0]
         brief = html.slice(0, split.lastIndex-r.length+6)
