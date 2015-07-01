@@ -197,7 +197,6 @@ DB class EvernotePost
         super
 
     @new: (guid, post_new) ->
-        console.log "GUID",guid
         EvernotePost.$.get_or_create({
             guid
         },{
