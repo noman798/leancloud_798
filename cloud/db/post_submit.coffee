@@ -11,59 +11,59 @@ DB class PostSubmit
     )->
         super
 
-    @publish:(params, options)->
-        0
-        #管理员发布的时候可以设置标签
-
-    @submit:(params, options)->
-        # 如果已经存在就不重复投稿
+    @_get: (params, callback)->
         PostSubmit.get_or_create(
             {
                 post : AV.Object.createWithoutData("Post", params.post_id)
                 site : AV.Object.createWithoutData("Site", params.site_id)
             }
             {
-                success:(o)->
-                    if o.get 'rmer'
-                        o.unset 'rmer'
-                        o.save()
-
-                    DB.SiteUserLevel._level_current_user params.site_id,(level)->
-                        # 如果是管理员/编辑就直接发布，否则是投稿等待审核
-                        if level >= SITE_USER_LEVEL.WRITER
-                            PostSubmit.publish {
-                                params
-                            }, options
-                        else
-                            options.success ''
+                success:callback
             }
         )
+    @publish:(params, options)->
+        #管理员发布的时候可以设置标签
+        PostSubmit._get params,(o)->
+            DB.SiteUserLevel._level_current_user params.site_id,(level)->
+                if level >= SITE_USER_LEVEL.WRITER
+                    PostSubmit.get_or_create(
+                        {
+                            post : AV.Object.createWithoutData("Post", params.post_id)
+                            site : AV.Object.createWithoutData("Site", params.site_id)
+                        }
+                    }
+
+    @submit:(params, options)->
+        # 如果已经存在就不重复投稿
+        PostSubmit._get (o)->
+            if o.get 'rmer'
+                o.unset 'rmer'
+                o.save()
+            DB.SiteUserLevel._level_current_user params.site_id,(level)->
+                # 如果是管理员/编辑就直接发布，否则是投稿等待审核
+                if level >= SITE_USER_LEVEL.WRITER
+                    PostSubmit.publish {
+                        params
+                    }, options
+                else
+                    options.success ''
 
 
     @rm:(params, options)->
         # 管理员/编辑 或者 投稿者本人可以删除
-        data = {
-            post : AV.Object.createWithoutData("Post", params.post_id)
-            site : AV.Object.createWithoutData("Site", params.site_id)
-        }
-        PostSubmit.get_or_create(
-            data
-            {
-                success:(o)->
-                    if o
-                        if not o.rmer
-                            o.get('post').fetch (post)->
-                                current = AV.User.current()
-                                if post.get('owner').id == current.id
-                                    o.destroy()
-                                else
-                                    DB.SiteUserLevel._level_current_user params.site_id,(level)->
-                                        if level >= SITE_USER_LEVEL.EDITOR
-                                            o.set 'rmer',current
-                                            o.save()
-                    options.success ''
-            }
-        )
+        PostSubmit._get (o)->
+            if o
+                if not o.rmer
+                    o.get('post').fetch (post)->
+                        current = AV.User.current()
+                        if post.get('owner').id == current.id
+                            o.destroy()
+                        else
+                            DB.SiteUserLevel._level_current_user params.site_id,(level)->
+                                if level >= SITE_USER_LEVEL.EDITOR
+                                    o.set 'rmer',current
+                                    o.save()
+            options.success ''
 
     @by_site:(params, options)->
         query = DB.PostSubmit.$
