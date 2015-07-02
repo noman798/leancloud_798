@@ -2,6 +2,8 @@ require "cloud/db/oauth"
 require "cloud/db/sync"
 DB = require "cloud/_db"
 NODE_ENV = process.env.NODE_ENV || 'development'
+
+#TODO RM
 console.log "NODE_ENV", NODE_ENV
 
 app = require("app")
@@ -20,18 +22,19 @@ _sync_username = (token, callback)->
         callback name
 
 
-app.get('/oauth/:oauthstr/:host/:user_id', (request, response) ->
+app.get('/oauth/:kind/:host/:user_id', (request, response) ->
     host = request.params.host.toLowerCase()
-    if NODE_ENV == 'production'
-        if host == "evernote"
-            http = "https://www.evernote.com/"
-        else
-            http = "https://www.evernote.com/"
-    else
-        http = "https://sandbox.evernote.com/"
+    kind = request.params.kind
 
-    evernote_url = request.params.oauthstr
-    kind = DB.Oauth.KIND[evernote_url]
+    kind = DB.Oauth.KIND[kind]
+
+    if NODE_ENV == 'production'
+        if kind == "evernote"
+            http = "https://www.evernote.com/"
+        else if kind == "yinxiang"
+            http = "https://app.yinxiang.com/"
+    else
+        kind = "https://sandbox.evernote.com/"
 
     query = request.query
     oauth = new OAuth.OAuth(
