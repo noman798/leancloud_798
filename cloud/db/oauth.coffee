@@ -3,22 +3,20 @@ require "cloud/db/sync"
 DB = require "cloud/_db"
 NODE_ENV = process.env.NODE_ENV || 'development'
 
-console.log "NODE_ENV", NODE_ENV
-
 DB class Oauth
     @KIND = {
         evernote : 1
         yinxiang : 2
     }
 
-    @_http_by_kind : (kind)->
+    @_host_by_kind : (kind)->
         if NODE_ENV == 'production'
             if kind == DB.Oauth.KIND.evernote
-                http = "https://www.evernote.com/"
+                http = "www.evernote.com"
             else if kind == DB.Oauth.KIND.yinxiang
-                http = "https://app.yinxiang.com/"
+                http = "app.yinxiang.com"
         else
-            http  = "https://sandbox.evernote.com/"
+            http  = "sandbox.evernote.com"
         return http
 
 
