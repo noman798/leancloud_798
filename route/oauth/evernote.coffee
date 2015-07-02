@@ -8,8 +8,11 @@ CONFIG = require('cloud/config')
 
 
 Evernote = require('evernote').Evernote
-_sync_username = (token, callback)->
-    client = new Evernote.Client({token})
+_sync_username = (serviceHost, token, callback)->
+    client = new Evernote.Client({
+        token
+        serviceHost
+    })
     store = client.getUserStore()
     store.getUser (err, user) ->
         console.log user
@@ -25,7 +28,8 @@ app.get('/oauth/:kind/:host/:user_id', (request, response) ->
     host = request.params.host.toLowerCase()
     _kind = request.params.kind
     kind = DB.Oauth.KIND[_kind]
-    http = "https://#{DB.Oauth._host_by_kind(kind)}/"
+    serviceHost = DB.Oauth._host_by_kind(kind)
+    http = "https://#{serviceHost}/"
     
     query = request.query
     oauth = new OAuth.OAuth(
@@ -50,7 +54,7 @@ app.get('/oauth/:kind/:host/:user_id', (request, response) ->
                     (error, oauth_access_token, oauth_access_token_secret, result) ->
                         if error
                             return response.send error
-                        _sync_username(oauth_access_token, (name)->
+                        _sync_username(serviceHost, oauth_access_token, (name)->
                             DB.Oauth.new(
                                 {
                                     user:request.params.user_id
