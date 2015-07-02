@@ -19,7 +19,7 @@ _sync_username = (serviceHost, token, callback)->
         if err
             console.log err
         else
-            name = user.username
+            name = user.name or user.username
         callback name
 
 
