@@ -104,13 +104,14 @@ app.get('/webhook/:kind', (request, response) ->
     
     query.first(
         success: (oauth) ->
-            DB.EvernoteSync.sync(
-                {id:oauth.id}
-                {
-                    success: (o) ->
-                        0
-                }
-            )
+            if oauth
+                DB.EvernoteSync.sync(
+                    {id:oauth.id}
+                    {
+                        success: (o) ->
+                            0
+                    }
+                )
     )
     
     response.send ''
