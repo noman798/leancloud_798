@@ -1,7 +1,7 @@
 global.AV = require('leanengine')
 
-APP_ID = process.env.LC_APP_ID
 APP_KEY = process.env.LC_APP_KEY
+APP_ID = process.env.LC_APP_ID
 MASTER_KEY = process.env.LC_APP_MASTER_KEY
 
 AV.initialize(APP_ID, APP_KEY, MASTER_KEY)
