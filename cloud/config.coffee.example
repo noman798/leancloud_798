@@ -10,7 +10,7 @@ module.exports =
     REDIS :
         PASSWORD : "testpassword"
         IP : "120.132.56.211"
-        NAMESPACE : "798.space"
+        NAMESPACE : "797.space"
         PORT : 10050
 
     EVERNOTE :
