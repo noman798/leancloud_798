@@ -3,7 +3,6 @@ require "cloud/db/sync"
 DB = require "cloud/_db"
 NODE_ENV = process.env.NODE_ENV || 'development'
 
-console.log "NODE_ENV", NODE_ENV
 
 DB class Oauth
     @KIND = {
