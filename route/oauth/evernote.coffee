@@ -1,6 +1,8 @@
 require "cloud/db/oauth"
 require "cloud/db/sync"
 DB = require "cloud/_db"
+NODE_ENV = process.env.NODE_ENV || 'development'
+console.log "NODE_ENV", NODE_ENV
 
 app = require("app")
 OAuth = require('oauth')
@@ -20,7 +22,14 @@ _sync_username = (token, callback)->
 
 app.get('/oauth/:oauthstr/:host/:user_id', (request, response) ->
     host = request.params.host.toLowerCase()
-    http = "https://sandbox.evernote.com/"
+    if NODE_ENV == 'production'
+        if host == "evernote"
+            http = "https://www.evernote.com/"
+        else
+            http = "https://www.evernote.com/"
+    else
+        http = "https://sandbox.evernote.com/"
+
     evernote_url = request.params.oauthstr
     kind = DB.Oauth.KIND[evernote_url]
 
