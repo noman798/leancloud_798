@@ -8,6 +8,17 @@ DB class Oauth
         yinxiang : 2
     }
 
+    @_http_by_kind : (kind)->
+        if NODE_ENV == 'production'
+            if kind == DB.Oauth.KIND.evernote
+                http = "https://www.evernote.com/"
+            else if kind == DB.Oauth.KIND.yinxiang
+                http = "https://app.yinxiang.com/"
+        else
+            http  = "https://sandbox.evernote.com/"
+        return http
+
+
     constructor:(
         @kind
         @token

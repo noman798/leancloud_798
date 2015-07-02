@@ -25,17 +25,9 @@ _sync_username = (token, callback)->
 app.get('/oauth/:kind/:host/:user_id', (request, response) ->
     host = request.params.host.toLowerCase()
     kind = request.params.kind
-
     kind = DB.Oauth.KIND[kind]
-
-    if NODE_ENV == 'production'
-        if kind == DB.Oauth.KIND.evernote
-            http = "https://www.evernote.com/"
-        else if kind == DB.Oauth.KIND.yinxiang
-            http = "https://app.yinxiang.com/"
-    else
-        http  = "https://sandbox.evernote.com/"
-
+    http = DB.Oauth._http_by_kind(kind)
+    
     query = request.query
     oauth = new OAuth.OAuth(
         http+'oauth',
