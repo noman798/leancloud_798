@@ -20,7 +20,7 @@ DB class PostInbox
             post : AV.Object.createWithoutData("Post", params.post_id)
             site : AV.Object.createWithoutData("Site", params.site_id)
         }
-        PostInbox.get_or_create(
+        PostInbox.$.get_or_create(
             data
             {
                 success:callback
@@ -35,7 +35,7 @@ DB class PostInbox
                 if level < SITE_USER_LEVEL.WRITER
                     return
                 o.get('post').fetch (post)->
-                    DB.SiteTagPost.get_or_create(
+                    DB.SiteTagPost.$.get_or_create(
                         data
                         (site_tag_post)->
                             site_tag_post.set 'tag_list', params.tag_list or post.get('tag_list')
@@ -48,7 +48,7 @@ DB class PostInbox
 
     @submit:(params, options)->
         # 如果已经存在就不重复投稿
-        PostInbox._get (o)->
+        PostInbox._get params, (o)->
             if o.get 'rmer'
                 o.unset 'rmer'
                 o.save()
