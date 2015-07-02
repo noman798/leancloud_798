@@ -3,4 +3,5 @@ cd $PREFIX
 mv test.coffee .test.coffee
 echo '' > test.coffee
 avoscloud deploy
+
 mv .test.coffee test.coffee
