@@ -23,7 +23,7 @@ app.get('/oauth/:kind/:host/:user_id', (request, response) ->
     host = request.params.host.toLowerCase()
     _kind = request.params.kind
     kind = DB.Oauth.KIND[_kind]
-    http = DB.Oauth._http_by_kind(kind)
+    http = "https://#{DB.Oauth._host_by_kind(kind)}/"
     
     query = request.query
     oauth = new OAuth.OAuth(
