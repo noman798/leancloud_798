@@ -15,7 +15,6 @@ _sync_username = (serviceHost, token, callback)->
     })
     store = client.getUserStore()
     store.getUser (err, user) ->
-        console.log user
         name = '未知'
         if err
             console.log err
