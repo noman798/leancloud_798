@@ -14,7 +14,9 @@ _sync_username = (token, callback)->
     store.getUser (err, user) ->
         console.log user
         name = '未知'
-        if not err
+        if err
+            console.log err
+        else
             name = user.username
         callback name
 
