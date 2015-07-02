@@ -12,6 +12,7 @@ _sync_username = (token, callback)->
     client = new Evernote.Client({token})
     store = client.getUserStore()
     store.getUser (err, user) ->
+        console.log user
         name = '未知'
         if not err
             name = user.username
