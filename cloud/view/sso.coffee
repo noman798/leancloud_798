@@ -32,30 +32,30 @@ AV.Cloud.define "SSO.auth.new", (request , response) ->
         user.signUp(
             null
             {
-              error:(user, _error)->
-                code=_error.code
-                if code == 125
-                    error.email = "邮箱格式无效"
+                error:(user, _error)->
+                    code = _error.code
+                    if code == 125
+                        error.email = "邮箱格式无效"
 
-                else if code == 127
-                    error.mobilePhoneNumber = "手机号码无效"
+                    else if code == 127
+                        error.mobilePhoneNumber = "手机号码无效"
 
-                else if code == 203 or code == 214
-                    tip = """已注册。忘记密码了？<a href="javascript:URL('-SSO/auth.password_set_mail', '#{o.email}');void(0)">点此找回。</a>"""
-                    if code == 203
-                        error.email = "邮箱"+tip
-                    else if code == 214
-                        error.mobilePhoneNumber = "手机"+tip
+                    else if code == 203 or code == 214
+                        tip = """已注册。忘记密码了？<a href="javascript:URL('-SSO/auth.password_set_mail', '#{o.email}');void(0)">点此找回。</a>"""
+                        if code == 203
+                            error.email = "邮箱"+tip
+                        else if code == 214
+                            error.mobilePhoneNumber = "手机"+tip
 
-                else if code == 202
-                    error.username = "昵称已被占用。加个数字后缀试试？"
-                
-                fail = response.fail error
-                if not fail
-                    response.error _error
+                    else if code == 202
+                        error.username = "昵称已被占用。加个数字后缀试试？"
+                    
+                    fail = response.fail error
+                    if not fail
+                        response.error _error
 
               success: (user) ->
-                  response.success user
+                response.success user
             }
         )
 
