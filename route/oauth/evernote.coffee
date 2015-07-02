@@ -20,8 +20,8 @@ _sync_username = (token, callback)->
 
 app.get('/oauth/:kind/:host/:user_id', (request, response) ->
     host = request.params.host.toLowerCase()
-    kind = request.params.kind
-    kind = DB.Oauth.KIND[kind]
+    _kind = request.params.kind
+    kind = DB.Oauth.KIND[_kind]
     http = DB.Oauth._http_by_kind(kind)
     
     query = request.query
@@ -31,7 +31,7 @@ app.get('/oauth/:kind/:host/:user_id', (request, response) ->
         CONFIG.EVERNOTE.KEY,
         CONFIG.EVERNOTE.SECRET,
         '1.0A',
-        "#{request.protocol}://#{request.headers.host}/oauth/#{evernote_url}/#{host}/#{request.params.user_id}",
+        "#{request.protocol}://#{request.headers.host}/oauth/#{_kind}/#{host}/#{request.params.user_id}",
         'HMAC-SHA1'
     )
 
