@@ -93,10 +93,15 @@ app.get('/oauth/:kind/:host/:user_id', (request, response) ->
                 response.send error
     )
 
-app.get('/webhook/evernote', (request, response) ->
+app.get('/webhook/:kind', (request, response) ->
     {userId, guid} = request.query
+    _kind = request.params.kind
+    kind = DB.Oauth.KIND[_kind]
+    
     query = DB.Oauth.$
     query.equalTo('app_user_id', userId)
+    query.equalTo('kind', kind)
+    
     query.first(
         success: (oauth) ->
             DB.EvernoteSync.sync(
@@ -107,7 +112,10 @@ app.get('/webhook/evernote', (request, response) ->
                 }
             )
     )
+    
     response.send ''
+
+
 
 
 

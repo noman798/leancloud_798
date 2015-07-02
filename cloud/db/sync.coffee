@@ -141,7 +141,6 @@ DB class EvernoteSync
                                             return
     
                                         for note in li.notes
-                                            console.log note.title , note.updateSequenceNum, update_count   # log
                                             if note.updateSequenceNum <= update_count
                                                 the_end = 1
                                                 break
