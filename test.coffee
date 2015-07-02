@@ -1,2 +1,2 @@
 #require "test/site_user_level"
-require "test/sync_test"
+#require "test/sync_test"
