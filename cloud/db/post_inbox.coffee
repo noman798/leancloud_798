@@ -5,7 +5,8 @@ PAGE_LIMIT = 20
 
 #TODO tag_list by site
 #待审核， 已退回，已发布
-#
+
+
 DB class PostInbox
     constructor : (
         @site
