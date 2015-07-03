@@ -7,12 +7,12 @@ require "enml-js"
 DB = require "cloud/_db"
 Evernote = require('evernote').Evernote
 {Thrift, NoteStoreClient, Client} = Evernote
-NODE_ENV = process.env.NODE_ENV || 'development'
 
 _oauth_get = (params, callback)->
     DB.Oauth.$.get(params.id, {
         success: (oauth) ->
-            #TODO , 根据oauth的类型决定访问的域名serviceHost
+            console.log DB.Oauth._host_by_kind(oauth.get('kind'))
+            console.log oauth.get('kind')
             client = new Client(
                 token:oauth.get('token')
                 serviceHost:DB.Oauth._host_by_kind(oauth.get('kind'))
