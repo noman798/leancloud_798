@@ -181,18 +181,20 @@ DB class PostHtml extends Post
         _ = (blog)->
             changed = 0
             for k,v of params
-                if v != blog[k]
+                if k == 'owner'
+                    if v.id != blog.owner.id
+                        changed = 1
+                        break
+                else if v != blog[k]
                     changed = 1
                     break
             if changed
-                console.log "changed"
                 blog.$set params
-                console.log "changed1"
-                blog.$save options
-                console.log "changed done"
+                blog.$save()
+                console.log "changed done", options
             else
                 options.success blog
-            console.log "blog new"
+
         id = params.id
         if 'id' of params
             delete params.id
@@ -206,11 +208,10 @@ DB class PostHtml extends Post
             )
         else
             params.kind = Post.KIND.HTML
-            params.owner = AV.User.current()
+            params.owner = params.owner or AV.User.current()
             blog = new PostHtml()
             blog.$setACL()
             _ blog
-
 
 
 DB class PostChat extends Post
