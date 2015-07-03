@@ -87,7 +87,7 @@ app.get('/oauth/:kind/:host/:user_id', (request, response) ->
             )
             if not error
                 response.redirect(
-                    http+"OAuth.action?oauth_token="+oauth_token
+                    http+"OAuth.action?supportLinkedSandbox=true&oauth_token="+oauth_token
                 )
             else
                 response.send error
