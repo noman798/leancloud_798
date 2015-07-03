@@ -1,3 +1,5 @@
+require "cloud/db/oauth"
+require "cloud/db/post"
 DB = require "cloud/_db"
 SITE_USER_LEVEL = require("cloud/db/site_user_level")
 require("cloud/db/post")
@@ -29,11 +31,27 @@ DB class PostInbox
         )
         data
 
-    @_submit_by_evernote:(user_id, post_id, site_tag_list)->
+    @_submit_by_evernote:(user, post_id, site_tag_list)->
         #通过Oauth查找用户user_id绑定的所有站点可以通过 include site来获取这些站点的名称
         #遍历站点名toLowerCase，如site_tag_list存在，那么就发布此文章（注意同步post.tag_list）
-        
-        console.log user_id, post_id, site_tag_list
+        query = DB.Oauth.$
+        query.include('site')
+        query.equalTo('user', user)
+        query.find({
+            success: (oauth_list) ->
+                for each_oauth in oauth_list
+                    site_name = each_oauth.get('site').get('name')
+                    if site_tag_list.indexOf(site_name.toLowerCase())>=0
+                        PostInbox.submit({
+                            site_id : each_oauth.get('site').id
+                            post_id
+                        }, {
+                            success:(o) ->
+                                0
+                        })
+
+        })
+
 
     @publish:(params, options)->
         #管理员发布的时候可以设置标签

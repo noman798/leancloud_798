@@ -113,7 +113,7 @@ DB class EvernoteSync
                                                             tag_list
                                                         }
                                                         success:(post)->
-                                                            DB.PostInbox._submit_by_evernote(oauth.user.id, post.id, site_tag_list)
+                                                            DB.PostInbox._submit_by_evernote(oauth.get('user'), post.id, site_tag_list)
                                                             success post
                                                             -- to_update_count
                                                             if to_update_count
