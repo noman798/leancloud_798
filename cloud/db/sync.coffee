@@ -12,7 +12,6 @@ _oauth_get = (params, callback)->
     DB.Oauth.$.get(params.id, {
         success: (oauth) ->
             console.log DB.Oauth._host_by_kind(oauth.get('kind'))
-            console.log oauth.get('kind')
             client = new Client(
                 token:oauth.get('token')
                 serviceHost:DB.Oauth._host_by_kind(oauth.get('kind'))
@@ -59,16 +58,6 @@ DB class EvernoteSync
                 update_count = 0
                 if evernote_sync
                     update_count = evernote_sync.get('update_count')
-
-                filter = new Evernote.NoteFilter()
-                filter.words = """tag:@*"""
-
-                filter.order = Evernote.NoteSortOrder.UPDATE_SEQUENCE_NUMBER
-                spec = new Evernote.NotesMetadataResultSpec()
-                spec.includeUpdateSequenceNum = true
-                spec.includeUpdated = true
-                #spec.includeDeleted = true
-                #spec.includeTitle= true
 
                 EvernoteSyncCount.$.get_or_create(
                     {
@@ -130,6 +119,16 @@ DB class EvernoteSync
                                     )
                                 )
 
+                            filter = new Evernote.NoteFilter()
+                            filter.words = """any: tag:*"""
+                            console.log filter.words
+                            filter.order = Evernote.NoteSortOrder.UPDATE_SEQUENCE_NUMBER
+                            spec = new Evernote.NotesMetadataResultSpec()
+                            spec.includeUpdateSequenceNum = true
+                            spec.includeUpdated = true
+                            #spec.includeDeleted = true
+                            #spec.includeTitle= true
+
                             _ = (offset)->
                                 if offset > 0
                                     limit = 3
@@ -141,7 +140,7 @@ DB class EvernoteSync
                                         if err or not li
                                             console.log err
                                             return
-
+                                        console.log "!",li, limit, offset
                                         the_end = 0
 
                                         if not li.notes.length

@@ -1,7 +1,7 @@
-require "cloud/db/site"
+equire "cloud/db/site"
 require "cloud/db/sync"
 DB = require "cloud/_db"
-NODE_ENV = process.env.NODE_ENV || 'development'
+#NODE_ENV = process.env.NODE_ENV || 'development'
 
 DB class Oauth
     @KIND = {
@@ -10,13 +10,10 @@ DB class Oauth
     }
 
     @_host_by_kind : (kind)->
-        if NODE_ENV == 'production'
-            if kind == DB.Oauth.KIND.evernote
-                http = "www.evernote.com"
-            else if kind == DB.Oauth.KIND.yinxiang
-                http = "app.yinxiang.com"
-        else
-            http  = "sandbox.evernote.com"
+        if kind == DB.Oauth.KIND.evernote
+            http = "www.evernote.com"
+        else if kind == DB.Oauth.KIND.yinxiang
+            http = "app.yinxiang.com"
         return http
 
 
