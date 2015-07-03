@@ -190,10 +190,9 @@ DB class PostHtml extends Post
                     break
             if changed
                 blog.$set params
-                blog.$save()
-                console.log "changed done", options
+                blog.$.save options
             else
-                options.success blog
+                options.success blog.$
 
         id = params.id
         if 'id' of params

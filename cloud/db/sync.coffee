@@ -103,14 +103,12 @@ DB class EvernoteSync
                                                     DB.PostHtml.new(
                                                         data
                                                         {
-                                                        error:(err)->
-                                                            console.log "err",err
                                                         success:(post)->
                                                             console.log "success 1", post
-                                                            DB.PostInbox._submit_by_evernote(oauth.user.id, post.id, site_tag_list)
+                                                            #DB.PostInbox._submit_by_evernote(oauth.user.id, post.id, site_tag_list)
+                                                            console.log oauth.user.id, post.id, site_tag_list
                                                             console.log "success 2"
                                                             success post
-                                                            console.log "success 3"
                                                             -- to_update_count
                                                             if to_update_count
                                                                 counter.increment 'count'
@@ -222,9 +220,7 @@ DB class EvernotePost
                     post_id = _post.id
                 else
                     post_id = 0
-                console.log "EvernotePost", post_id
                 post_new post_id, (post)->
-                    console.log "EvernotePost new", post
                     if post_id != post.id
                         o.set {post}
                         o.save()
