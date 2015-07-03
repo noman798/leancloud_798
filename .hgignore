@@ -1,0 +1,23 @@
+syntax: glob
+config.py
+config.coffee
+config.js
+*.map
+build/*
+fis-conf.js
+.sass-cache/
+pure/css/**.css
+pure/modules
+cli/docker/config.py
+pure/lib/config.js
+leancloud/config/global.json
+leancloud/cloud/*.js
+pure/html
+config.py
+start.sh
+npm-debug.log
+node_modules
+.gitignore
+
+.avoscloud/apps.json
+release
