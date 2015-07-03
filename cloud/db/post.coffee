@@ -187,6 +187,8 @@ DB class PostHtml extends Post
             if changed
                 blog.$set params
                 blog.$save options
+            else
+                options.success blog
 
         id = params.id
         if 'id' of params
