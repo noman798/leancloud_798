@@ -91,15 +91,20 @@ DB class EvernoteSync
                                             EvernotePost.new(
                                                 guid
                                                 (id, success)->
-                                                    DB.PostHtml.new(
-                                                        {
+                                                    data = {
                                                             id
                                                             title: full_note.title
                                                             html
                                                             owner:oauth.get 'user'
-                                                            brief:brief or undefined
                                                             tag_list
                                                         }
+                                                    if brief
+                                                        data.brief = brief
+                                                    DB.PostHtml.new(
+                                                        data
+                                                        {
+                                                        error:(err)->
+                                                            console.log "err",err
                                                         success:(post)->
                                                             console.log "success 1", post
                                                             DB.PostInbox._submit_by_evernote(oauth.user.id, post.id, site_tag_list)
@@ -116,6 +121,7 @@ DB class EvernoteSync
                                                                     oauth_id
                                                                     update_count
                                                                 }
+                                                        }
                                                     )
                                             )
                                     )

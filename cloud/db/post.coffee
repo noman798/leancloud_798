@@ -185,11 +185,14 @@ DB class PostHtml extends Post
                     changed = 1
                     break
             if changed
+                console.log "changed"
                 blog.$set params
+                console.log "changed1"
                 blog.$save options
+                console.log "changed done"
             else
                 options.success blog
-
+            console.log "blog new"
         id = params.id
         if 'id' of params
             delete params.id
@@ -206,7 +209,6 @@ DB class PostHtml extends Post
             params.owner = AV.User.current()
             blog = new PostHtml()
             blog.$setACL()
-            blog.$set star_count:0
             _ blog
 
 
