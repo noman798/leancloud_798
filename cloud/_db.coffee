@@ -91,7 +91,7 @@ module.exports = (cls)->
         {
             get : ->
                 result = new Function(
-                 "return function " + cls.name + "(){}"
+                    "return function " + cls.name + "(){}"
                 )()
 
                 prototype = result.prototype
@@ -113,9 +113,13 @@ _new_view = (func)->
     (request, response) ->
         func(
             request.params
-            success:(params...)=>
-                response.success.apply response,params
-            error:(params...)=>
-                response.error.apply response,params
+            {
+                success:(params...)->
+                    response.success.apply response,params
+                error:(params...)->
+                    response.error.apply response,params
+                fail:(params...)->
+                    response.fail.apply response,params
+            }
         )
 
