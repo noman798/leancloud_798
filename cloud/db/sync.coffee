@@ -119,8 +119,7 @@ DB class EvernoteSync
                                 )
 
                             filter = new Evernote.NoteFilter()
-                            filter.words = """any: tag:*"""
-                            console.log filter.words
+                            filter.words = """tag:@*"""
                             filter.order = Evernote.NoteSortOrder.UPDATE_SEQUENCE_NUMBER
                             spec = new Evernote.NotesMetadataResultSpec()
                             spec.includeUpdateSequenceNum = true
@@ -139,7 +138,6 @@ DB class EvernoteSync
                                         if err or not li
                                             console.log err
                                             return
-                                        console.log "!",li, limit, offset
                                         the_end = 0
 
                                         if not li.notes.length
