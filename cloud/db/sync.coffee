@@ -104,11 +104,9 @@ DB class EvernoteSync
                                                         data
                                                         {
                                                         success:(post)->
-                                                            console.log "success 1", post
                                                             DB.PostInbox._submit_by_evernote(oauth.get('user').id, post.id, site_tag_list)
                                                             success post
                                                             -- to_update_count
-                                                            console.log "success to_update_count", to_update_count
                                                             if to_update_count
                                                                 counter.increment 'count'
                                                                 counter.save()
