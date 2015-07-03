@@ -33,7 +33,8 @@ DB class SiteUserLevel
         key = R.SITE_USER_LEVEL+site_id
         user_id = id_bin user_id
         redis.hget key, user_id, (err, level)->
-            callback level or 0
+            level = level or 0
+            callback level - 0
 
     @set: ({username,site_id,level}, options) ->
         current = AV.User.current()
