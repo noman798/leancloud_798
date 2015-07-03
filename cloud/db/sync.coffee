@@ -7,12 +7,10 @@ require "enml-js"
 DB = require "cloud/_db"
 Evernote = require('evernote').Evernote
 {Thrift, NoteStoreClient, Client} = Evernote
-NODE_ENV = process.env.NODE_ENV || 'development'
 
 _oauth_get = (params, callback)->
     DB.Oauth.$.get(params.id, {
         success: (oauth) ->
-            #TODO , 根据oauth的类型决定访问的域名serviceHost
             client = new Client(
                 token:oauth.get('token')
                 serviceHost:DB.Oauth._host_by_kind(oauth.get('kind'))
@@ -60,16 +58,6 @@ DB class EvernoteSync
                 if evernote_sync
                     update_count = evernote_sync.get('update_count')
 
-                filter = new Evernote.NoteFilter()
-                filter.words = """tag:@*"""
-
-                filter.order = Evernote.NoteSortOrder.UPDATE_SEQUENCE_NUMBER
-                spec = new Evernote.NotesMetadataResultSpec()
-                spec.includeUpdateSequenceNum = true
-                spec.includeUpdated = true
-                #spec.includeDeleted = true
-                #spec.includeTitle= true
-
                 EvernoteSyncCount.$.get_or_create(
                     {
                         oauth_id
@@ -103,15 +91,18 @@ DB class EvernoteSync
                                             EvernotePost.new(
                                                 guid
                                                 (id, success)->
-                                                    DB.PostHtml.new(
-                                                        {
-                                                            id
+                                                    data = {
                                                             title: full_note.title
                                                             html
                                                             owner:oauth.get 'user'
-                                                            brief:brief or undefined
                                                             tag_list
+                                                            id
                                                         }
+                                                    if brief
+                                                        data.brief = brief
+                                                    DB.PostHtml.new(
+                                                        data
+                                                        {
                                                         success:(post)->
                                                             DB.PostInbox._submit_by_evernote(oauth.get('user'), post.id, site_tag_list)
                                                             success post
@@ -120,15 +111,26 @@ DB class EvernoteSync
                                                                 counter.increment 'count'
                                                                 counter.save()
                                                             else
-                                                                EvernoteSyncCount.rm oauth_id
-                                                                EvernoteSync.new {
-                                                                    oauth_id
-                                                                    update_count
-                                                                }
+                                                                the_end()
+                                                        }
                                                     )
                                             )
                                     )
                                 )
+                            the_end = ->
+                                EvernoteSyncCount.rm oauth_id
+                                EvernoteSync.new {
+                                    oauth_id
+                                    update_count
+                                }
+                            filter = new Evernote.NoteFilter()
+                            filter.words = """tag:@*"""
+                            filter.order = Evernote.NoteSortOrder.UPDATE_SEQUENCE_NUMBER
+                            spec = new Evernote.NotesMetadataResultSpec()
+                            spec.includeUpdateSequenceNum = true
+                            spec.includeUpdated = true
+                            #spec.includeDeleted = true
+                            #spec.includeTitle= true
 
                             _ = (offset)->
                                 if offset > 0
@@ -142,15 +144,12 @@ DB class EvernoteSync
                                             console.log err
                                             return
 
-                                        the_end = 0
-
                                         if not li.notes.length
-                                            the_end = 1
+                                            the_end()
                                             return
     
                                         for note in li.notes
                                             if note.updateSequenceNum <= update_count
-                                                the_end = 1
                                                 break
                                             _fetch note, li.updateCount
                                     
@@ -217,7 +216,6 @@ DB class EvernotePost
                     post_id = _post.id
                 else
                     post_id = 0
-
                 post_new post_id, (post)->
                     if post_id != post.id
                         o.set {post}

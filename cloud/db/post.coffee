@@ -181,12 +181,18 @@ DB class PostHtml extends Post
         _ = (blog)->
             changed = 0
             for k,v of params
-                if v != blog[k]
+                if k == 'owner'
+                    if v.id != blog.owner.id
+                        changed = 1
+                        break
+                else if v != blog[k]
                     changed = 1
                     break
             if changed
                 blog.$set params
-                blog.$save options
+                blog.$.save options
+            else
+                options.success blog.$
 
         id = params.id
         if 'id' of params
@@ -201,12 +207,10 @@ DB class PostHtml extends Post
             )
         else
             params.kind = Post.KIND.HTML
-            params.owner = AV.User.current()
+            params.owner = params.owner or AV.User.current()
             blog = new PostHtml()
             blog.$setACL()
-            blog.$set star_count:0
             _ blog
-
 
 
 DB class PostChat extends Post

@@ -11,6 +11,11 @@ module.exports = (html) ->
         brief = to_markdown(brief, {
             converters:[
                 {
+                    filter:"span"
+                    replacement:(innerHTML)->
+                        return innerHTML
+                }
+                {
                     filter:"div"
                     replacement:(innerHTML)->
                         return "\n"+innerHTML+"\n"
