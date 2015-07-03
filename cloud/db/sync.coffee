@@ -213,8 +213,9 @@ DB class EvernotePost
                     post_id = _post.id
                 else
                     post_id = 0
-
+                console.log "EvernotePost", post_id
                 post_new post_id, (post)->
+                    console.log "EvernotePost new", post
                     if post_id != post.id
                         o.set {post}
                         o.save()
