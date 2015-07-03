@@ -1,4 +1,4 @@
-equire "cloud/db/site"
+require "cloud/db/site"
 require "cloud/db/sync"
 DB = require "cloud/_db"
 #NODE_ENV = process.env.NODE_ENV || 'development'
