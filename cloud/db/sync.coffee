@@ -11,7 +11,6 @@ Evernote = require('evernote').Evernote
 _oauth_get = (params, callback)->
     DB.Oauth.$.get(params.id, {
         success: (oauth) ->
-            console.log DB.Oauth._host_by_kind(oauth.get('kind'))
             client = new Client(
                 token:oauth.get('token')
                 serviceHost:DB.Oauth._host_by_kind(oauth.get('kind'))
