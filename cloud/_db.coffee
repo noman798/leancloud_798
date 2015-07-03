@@ -118,8 +118,8 @@ _new_view = (func)->
                     response.success.apply response,params
                 error:(params...)->
                     response.error.apply response,params
-                fail:(params...)->
-                    response.fail.apply response,params
+                fail:(error)->
+                    response.error {code:-1,message:error}
             }
         )
 
