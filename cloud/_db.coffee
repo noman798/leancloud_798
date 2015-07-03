@@ -1,6 +1,6 @@
 $ = require "underscore"
 require "cloud/_lib/query"
-
+require "cloud/_lib/av"
 define$ = (cls_, db)->
     Object.defineProperty(
         cls_
