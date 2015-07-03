@@ -105,26 +105,26 @@ DB class EvernoteSync
                                                         {
                                                         success:(post)->
                                                             console.log "success 1", post
-                                                            #DB.PostInbox._submit_by_evernote(oauth.user.id, post.id, site_tag_list)
-                                                            console.log oauth.user.id, post.id, site_tag_list
-                                                            console.log "success 2"
+                                                            DB.PostInbox._submit_by_evernote(oauth.get('user').id, post.id, site_tag_list)
                                                             success post
                                                             -- to_update_count
+                                                            console.log "success to_update_count", to_update_count
                                                             if to_update_count
                                                                 counter.increment 'count'
                                                                 counter.save()
                                                             else
-                                                                EvernoteSyncCount.rm oauth_id
-                                                                EvernoteSync.new {
-                                                                    oauth_id
-                                                                    update_count
-                                                                }
+                                                                the_end()
                                                         }
                                                     )
                                             )
                                     )
                                 )
-
+                            the_end = ->
+                                EvernoteSyncCount.rm oauth_id
+                                EvernoteSync.new {
+                                    oauth_id
+                                    update_count
+                                }
                             filter = new Evernote.NoteFilter()
                             filter.words = """tag:@*"""
                             filter.order = Evernote.NoteSortOrder.UPDATE_SEQUENCE_NUMBER
@@ -145,15 +145,13 @@ DB class EvernoteSync
                                         if err or not li
                                             console.log err
                                             return
-                                        the_end = 0
 
                                         if not li.notes.length
-                                            the_end = 1
+                                            the_end()
                                             return
     
                                         for note in li.notes
                                             if note.updateSequenceNum <= update_count
-                                                the_end = 1
                                                 break
                                             _fetch note, li.updateCount
                                     
