@@ -1,6 +1,7 @@
 require "cloud/db/oauth"
 evernote2html = require "cloud/db/evernote2html"
 brief2markdown = require "cloud/db/brief2markdown"
+require 'cloud/db/post_inbox'
 require "cloud/db/post"
 require "enml-js"
 DB = require "cloud/_db"
@@ -60,13 +61,14 @@ DB class EvernoteSync
                     update_count = evernote_sync.get('update_count')
 
                 filter = new Evernote.NoteFilter()
-                filter.words = """any: tag:@blog tag:@tech2ipo"""
+                filter.words = """tag:@*"""
+
                 filter.order = Evernote.NoteSortOrder.UPDATE_SEQUENCE_NUMBER
                 spec = new Evernote.NotesMetadataResultSpec()
                 spec.includeUpdateSequenceNum = true
                 spec.includeUpdated = true
-                spec.includeDeleted = true
-                spec.includeTitle= true
+                #spec.includeDeleted = true
+                #spec.includeTitle= true
 
                 EvernoteSyncCount.$.get_or_create(
                     {
@@ -87,9 +89,14 @@ DB class EvernoteSync
                                         return
                                     store.getNoteTagNames(guid, (err, taglist) ->
                                         tag_list = []
+                                        site_tag_list = []
                                         for each_tag in taglist
                                             if each_tag.charAt(0) != '@'
                                                 tag_list.push each_tag
+                                            else
+                                                each_tag = each_tag.slice(1).toLowerCase()
+                                                if each_tag != "blog"
+                                                    site_tag_list.push each_tag
 
                                         evernote2html full_note, (html)->
                                             [brief,html] = brief2markdown(html)
@@ -101,11 +108,12 @@ DB class EvernoteSync
                                                             id
                                                             title: full_note.title
                                                             html
-                                                            owner:oauth.user
+                                                            owner:oauth.get 'user'
                                                             brief:brief or undefined
                                                             tag_list
                                                         }
                                                         success:(post)->
+                                                            DB.PostInbox._submit_by_evernote(oauth.user.id, post.id, site_tag_list)
                                                             success post
                                                             -- to_update_count
                                                             if to_update_count
