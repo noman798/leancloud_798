@@ -37,7 +37,7 @@ DB class SiteUserLevel
             callback level - 0
 
     @set_by_user_id: ({user_id,site_id,level}, options) ->
-        AV.User.get(user_id).done (user)->
+        new AV.Query(AV.User).get(user_id).done (user)->
             SiteUserLevel.set_by_user {user, site_id, level}, options
 
     @set_by_user: ({user,site_id,level}, options) ->
@@ -62,7 +62,7 @@ DB class SiteUserLevel
                     username:"查无此人"
                 }
 
-    @by_site_id:({site_id}, options)->
+    @by_site_id:SITE_USER_LEVEL.$ROOT ({site_id}, options)->
         key = R.SITE_USER_LEVEL+site_id
         redis.hgetall key, (err, user_id_level)->
             user_id_list = []
