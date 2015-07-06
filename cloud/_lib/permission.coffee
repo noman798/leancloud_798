@@ -1,5 +1,5 @@
 
-module.exports = (level_dict)->
+module.exports = (level_dict, level_func)->
     extend = {}
     has_permission = (_level)->
         (func)->
@@ -11,7 +11,7 @@ module.exports = (level_dict)->
 
                 user = AV.User.current()
                 if user
-                    SiteUserLevel._level user.id, params.site_id, (level)=>
+                    level_func user.id, params, (level)=>
                         if level >= _level
                             func.call @, params, options
                         else
