@@ -37,10 +37,7 @@ DB class SiteUserLevel
             callback level - 0
 
     @set_by_user_id: ({user_id,site_id,level}, options) ->
-        AV.Object.createWithoutData(
-            'User'
-            user_id
-        ).fetch (user)->
+        AV.User.get(user_id).done (user)->
             SiteUserLevel.set_by_user {user, site_id, level}, options
 
     @set_by_user: ({user,site_id,level}, options) ->
