@@ -11,6 +11,6 @@ wrap = (func)->
 
 
 AV.Cloud.define = (name, func) ->
-    Cloud.__code[name] = wrap func
+    AV.Cloud.__code[name] = wrap func
     
 
