@@ -36,23 +36,34 @@ DB class SiteUserLevel
             level = level or 0
             callback level - 0
 
-    @set: ({username,site_id,level}, options) ->
+    @set_by_user_id: ({user_id,site_id,level}, options) ->
+        AV.Object.createWithoutData(
+            'User'
+            user_id
+        ).fetch (user)->
+            SiteUserLevel.set_by_user {user, site_id, level}, options
+
+    @set_by_user: ({user,site_id,level}, options) ->
         current = AV.User.current()
+        user_id = user.id
         if current
             SiteUserLevel._level(
                 current.id
                 site_id
                 (_level)->
-                    USER.search username, (user)->
-                        if user
-                            if _level >= SITE_USER_LEVEL.ROOT
-                                SiteUserLevel._set user.id, site_id, level
-                            options.success [user.id, user.get('username')]
-                        else
-                            options.fail {
-                                username:"查无此人"
-                            }
+                    if _level >= SITE_USER_LEVEL.ROOT
+                        SiteUserLevel._set user_id, site_id, level
+                    options.success [user_id, user.get('username')]
             )
+
+    @set: ({username,site_id,level}, options) ->
+        USER.search username, (user)->
+            if user
+                SiteUserLevel.set_by_user {user, site_id, level}, options
+            else
+                options.fail {
+                    username:"查无此人"
+                }
 
     @by_site_id:({site_id}, options)->
         key = R.SITE_USER_LEVEL+site_id
