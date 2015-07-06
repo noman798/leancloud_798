@@ -10,7 +10,7 @@ DB class Oauth
     }
 
     @_host_by_kind : (kind)->
-        return "sandbox.evernote.com"
+        #return "sandbox.evernote.com"
         if kind == DB.Oauth.KIND.evernote
             http = "www.evernote.com"
         else if kind == DB.Oauth.KIND.yinxiang
