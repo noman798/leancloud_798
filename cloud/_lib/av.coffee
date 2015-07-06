@@ -4,9 +4,9 @@ wrap = (func)->
         response.fail = (err)->
             count = Object.keys(err).length
             if count
-                response.reject({code:-1, message:err})
+                response.error({code:-1, message:err})
             else
-                response.resolve('')
+                response.success('')
         func(request, response)
 
 
