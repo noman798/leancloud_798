@@ -143,7 +143,6 @@ DB class PostTxt extends Post
                 result = []
                 for i in post_list
                     rmer = i.get 'rmer'
-                    console.log i.get 'owner'
                     o = {
                         owner : [
                             i.get('owner').get('ID')
@@ -194,7 +193,7 @@ DB class PostHtml extends Post
                     break
             if changed
                 blog.$set params
-                blog.$.save options
+                blog.$save options
             else
                 options.success blog.$
 
