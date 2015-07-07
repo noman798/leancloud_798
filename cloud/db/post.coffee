@@ -143,13 +143,17 @@ DB class PostTxt extends Post
                 result = []
                 for i in post_list
                     rmer = i.get 'rmer'
+                    console.log i.get 'owner'
                     o = {
-                        owner : i.get('owner').username
+                        owner : [
+                            i.get('owner').get('ID')
+                            i.get('owner').get('username')
+                        ]
                         createdAt:i.createdAt
                         id:i.id
                     }
                     if rmer
-                        o.rmer = rmer.username
+                        o.rmer = rmer.get 'username'
                     else
                         o.txt = i.get 'txt'
 
