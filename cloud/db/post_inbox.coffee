@@ -133,6 +133,7 @@ DB class PostInbox
     @_by_user:(params, options)->
         query = DB.Post.$
         owner = AV.Object.createWithoutData('User', params.owner_id)
+        site = AV.Object.createWithoutData('Site', params.site_id)
         query.equalTo(
             owner:owner
             kind:params.kind or DB.Post.KIND.HTML
@@ -143,17 +144,22 @@ DB class PostInbox
         query.limit PAGE_LIMIT
         query.find(
             success:(post_list)->
-                console.log post_list
+                console.log "post_list", post_list.length
                 result = []
                 for i in post_list
                     query = DB.PostInbox.$
-                    query.equalTo({
-                        post
-                    })
+                    console.log 2
+                    query.equalTo('post',post)
+                    console.log 222
+                    query.equalTo('site',site)
+                    console.log i
                     result.push query.first()
+                    console.log 1
                 AV.Promise.when(result).done (post_submit_list)->
+                    console.log post_submit_list
                     for i in post_submit_list
-                        console.log i
+                        console.log i.get 'publisher'
+                        console.log i.get('post').id
 
         )
 

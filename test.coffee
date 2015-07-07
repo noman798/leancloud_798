@@ -3,6 +3,7 @@ require "cloud/db/post_inbox"
 DB = require "cloud/_db"
 DB.PostInbox._by_user(
     {
+        site_id:"555d759fe4b06ef0d72ce8e7"
         owner_id:"559bbcb4e4b023682f148e98"
     }
     {
