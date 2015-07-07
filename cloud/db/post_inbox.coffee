@@ -130,11 +130,12 @@ DB class PostInbox
                     console.log post_submit
         )
 
-    @by_current:(params, options)->
+    @_by_user:(params, options)->
         query = DB.Post.$
+        owner = AV.Object.createWithoutData('User', params.owner_id)
         query.equalTo(
-            owner:AV.User.current()
-            kind:params.kind or Post.KIND.HTML
+            owner:owner
+            kind:params.kind or DB.Post.KIND.HTML
         )
         if params.since
             query.lessThan('ID', params.since)
@@ -142,6 +143,7 @@ DB class PostInbox
         query.limit PAGE_LIMIT
         query.find(
             success:(post_list)->
+                console.log post_list
                 result = []
                 for i in post_list
                     query = DB.PostInbox.$
@@ -149,9 +151,12 @@ DB class PostInbox
                         post
                     })
                     result.push query.first()
-                AV.Promise.when(result).done (post_submit)->
-                    console.log post_submit
+                AV.Promise.when(result).done (post_submit_list)->
+                    for i in post_submit_list
+                        console.log i
+
         )
 
-
-
+    @by_current:(params, options)->
+        params.owner_id = AV.User.current().id
+        PostInbox._by_user(params, options)
