@@ -144,17 +144,18 @@ DB class PostInbox
         query.limit PAGE_LIMIT
         query.find(
             success:(post_list)->
-                console.log "post_list", post_list.length
                 result = []
                 for post in post_list
                     q = PostInbox.$
                     q.equalTo('post',post)
                     q.equalTo('site',site)
                     result.push q.first()
-                AV.Promise.when(result).done (post_submit_list)->
+                AV.Promise.when(result).done (post_submit_list...)->
+                    
                     for i in post_submit_list
-                        console.log i.get 'publisher'
                         console.log i.get('post').id
+                        console.log i.get('updatedAt')
+                        console.log i.get 'publisher'
 
         )
 
