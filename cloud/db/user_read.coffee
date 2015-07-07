@@ -47,7 +47,7 @@ DB class UserRead
                     duration = 600
                 
                 o.set('duration', duration)
-                o.save options
+                o.save success:options.success
         )
 
     @_get_or_create:(params, success)->

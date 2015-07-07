@@ -42,7 +42,7 @@ DB class Site
     @tag_list_set: (params, options)->
         Site.$.get(params.id).done (site)->
             site.set('tag_list', params.tag_list)
-            site.save options
+            site.save success:options.success
 
 
     @new : (params, options) ->
@@ -50,7 +50,7 @@ DB class Site
         site = new Site()
         site.$set params
         site.$setACL()
-        site.$save options
+        site.$save success:options.success
    
     @host_new : (params, options)->
         host = $.trim(params.host.toLowerCase())
@@ -66,7 +66,7 @@ DB class Site
                         host
                     }
                     site_host.$setACL()
-                    site_host.$save options
+                    site_host.$save success:options.success
 
         }
 

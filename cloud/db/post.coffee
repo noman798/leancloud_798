@@ -64,7 +64,7 @@ DB class Post
         query.get(params.id, {
             success:(o) ->
                 o.set('rmer', AV.User.current())
-                o.save options
+                o.save success:options.success
         })
 
     @by_id: (params, options) ->
@@ -122,7 +122,7 @@ DB class PostTxt extends Post
                     post
                 }
                 post_txt.$setACL()
-                post_txt.$save options
+                post_txt.$save success:options.success
         else
             options.success()
 
@@ -194,7 +194,7 @@ DB class PostHtml extends Post
                     break
             if changed
                 blog.$set params
-                blog.$save options
+                blog.$save success:options.success
             else
                 options.success blog.$
 
