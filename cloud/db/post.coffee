@@ -117,7 +117,7 @@ DB class PostTxt extends Post
             post.save().done ->
                 post_txt = DB.PostTxt {
                     owner
-                    kind: Post.KIND.TXT
+                    kind:Post.KIND.TXT
                     txt:params.txt
                     post
                 }
@@ -145,7 +145,7 @@ DB class PostTxt extends Post
                     rmer = i.get 'rmer'
                     o = {
                         owner : [
-                            i.get('owner').get('ID')
+                            i.get('owner').get('id')
                             i.get('owner').get('username')
                         ]
                         createdAt:i.createdAt
