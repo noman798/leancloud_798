@@ -122,7 +122,9 @@ DB class PostTxt extends Post
                     post
                 }
                 post_txt.$setACL()
-                post_txt.$save options
+                post_txt.$save {
+                    success:options.success
+                }
         else
             options.success()
 
@@ -142,11 +144,12 @@ DB class PostTxt extends Post
             success:(post_list) ->
                 result = []
                 for i in post_list
+                    owner = i.get 'owner'
                     rmer = i.get 'rmer'
                     o = {
                         owner : [
-                            i.get('owner').get('id')
-                            i.get('owner').get('username')
+                            owner.id
+                            owner.get('username')
                         ]
                         createdAt:i.createdAt
                         id:i.id
