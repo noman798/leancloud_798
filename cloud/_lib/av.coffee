@@ -9,8 +9,8 @@ wrap = (func)->
                 response.success('')
         func(request, response)
 
-
+_define = AV.Cloud.define
 AV.Cloud.define = (name, func) ->
-    AV.Cloud.__code[name] = wrap func
+    _define name, wrap(func)
     
 
