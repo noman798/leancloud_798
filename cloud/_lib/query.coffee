@@ -27,6 +27,7 @@ AV.Query.prototype.get_or_create = (
 _equalTo = AV.Query.prototype.equalTo
 
 AV.Query.prototype.equalTo = (params...)->
+    #console.log params
     if $.isString params[0]
         _equalTo.apply @, params
     else

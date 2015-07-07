@@ -146,17 +146,12 @@ DB class PostInbox
             success:(post_list)->
                 console.log "post_list", post_list.length
                 result = []
-                for i in post_list
-                    query = DB.PostInbox.$
-                    console.log 2
-                    query.equalTo('post',post)
-                    console.log 222
-                    query.equalTo('site',site)
-                    console.log i
-                    result.push query.first()
-                    console.log 1
+                for post in post_list
+                    q = PostInbox.$
+                    q.equalTo('post',post)
+                    q.equalTo('site',site)
+                    result.push q.first()
                 AV.Promise.when(result).done (post_submit_list)->
-                    console.log post_submit_list
                     for i in post_submit_list
                         console.log i.get 'publisher'
                         console.log i.get('post').id
