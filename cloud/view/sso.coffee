@@ -25,7 +25,7 @@ AV.Cloud.define "SSO.auth.new", (request , response) ->
     else if o.password.length < 6
         error.password = "密码不少于6个字符"
 
-    if not response.fail error
+    if not request.fail error
         user = new AV.User()
         user.set(o)
 
@@ -50,7 +50,7 @@ AV.Cloud.define "SSO.auth.new", (request , response) ->
                     else if code == 202
                         error.username = "昵称已被占用。加个数字后缀试试？"
                     
-                    fail = response.fail error
+                    fail = request.fail error
                     if not fail
                         response.error _error
 
@@ -65,7 +65,7 @@ AV.Cloud.define "SSO.auth.info_update",(request,response) ->
     error = {}
     check(o,error)
     
-    if not response.fail error
+    if not request.fail error
         user = AV.User.current()
         user.set(o)
         user.save(
@@ -87,7 +87,7 @@ AV.Cloud.define "SSO.auth.info_update",(request,response) ->
                     else if code == 214
                         error.mobilePhoneNumber = "手机已被占用"
 
-                    if not response.fail error
+                    if not request.fail error
                         response.error _error
             }
         )
@@ -102,7 +102,7 @@ AV.Cloud.define "SSO.auth.password_update",(request,response) ->
     else if o.newpassword.length < 6
         error.newpassword = "密码不少于6个字符"
 
-    if not response.fail error
+    if not request.fail error
         user = AV.User.current()
         
         user.updatePassword(o.oldpassword,o.newpassword,{
@@ -114,6 +114,6 @@ AV.Cloud.define "SSO.auth.password_update",(request,response) ->
                 if code == 210
                     error.oldpassword = "旧密码错误"
 
-                if not response.fail error
+                if not request.fail error
                     response.error _error
         })
