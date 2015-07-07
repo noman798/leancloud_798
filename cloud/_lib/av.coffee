@@ -1,7 +1,7 @@
 
 wrap = (func)->
     (request, response) ->
-        response.fail = (err)->
+        request.fail = (err)->
             count = Object.keys(err).length
             if count
                 response.error({code:-1, message:err})

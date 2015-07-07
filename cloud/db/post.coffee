@@ -122,9 +122,7 @@ DB class PostTxt extends Post
                     post
                 }
                 post_txt.$setACL()
-                post_txt.$save {
-                    success:options.success
-                }
+                post_txt.$save options
         else
             options.success()
 
