@@ -11,7 +11,6 @@ wrap = (func)->
 
 _define = AV.Cloud.define
 AV.Cloud.define = (name, func) ->
-    console.log name
     _define name, wrap(func)
     
 

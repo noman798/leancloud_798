@@ -19,6 +19,39 @@ DB class PostInbox
     @by_current:(params, options)->
         params.owner_id = AV.User.current().id
         PostInbox._by_user(params, options)
+    
+    @by_site:(params, options)->
+        query = DB.PostInbox.$
+        query.equalTo "site", AV.Object.createWithoutData("Site", params.site_id)
+        if query.rmer
+            query.notEqualTo "rmer", null
+        else
+            if query.publisher
+                query.notEqualTo "publisher", null
+            else
+                query.equalTo "publisher", null
+
+        if params.owner_id
+            owner = AV.Object.createWithoutData('User', params.owner_id)
+        if params.since
+            query.lessThan('ID', params.since)
+        query.descending('ID')
+        query.limit PAGE_LIMIT
+        query.find(
+            success:(post_list)->
+                result = []
+                for i in post_list
+                    query = DB.PostInbox.$
+                    query.equalTo({
+                        post
+                    })
+                    result.push query.first()
+                AV.Promise.when(result).done (post_submit)->
+                    console.log post_submit
+        )
+
+    @by_current_published:(params, options)->
+        params.owner_id = AV.User.current().id
 
     @_get: (params, callback)->
         data = {
@@ -105,32 +138,6 @@ DB class PostInbox
                                     o.save()
             options.success ''
 
-    @by_site:(params, options)->
-        query = DB.PostInbox.$
-        query.equalTo "site", AV.Object.createWithoutData("Site", params.site_id)
-        if query.rmer
-            query.notEqualTo "rmer", null
-        else
-            if query.publisher
-                query.notEqualTo "publisher", null
-            else
-                query.equalTo "publisher", null
-        if params.since
-            query.lessThan('ID', params.since)
-        query.descending('ID')
-        query.limit PAGE_LIMIT
-        query.find(
-            success:(post_list)->
-                result = []
-                for i in post_list
-                    query = DB.PostInbox.$
-                    query.equalTo({
-                        post
-                    })
-                    result.push query.first()
-                AV.Promise.when(result).done (post_submit)->
-                    console.log post_submit
-        )
 
     @_by_user:(params, options)->
         query = DB.Post.$
