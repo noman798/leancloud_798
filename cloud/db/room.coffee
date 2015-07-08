@@ -22,12 +22,40 @@ DB = require "cloud/_db"
 #     
 #    updatedAt
 
-DB class Room
-
 DB class RoomMember
     constructor: (
+        @site
+        @msg_read_count
+        @from_user
+        @to_user
+        @room
+        @show_name
 
-    )
+        @is_exit
+        @is_hidden
+        @is_top
+    )->
+        super
+
+    @send_to_user:()->
+    @send_to_room:()->
+    @join_room:()->
+
+    @by_user:()-> #[[channel], [friend]]
+    # 根据最近联系时间倒序排列，只返回最近30天有联系过的, 最多100个, 当前用户,  每个人用户会set一个unread
+    # query.include('room')
+    @by_current:()->
+
+    @hide:(id)->
+    @exit:()-> #只能exit channel，不能exit私聊
+        #query.doesNotExist
+        #query.exists
+        #xxx.unset 'is_exit'
+
+    @rename:()->
+    @readed:(id, count)->
+     
+
 
 #DB class ImFriend
 #    constructor: (
