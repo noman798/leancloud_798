@@ -17,10 +17,8 @@ DB class PostInbox
         super
 
     @by_current:(params, options)->
-        console.log "!!!!"
-        #params.owner_id = AV.User.current().id
-        #PostInbox._by_user(params, options)
-        options.success []
+        params.owner_id = AV.User.current().id
+        PostInbox._by_user(params, options)
 
     @_get: (params, callback)->
         data = {
@@ -159,7 +157,7 @@ DB class PostInbox
                 AV.Promise.when(result).done (post_submit_list...)->
                     post_dict = {}
                     for i in post_submit_list
-                        r = {is_submit:!!i.updatedAt}
+                        r = {is_submit:!!i.updatedAt-0}
                         
                         publisher = i.get 'publisher'
                         if publisher
