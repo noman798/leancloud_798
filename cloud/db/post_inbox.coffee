@@ -29,10 +29,10 @@ DB class PostInbox
     @by_site:(params, options)->
         query = DB.PostInbox.$
         query.equalTo "site", AV.Object.createWithoutData("Site", params.site_id)
-        if query.rmer
+        if query.rm
             query.notEqualTo "rmer", null
         else
-            if query.publisher
+            if query.publish
                 query.notEqualTo "publisher", null
             else
                 query.equalTo "publisher", null
