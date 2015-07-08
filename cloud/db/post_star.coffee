@@ -86,7 +86,7 @@ DB class PostStar
             redis.sadd R.PostStar + id_b64(kwds.user.id), o.get("ID")
             PostStar.$.get_or_create(
                 kwds
-                options
+                success:options.success
             )
 
     @rm : (params, options) ->
@@ -95,7 +95,7 @@ DB class PostStar
         kwds.post.fetch success:(o)->
             redis.srem R.PostStar + id_b64(kwds.user.id), o.get("ID")
             query.equalTo kwds
-            query.destroyAll options
+            query.destroyAll success:options.success
             
 
     @_params_site_post:(params)->

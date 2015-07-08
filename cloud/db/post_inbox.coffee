@@ -18,6 +18,12 @@ DB class PostInbox
     )->
         super
 
+    @by_current:(params, options)->
+        console.log "!!!!"
+        #params.owner_id = AV.User.current().id
+        #PostInbox._by_user(params, options)
+        options.success []
+
     @_get: (params, callback)->
         data = {
             post : AV.Object.createWithoutData("Post", params.post_id)
@@ -168,6 +174,3 @@ DB class PostInbox
                         options.success post_list
         )
 
-    @by_current:(params, options)->
-        params.owner_id = AV.User.current().id
-        PostInbox._by_user(params, options)
