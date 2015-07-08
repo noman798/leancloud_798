@@ -19,6 +19,7 @@ DB class PostInbox
     
     @by_current_published:(params, options)->
         params.owner_id = AV.User.current().id
+        params.publisher = 1
         PostInbox.by_site(params, options)
 
     @by_current:(params, options)->
@@ -42,6 +43,7 @@ DB class PostInbox
 
         if params.since
             query.lessThan('ID', params.since)
+
         query.descending('ID')
         query.limit PAGE_LIMIT
         query.find(
