@@ -86,7 +86,10 @@ DB class PostStar
             redis.sadd R.PostStar + id_b64(kwds.user.id), o.get("ID")
             PostStar.$.get_or_create(
                 kwds
-                success:options.success
+                {
+                    success:options.success
+                    create:options.create
+                }
             )
 
     @rm : (params, options) ->
@@ -109,6 +112,7 @@ DB class PostStar
         )
         {
             user:AV.User.current()
+            # user:AV.Object.createWithoutData('User', "5566f0cee4b09f185e943711")
             site
             post
         }
