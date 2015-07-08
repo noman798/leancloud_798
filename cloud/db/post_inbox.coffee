@@ -180,9 +180,9 @@ DB class PostInbox
                             r.is_publish = 1
 
                         post_dict[i.get('post').id] = r
-                        for i in post_list
-                            if i.id of post_dict
-                                i.set post_dict[i.id]
-                        options.success post_list
+                    for i in post_list
+                        if i.id of post_dict
+                            i.set post_dict[i.id]
+                    options.success post_list
         )
 
