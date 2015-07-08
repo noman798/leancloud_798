@@ -145,18 +145,27 @@ DB class PostInbox
         query.find(
             success:(post_list)->
                 result = []
+                 
                 for post in post_list
                     q = PostInbox.$
                     q.equalTo('post',post)
                     q.equalTo('site',site)
                     result.push q.first()
-                AV.Promise.when(result).done (post_submit_list...)->
-                    
-                    for i in post_submit_list
-                        console.log i.get('post').id
-                        console.log i.get('updatedAt')
-                        console.log i.get 'publisher'
 
+                AV.Promise.when(result).done (post_submit_list...)->
+                    post_dict = {}
+                    for i in post_submit_list
+                        r = {is_submit:!!i.updatedAt}
+                        
+                        publisher = i.get 'publisher'
+                        if publisher
+                            r.is_publish = 1
+
+                        post_dict[i.get('post').id] = r
+                        for i in post_list
+                            if i.id of post_dict
+                                i.set post_dict[i.id]
+                        options.success post_list
         )
 
     @by_current:(params, options)->

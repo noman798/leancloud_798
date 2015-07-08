@@ -8,7 +8,8 @@ DB.PostInbox._by_user(
     }
     {
         success:(li)->
-
+            for i in li
+                console.log i
     }
 )
 #DB.PostTxt.by_post(
