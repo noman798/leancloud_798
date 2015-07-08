@@ -11,9 +11,9 @@ module.exports = SITE_USER_LEVEL =
     WRITER : 800    #投稿可以自动发布
 
 permission = require "cloud/_lib/permission"
-$SITE_USER_LEVEL = permission SITE_USER_LEVEL, (user_id, params, callback)->
+$SITE_USER_LEVEL  = permission SITE_USER_LEVEL, (user_id, params, callback)->
     SiteUserLevel._level(user_id, params.site_id, callback)
-
+SITE_USER_LEVEL.$ = $SITE_USER_LEVEL
 
 
 
