@@ -30,12 +30,12 @@ DB class PostInbox
         query = DB.PostInbox.$
         query.equalTo "site", AV.Object.createWithoutData("Site", params.site_id)
         if query.rm
-            query.notEqualTo "rmer", null
+            query.exists "rmer"
         else
             if query.publish
-                query.notEqualTo "publisher", null
+                query.exists "publisher"
             else
-                query.equalTo "publisher", null
+                query.doesNotExist "publisher"
 
         if params.owner_id
             owner = AV.Object.createWithoutData('User', params.owner_id)
