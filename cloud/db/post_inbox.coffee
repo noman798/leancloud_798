@@ -2,9 +2,7 @@ require "cloud/db/oauth"
 require "cloud/db/post"
 DB = require "cloud/_db"
 SITE_USER_LEVEL = require("cloud/db/site_user_level")
-require("cloud/db/post")
 PAGE_LIMIT = 20
-
 #TODO tag_list by site
 #待审核， 已退回，已发布
 
