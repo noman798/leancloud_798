@@ -11,10 +11,15 @@ DB class PostInbox
     constructor : (
         @site
         @post
+        @owner
         @publisher
         @rmer
     )->
         super
+    
+    @by_current_published:(params, options)->
+        params.owner_id = AV.User.current().id
+        PostInbox.by_site(params, options)
 
     @by_current:(params, options)->
         params.owner_id = AV.User.current().id
@@ -33,6 +38,8 @@ DB class PostInbox
 
         if params.owner_id
             owner = AV.Object.createWithoutData('User', params.owner_id)
+            query.equalTo "owner", owner
+
         if params.since
             query.lessThan('ID', params.since)
         query.descending('ID')
@@ -50,23 +57,24 @@ DB class PostInbox
                     console.log post_submit
         )
 
-    @by_current_published:(params, options)->
-        params.owner_id = AV.User.current().id
 
     @_get: (params, callback)->
         data = {
-            post : AV.Object.createWithoutData("Post", params.post_id)
             site : AV.Object.createWithoutData("Site", params.site_id)
+            post : AV.Object.createWithoutData("Post", params.post_id)
         }
-        PostInbox.$.get_or_create(
-            data
-            {
-                success:callback
-            }
-        )
+        DB.Post.$.get(params.post_id).done (post)->
+            data.owner = post.get('owner')
+            PostInbox.$.get_or_create(
+                data
+                {
+                    success:callback
+                }
+            )
         data
 
-    @_submit_by_evernote:(user, post_id, site_tag_list)->
+    @_submit_by_evernote:(user, post, site_tag_list)->
+        post_id = post.id
         #通过Oauth查找用户user_id绑定的所有站点可以通过 include site来获取这些站点的名称
         #遍历站点名toLowerCase，如site_tag_list存在，那么就发布此文章（注意同步post.tag_list）
         query = DB.Oauth.$
@@ -79,6 +87,7 @@ DB class PostInbox
                     if site_tag_list.indexOf(site_name.toLowerCase())>=0
                         PostInbox.submit({
                             site_id : each_oauth.get('site').id
+                            owner:post.get 'owner'
                             post_id
                         }, {
                             success:(o) ->
