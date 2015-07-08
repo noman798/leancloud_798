@@ -1,5 +1,28 @@
 DB = require "cloud/_db"
 
+Room
+    id
+    name
+    site
+    is_public
+    member_count
+    msg_count
+
+RoomMember
+    site
+    msg_read_count
+    from_user
+    is_hidden
+    is_top
+    #私聊
+        to_user
+    #群聊
+        room
+    #如果有自定义名称
+        show_name
+     
+    updatedAt
+
 DB class ImFriend
     constructor: (
         @from_user
