@@ -45,18 +45,19 @@ DB class PostInbox
             query.lessThan('ID', params.since)
 
         query.descending('ID')
+        query.include("post")
         query.limit PAGE_LIMIT
         query.find(
-            success:(post_list)->
+            success:(post_inbox_list)->
                 result = []
-                for i in post_list
-                    query = DB.PostInbox.$
-                    query.equalTo({
-                        post
-                    })
-                    result.push query.first()
-                AV.Promise.when(result).done (post_submit)->
-                    console.log post_submit
+                for i in post_inbox_list
+                    post = i.get 'post'
+                    post.set "is_submit", 1
+                    publisher = i.get 'publisher'
+                    if publisher
+                        post.set 'publisher', publisher
+                    result.push post
+                options.success result
         )
 
 
@@ -175,11 +176,11 @@ DB class PostInbox
                 AV.Promise.when(result).done (post_submit_list...)->
                     post_dict = {}
                     for i in post_submit_list
-                        r = {is_submit:!!i.updatedAt-0}
+                        r = {is_submit:1}
                         
                         publisher = i.get 'publisher'
                         if publisher
-                            r.is_publish = 1
+                            r.publisher = publisher
 
                         post_dict[i.get('post').id] = r
                     for i in post_list
