@@ -7,6 +7,10 @@ R "RoomMemberMessageReadCount",":"
 
 APP_ID = process.env.LC_APP_ID
 
+#客服服务 -> 第一次发消息的时候创建房间，并且把管理员加入进来
+#闲聊灌水
+
+
 #_messageReceived: (req, res) ->
 DB class RoomMember
     constructor: (
