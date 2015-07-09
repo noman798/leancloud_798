@@ -19,7 +19,7 @@ APP_ID = process.env.LC_APP_ID
 #       @我 ->
 
 # -留言对话
-#       xxx ->  
+#       xxx项目 ->  
 
 #_messageReceived: (req, res) ->
 DB class RoomMember
