@@ -10,7 +10,6 @@ DB SiteRoom
         name
         unread_count
     ]
-   readed:(room_id)->
    room_set:SITE_USER_LEVEL.$.ROOT (
         site,
         room_list
@@ -22,4 +21,14 @@ DB SiteRoom
         #]
    )->
    room_new:(site, name)->
+
+   readed:()->
+        redis.hset(
+            R.ROOM_LOG_READ_COUNT+user_id,
+            room_id,
+            count
+        )
+
+_messageReceived: (req, res) ->
+    redis.hincr R.ROOM_LOG_COUNT, room_id
 
