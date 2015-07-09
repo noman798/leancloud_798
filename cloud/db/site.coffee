@@ -4,7 +4,6 @@ $.mixin(require("underscore.string").exports())
 DB = require "cloud/_db"
 
 DB class SiteRss
-
     constructor : (
         @url
     )->
