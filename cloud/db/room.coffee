@@ -7,6 +7,7 @@ R "RoomMemberMessageReadCount",":"
 
 APP_ID = process.env.LC_APP_ID
 
+#_messageReceived: (req, res) ->
 DB class RoomMember
     constructor: (
         @site
@@ -44,116 +45,7 @@ DB class RoomMember
                 }
 
         
-#        # options.success room_id
-#        
-#        # from_user > to_user 
-#        # to_user < from_user
-#
-#        query = RoomMember.$
-#
-#        query.include('room')
-#        query.get_or_create({
-#            from_user:AV.Object.createWithoutData('User',from_user_id)
-#            to_user:AV.Object.createWithoutData('User',to_user_id)
-#        }, {
-#            create: (room_member) ->
-#                realtime = AV.realtime({
-#                    APP_ID,
-#                    clientId: from_user_id
-#                })
-#                realtime.on 'open', ->
-#                    realtime.room({
-#                        members: [from_user_id, to_user_id],
-#                    })
-#                new_room.send({msg: params.msg}, ()->
-#                    console.log 'server ack.'
-#                )
-#                room_member.set('room', new_room)
-#                room_member.save()
-#            success: (room_member) ->
-#                room = room_member.get('room')
-#                room.add(params.to_user_id, ()->
-#                    console.log 'add success'
-#                )
-#        })
     
-# hset
-    #Room
-    #    msg_count
-
-#Room
-#    id
-#    site
-#    is_public
-
-#RoomMember
-#    site
-#    msg_read_count
-#    from_user
-#    is_hidden
-#    is_top
-#    #私聊
-#        to_user
-#    room
-#    #如果有自定义名称
-#        show_name
-#    updatedAt
-
-#DB class RoomMember
-#    constructor: (
-#        @site
-#        @msg_read_count
-#        @from_user
-#        @to_user
-#        @room
-#        @show_name
-#        @is_exit
-#        @is_hidden
-#        @is_top
-#    )->
-#        super
-#
-#    @room_id_by_to_user:(params, options)->
-#        # options.success room_id
-#        
-#        # from_user > to_user 
-#        # to_user < from_user
-#
-#        query = RoomMember.$
-#        {from_user_id, to_user_id} = params
-#
-#        query.include('room')
-#        query.get_or_create({
-#            from_user:AV.Object.createWithoutData('User',from_user_id)
-#            to_user:AV.Object.createWithoutData('User',to_user_id)
-#        }, {
-#            create: (room_member) ->
-#                realtime = AV.realtime({
-#                    APP_ID,
-#                    clientId: from_user_id
-#                })
-#                realtime.on 'open', ->
-#                    realtime.room({
-#                        members: [from_user_id, to_user_id],
-#                    })
-#                new_room.send({msg: params.msg}, ()->
-#                    console.log 'server ack.'
-#                )
-#                room_member.set('room', new_room)
-#                room_member.save()
-#            success: (room_member) ->
-#                room = room_member.get('room')
-#                room.add(params.to_user_id, ()->
-#                    console.log 'add success'
-#                )
-#        })
-#
-#
-#    @send_to_room:(params, options)->
-#        room = AV.Object.createWithoutData("_Conversation", params.room_id)
-#        room.send({msg: params.msg}, ()->
-#            console.log 'server ack.'
-#        )
 #
 #
 #    @join_room:(params, options)->
