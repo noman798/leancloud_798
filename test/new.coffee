@@ -21,28 +21,28 @@ _site_new = (url_rss, options)->
                     }
                 }
 
-$.SETUP.tech2ipo = ->
-    _site_new URL_RSS, success:(site)->
-        console.log site
-        
-        for host in [
-            "tech2ipo.com"
-            "alpha.tech2ipo.com"
-            "tech2ipo.798.space"
-            "797.space"
-            "798.space"
-            "tech2ipo.797.space"
-            "r.io"
-            "majia.space"
-        ]
-            AV.Cloud.run "Site.host_new" , {
-                id:site.objectId
-                host
-            },{
-                success:(site)->
-                    console.log "host_new success", site.host_list
-                error:(site)->
-                    console.log "host_new error", site
-            }
-        AV.Cloud.run "Site.tag_list_set", {
-            id:site.id
+#$.SETUP.tech2ipo = ->
+#    _site_new URL_RSS, success:(site)->
+#        console.log site
+#        
+#        for host in [
+#            "tech2ipo.com"
+#            "alpha.tech2ipo.com"
+#            "tech2ipo.798.space"
+#            "797.space"
+#            "798.space"
+#            "tech2ipo.797.space"
+#            "r.io"
+#            "majia.space"
+#        ]
+#            AV.Cloud.run "Site.host_new" , {
+#                id:site.objectId
+#                host
+#            },{
+#                success:(site)->
+#                    console.log "host_new success", site.host_list
+#                error:(site)->
+#                    console.log "host_new error", site
+#            }
+#        AV.Cloud.run "Site.tag_list_set", {
+#            id:site.id
