@@ -1,5 +1,5 @@
-
-require "test/test_room"
+#require "test/post_inbox_test"
+#require "test/test_room"
 
 
 #require "cloud/db/site_user_level"

@@ -20,34 +20,8 @@ DB class RoomMember
     )->
         super
 
-<<<<<<< local
     @room_id_by_to_user:(params, options)->
         {from_user_id, to_user_id} = params
-=======
-    @send_to_user:(params, options)->
-        query = RoomMember.$
-        query.include('room')
-        {from_user_id, to_user_id} = params
-        query.get_or_create({
-            from_user: AV.Object.createWithoutData(from_user_id)
-            to_user: AV.Object.createWithoutData(to_user_id)
-        }, {
-            create: (room_member) ->
-                realtime = AV.realtime({
-                    appId,
-                    clientId: params.id
-                })
-                new_room = realtimeObj.room({
-                    members: [params.from_user_id, params.to_user_id],
-                })
-                new_room.send({msg: params.msg}, ()->
-                    console.log 'server ack.'
-                )
-                room_member.set('room', new_room)
-                room_member.save()
-
->>>>>>> other
-
         if from_user_id > to_user_id
             key = from_user_id+"-"+to_user_id
         else
@@ -69,7 +43,6 @@ DB class RoomMember
                             options.success room.id
                 }
 
-        
     
 #
 #

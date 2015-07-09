@@ -99,7 +99,6 @@ DB class PostInbox
 
         })
 
-    #title tag_list brief
     @_post_set: (post, {tag_list, title, brief})->
         post.set({tag_list, title, brief})
         post.save()
@@ -142,7 +141,7 @@ DB class PostInbox
 
     @rm:(params, options)->
         # 管理员/编辑 或者 投稿者本人可以删除
-        PostInbox._get (o)->
+        PostInbox._get params, (o)->
             if o
                 if not o.rmer
                     o.get('post').fetch (post)->
