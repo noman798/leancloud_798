@@ -19,7 +19,6 @@ DB = require "cloud/_db"
 #    room
 #    #如果有自定义名称
 #        show_name
-#     
 #    updatedAt
 
 DB class RoomMember
