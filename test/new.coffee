@@ -1,25 +1,23 @@
-URL_RSS = "http://rss.tech2ipo.com"
-HOST = "tech2ipo.com"
 
-_site_new = (url_rss, options)->
-    AV.Cloud.run "Site.by_host", {host:HOST}, success:(site) ->
+_site_new = (host, options)->
+    Site.by_host {host:host}, success:(site) ->
         if site
-            options.success site
+            site.set options
         else
-            AV.Cloud.run "Site.new",{
-                    name:"TECH2IPO"
-                    slogo:"创新改变世界 , 我们见证未来"
-                    logo:"//dn-xpure.qbox.me/iconfont-shandian.svg"
-                },{
+            Site.host_new options ,{
                 success:(site)->
-                    AV.Cloud.run "Site.rss_new", {
-                        id:site.objectId
-                        url:URL_RSS
-                    },{
-                        success:->
-                            options.success site
-                    }
-                }
+                    console.log site
+            }
+
+_site_new(
+    "tech2ipo.com"
+    {
+        name:"TECH2IPO"
+        slogo:"「 创造 & 见证 」"
+        logo:"//dn-acac.qbox.me/tech2ipoTECH2IPOIcon.svg"
+
+    }
+)
 
 #$.SETUP.tech2ipo = ->
 #    _site_new URL_RSS, success:(site)->
