@@ -40,12 +40,25 @@ DB class RoomMember
     @send_to_user:(params, options)->
         query = RoomMember.$
         query.include('room')
+        {from_user_id, to_user_id} = params
         query.get_or_create({
-            from_user: params.from_user_id
+            from_user: AV.Object.createWithoutData(from_user_id)
+            to_user: AV.Object.createWithoutData(to_user_id)
         }, {
             create: (room_member) ->
-                room_member.set('from_user', params.from_user_id)
-                room_member.set('to_user', params.to_user_id)
+                realtime = AV.realtime({
+                    appId,
+                    clientId: params.id
+                })
+                new_room = realtimeObj.room({
+                    members: [params.from_user_id, params.to_user_id],
+                })
+                new_room.send({msg: params.msg}, ()->
+                    console.log 'server ack.'
+                )
+                room_member.set('room', new_room)
+                room_member.save()
+
 
             success: (room_member) ->
                 room = room_member.get('room')
