@@ -99,6 +99,10 @@ DB class PostInbox
 
         })
 
+    @_post_set: (post, {tag_list, title, brief})->
+        post.set({tag_list, title, brief})
+        post.save()
+
 
     @publish:(params, options)->
         #管理员发布的时候可以设置标签
@@ -107,6 +111,7 @@ DB class PostInbox
                 if level < SITE_USER_LEVEL.WRITER
                     return
                 o.get('post').fetch (post)->
+                    PostInbox._post_set post, params
                     DB.SiteTagPost.$.get_or_create(
                         data
                         (site_tag_post)->
@@ -136,10 +141,11 @@ DB class PostInbox
 
     @rm:(params, options)->
         # 管理员/编辑 或者 投稿者本人可以删除
-        PostInbox._get (o)->
+        PostInbox._get params, (o)->
             if o
                 if not o.rmer
                     o.get('post').fetch (post)->
+                        PostInbox._post_set post, params
                         current = AV.User.current()
                         if post.get('owner').id == current.id
                             o.destroy()

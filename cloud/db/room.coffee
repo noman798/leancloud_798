@@ -82,7 +82,6 @@ DB class RoomMember
 
     @room_id_by_to_user:(params, options)->
         {from_user_id, to_user_id} = params
-
         if from_user_id > to_user_id
             key = from_user_id+"-"+to_user_id
         else
@@ -104,7 +103,6 @@ DB class RoomMember
                             options.success room.id
                 }
 
-        
     
 #
 #
