@@ -1,8 +1,10 @@
-USER = require "cloud/db/user"
-DB = require "cloud/_db"
+
 redis = require "cloud/_redis"
 {R} = redis
 R "SITE_USER_LEVEL",":"
+
+USER = require "cloud/db/user"
+DB = require "cloud/_db"
 {id_bin,bin_id} = require "cloud/_lib/b64"
 
 module.exports = SITE_USER_LEVEL =

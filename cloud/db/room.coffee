@@ -6,20 +6,66 @@ R "RoomMemberRoomId",":"
 R "RoomMemberMessageReadCount",":"
 
 APP_ID = process.env.LC_APP_ID
+###
+每个网站可以自定义创建一个或多个公众聊天室
+-公众频道
+   谈天说地 -> 公众聊天室
 
-# -公众频道
-#       谈天说地 -> 公众聊天室
+记录每个站点默认有的公众频道
 
+DB SiteChannel
+    site_id
+    channel_list = [
+         
+    ]
+    用relation来存对应的频道
+
+{
+    site_channel:[
+        [
+            id
+            name
+            unread_count
+        ]
+    ]
+}
+
+_messageReceived: (req, res) ->
+    redis.hincr R.ROOM_LOG_COUNT, room_id
+
+readed:()->
+    redis.hset(
+        R.ROOM_LOG_READ_COUNT+user_id,
+        room_id,
+        count
+    )
+
+###
+
+# 客服频道 ， 用户可以与多个客服聊天， 用户和用户默认之间不可见
+
+# 广而告之 ， 全站频道，发一条消息，所以用户都收到
+
+# 系统通知  
 
 # -私人频道
-#       客服咨询 -> 第一次发消息的时候创建房间，并且把所有编辑身份以上的人加入进来
-#       系统消息 -> 新人导航，投稿提醒什么的, 在系统通知的留言会直接转发到客服咨询
-#       版本更新 -> 留言会直接转发到客服咨询
-#       留言提醒 -> 没有的时候不显示
-#       @我 ->
+#
+#       客服咨询 -> 
+#           第一次发消息的时候创建房间，并且把所有编辑身份以上的人加入进来
+#           客服
+           
+#       通知提醒 -> 新人导航，投稿提醒什么的, 在系统通知的留言会直接转发到客服咨询
+
+#       广而告之 -> 留言会直接转发到客服咨询
+#
+#       文章回复 -> 没有的时候不显示
+#
+###       @我 -> 
+#      以上频道不能删除不能退出
 
 # -留言对话
-#       xxx项目 ->  
+#       xxx项目 -> 
+#               通知项目的相关人员
 
 #_messageReceived: (req, res) ->
 DB class RoomMember
