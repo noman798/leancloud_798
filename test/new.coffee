@@ -1,6 +1,3 @@
-
-
-
 URL_RSS = "http://rss.tech2ipo.com"
 HOST = "tech2ipo.com"
 
