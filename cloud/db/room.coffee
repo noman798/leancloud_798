@@ -1,4 +1,88 @@
 DB = require "cloud/_db"
+redis = require "cloud/_redis"
+{R} = redis
+
+R "RoomMemberRoomId",":"
+R "RoomMemberMessageReadCount",":"
+
+
+
+APP_ID = process.env.LC_APP_ID
+
+DB class RoomMember
+    constructor: (
+        @site
+        @from_user
+        @to_user
+        @show_name
+        @is_exit
+        @is_hidden
+        @is_top
+    )->
+        super
+
+    @room_id_by_to_user:(params, options)->
+        {from_user_id, to_user_id} = params
+
+        if from_user_id > to_user_id
+            key = from_user_id+"-"+to_user_id
+        else
+            key = to_user_id+"-"+from_user_id
+        key = R.RoomMemberRoomId+key
+        redis.get key, (room_id)->
+            console.log key, room_id
+            if room_id
+                console.log "key find"
+                options.success room_id
+            else
+                console.log "key new"
+                room = AV.Object.new('_Conversation')
+                room.set {
+                    m:[from_user_id, to_user_id]
+                    c:from_user_id
+                    mu:[]
+                }
+                room.save {
+                    success:(room)->
+                        console.log "redis set", key, room.id
+                        redis.set key, room.id, ->
+                            options.success room.id
+                }
+
+        
+#        # options.success room_id
+#        
+#        # from_user > to_user 
+#        # to_user < from_user
+#
+#        query = RoomMember.$
+#
+#        query.include('room')
+#        query.get_or_create({
+#            from_user:AV.Object.createWithoutData('User',from_user_id)
+#            to_user:AV.Object.createWithoutData('User',to_user_id)
+#        }, {
+#            create: (room_member) ->
+#                realtime = AV.realtime({
+#                    APP_ID,
+#                    clientId: from_user_id
+#                })
+#                realtime.on 'open', ->
+#                    realtime.room({
+#                        members: [from_user_id, to_user_id],
+#                    })
+#                new_room.send({msg: params.msg}, ()->
+#                    console.log 'server ack.'
+#                )
+#                room_member.set('room', new_room)
+#                room_member.save()
+#            success: (room_member) ->
+#                room = room_member.get('room')
+#                room.add(params.to_user_id, ()->
+#                    console.log 'add success'
+#                )
+#        })
+    
 # hset
     #Room
     #    msg_count
@@ -21,121 +105,140 @@ DB = require "cloud/_db"
 #        show_name
 #    updatedAt
 
-DB class RoomMember
-    constructor: (
-        @site
-        @msg_read_count
-        @from_user
-        @to_user
-        @room
-        @show_name
+#DB class RoomMember
+#    constructor: (
+#        @site
+#        @msg_read_count
+#        @from_user
+#        @to_user
+#        @room
+#        @show_name
+#        @is_exit
+#        @is_hidden
+#        @is_top
+#    )->
+#        super
+#
+#    @room_id_by_to_user:(params, options)->
+#        # options.success room_id
+#        
+#        # from_user > to_user 
+#        # to_user < from_user
+#
+#        query = RoomMember.$
+#        {from_user_id, to_user_id} = params
+#
+#        query.include('room')
+#        query.get_or_create({
+#            from_user:AV.Object.createWithoutData('User',from_user_id)
+#            to_user:AV.Object.createWithoutData('User',to_user_id)
+#        }, {
+#            create: (room_member) ->
+#                realtime = AV.realtime({
+#                    APP_ID,
+#                    clientId: from_user_id
+#                })
+#                realtime.on 'open', ->
+#                    realtime.room({
+#                        members: [from_user_id, to_user_id],
+#                    })
+#                new_room.send({msg: params.msg}, ()->
+#                    console.log 'server ack.'
+#                )
+#                room_member.set('room', new_room)
+#                room_member.save()
+#            success: (room_member) ->
+#                room = room_member.get('room')
+#                room.add(params.to_user_id, ()->
+#                    console.log 'add success'
+#                )
+#        })
+#
+#
+#    @send_to_room:(params, options)->
+#        room = AV.Object.createWithoutData("_Conversation", params.room_id)
+#        room.send({msg: params.msg}, ()->
+#            console.log 'server ack.'
+#        )
+#
+#
+#    @join_room:(params, options)->
+#        query = RoomMember.$
+#        room = AV.Object.createWithoutData("_Conversation", params.room_id)
+#        room.add(params.from_user_id, ()->
+#            console.log 'add success'
+#        )
+#        query.get_or_create({
+#            from_user: params.from_user_id
+#            room: room
+#        }, {
+#            create: (room_member) ->
+#                room_member.set('from_user', params.from_user_id)
+#                room_member.set('room', room)
+#
+#            success: (room_member) ->
+#                room.save()
+#        })
+#
+#
+#
+#    @by_user:()-> #[[channel], [friend]]
+#    # 根据最近联系时间倒序排列，只返回最近30天有联系过的, 最多100个, 当前用户,  每个人用户会set一个unread
+#    # query.include('room')
+#        query = RoomMember.$
+#        query.equalTo('from_user', params.from_user_id)
+#        query.greateThan('updated_time',
+#                         new Date(new Date()- 24*3600*1000*30))
+#        query.descending('updated_time')
+#        query.limit 100
+#        query.find({
+#            success:(room_member_list) ->
+#                user_list = []
+#                room_list = []
+#                for i in room_member_list
+#                    user = i.get('to_user').fetch()
+#                    unread = i.get('unread')
+#                    room = i.get('room')
+#                    if user
+#                        user_list.push(user)
+#                    if room
+#                        room_list.push(room.id)
+#                        
+#                options.success [room_list, user_list]
+#        })
+#   
+#
+#    @by_current:(params, options)->
+#        user = AV.User.current()
+#        params.from_user_id = user.id
+#        RoomMember.by_user(params, options)
+#
+#    @hide:(id)->
+#
+#    @exit:()-> #只能exit channel，不能exit私聊
+#        #query.doesNotExist
+#        #query.exists
+#        #xxx.unset 'is_exit'
+#
+#    @rename:()->
+#    @readed:(id, count)->
+#     
+#################
+#
+#
+#
 
-        @is_exit
-        @is_hidden
-        @is_top
-    )->
-        super
-
-    @send_to_user:(params, options)->
-        query = RoomMember.$
-        query.include('room')
-        query.get_or_create({
-            from_user: params.from_user_id
-        }, {
-            create: (room_member) ->
-                room_member.set('from_user', params.from_user_id)
-                room_member.set('to_user', params.to_user_id)
-
-            success: (room_member) ->
-                room = room_member.get('room')
-                if room
-                    room.add(params.to_user_id, ()->
-                        console.log 'add success'
-                    )
-                else
-                    realtimeObj = AV.realtime({
-                        appId,
-                        clientId: params.id
-                    })
-                    new_room = realtimeObj.room({
-                        members: [params.from_user_id, params.to_user_id],
-                    })
-                    new_room.send({msg: params.msg}, ()->
-                        console.log 'server ack.'
-                    )
-                    room_member.set('room', new_room)
-                    room_member.save()
-        })
-
-
-    @send_to_room:(params, options)->
-        room = AV.Object.createWithoutData("_Conversation", params.room_id)
-        room.send({msg: params.msg}, ()->
-            console.log 'server ack.'
-        )
-
-
-    @join_room:(params, options)->
-        query = RoomMember.$
-        room = AV.Object.createWithoutData("_Conversation", params.room_id)
-        room.add(params.from_user_id, ()->
-            console.log 'add success'
-        )
-        query.get_or_create({
-            from_user: params.from_user_id
-            room: room
-        }, {
-            create: (room_member) ->
-                room_member.set('from_user', params.from_user_id)
-                room_member.set('room', room)
-
-            success: (room_member) ->
-                room.save()
-        })
 
 
 
-    @by_user:()-> #[[channel], [friend]]
-    # 根据最近联系时间倒序排列，只返回最近30天有联系过的, 最多100个, 当前用户,  每个人用户会set一个unread
-    # query.include('room')
-        query = RoomMember.$
-        query.equalTo('from_user', params.from_user_id)
-        query.greateThan('updated_time',
-                         new Date(new Date()- 24*3600*1000*30))
-        query.descending('updated_time')
-        query.limit 100
-        query.find({
-            success:(room_member_list) ->
-                user_list = []
-                room_list = []
-                for i in room_member_list
-                    user = i.get('to_user').fetch()
-                    unread = i.get('unread')
-                    room = i.get('room')
-                    if user
-                        user_list.push(user)
-                    if room
-                        room_list.push(room.id)
-                        
-                options.success [room_list, user_list]
-        })
-   
 
-    @by_current:(params, options)->
-        user = AV.User.current()
-        params.from_user_id = user.id
-        RoomMember.by_user(params, options)
 
-    @hide:(id)->
 
-    @exit:()-> #只能exit channel，不能exit私聊
-        #query.doesNotExist
-        #query.exists
-        #xxx.unset 'is_exit'
 
-    @rename:()->
-    @readed:(id, count)->
-     
+
+
+
+
 
 
 #DB class ImFriend

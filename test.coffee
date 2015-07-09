@@ -1,6 +1,5 @@
 
-require "cloud/db/post_star"
-DB = require "cloud/_db"
+require "test/test_room"
 
 
 #require "cloud/db/site_user_level"

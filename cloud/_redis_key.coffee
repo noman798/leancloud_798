@@ -1,5 +1,7 @@
 module.exports =
     '':0
 
-    PostStar:'4'
-    SITE_USER_LEVEL:'5'
+    PostStar:'1'
+    SITE_USER_LEVEL:'2'
+    RoomMemberRoomId:'3'
+    RoomMemberMessageReadCount:'4'
