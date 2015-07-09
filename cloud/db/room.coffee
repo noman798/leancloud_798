@@ -5,8 +5,6 @@ redis = require "cloud/_redis"
 R "RoomMemberRoomId",":"
 R "RoomMemberMessageReadCount",":"
 
-
-
 APP_ID = process.env.LC_APP_ID
 
 DB class RoomMember
@@ -29,13 +27,10 @@ DB class RoomMember
         else
             key = to_user_id+"-"+from_user_id
         key = R.RoomMemberRoomId+key
-        redis.get key, (room_id)->
-            console.log key, room_id
+        redis.get key, (err, room_id)->
             if room_id
-                console.log "key find"
                 options.success room_id
             else
-                console.log "key new"
                 room = AV.Object.new('_Conversation')
                 room.set {
                     m:[from_user_id, to_user_id]
@@ -44,7 +39,6 @@ DB class RoomMember
                 }
                 room.save {
                     success:(room)->
-                        console.log "redis set", key, room.id
                         redis.set key, room.id, ->
                             options.success room.id
                 }
