@@ -36,7 +36,12 @@ DB class SiteTagPost
                     post = i.get('post')
                     post.set 'tag_list', i.get('tag_list')
                     post_list.push post
-
+                    owner = post.get 'owner'
+                    if owner
+                        post.set 'owner', {
+                            id:owner.id
+                            username:owner.get 'username'
+                        }
                 success = (li)->
                     if site_tag_list.length >= PAGE_LIMIT
                         last_id = site_tag_list[site_tag_list.length-1].get 'ID'

@@ -13,6 +13,7 @@ DB.SiteTagPost.by_site_tag {
     site_id:"555d759fe4b06ef0d72ce8e7"
 }, {
     success:(li)->
-        for i in li
-            console.log i
+        for i in li[0]
+            console.log i.get 'title'
+            console.log i.get 'owner'
 }
