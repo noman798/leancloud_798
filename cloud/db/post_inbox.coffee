@@ -6,6 +6,12 @@ PAGE_LIMIT = 20
 #TODO tag_list by site
 #待审核， 已退回，已发布
 
+_post_owner = (post)->
+    owner = post.get 'owner'
+    post.set 'owner',{
+        id:owner.id
+        username:owner.get 'username'
+    }
 
 DB class PostInbox
     constructor : (
@@ -52,12 +58,7 @@ DB class PostInbox
                 result = []
                 for i in post_inbox_list
                     post = i.get 'post'
-                    owner = post.get 'owner'
-                    if owner
-                        post.set 'owner',{
-                            id:owner.id
-                            username:owner.get 'username'
-                        }
+                    _post_owner post
                     post.set "is_submit", 1
                     publisher = i.get 'publisher'
                     if publisher
@@ -199,6 +200,9 @@ DB class PostInbox
                     for i in post_list
                         if i.id of post_dict
                             i.set post_dict[i.id]
+                        _post_owner i
                     options.success post_list
         )
+
+
 
