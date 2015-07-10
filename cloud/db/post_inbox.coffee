@@ -190,13 +190,14 @@ DB class PostInbox
                 AV.Promise.when(result).done (post_submit_list...)->
                     post_dict = {}
                     for i in post_submit_list
-                        r = {is_submit:1}
-                        
-                        publisher = i.get 'publisher'
-                        if publisher
-                            r.publisher = publisher
+                        if i
+                            r = {is_submit:1}
+                            
+                            publisher = i.get 'publisher'
+                            if publisher
+                                r.publisher = publisher
 
-                        post_dict[i.get('post').id] = r
+                            post_dict[i.get('post').id] = r
                     for i in post_list
                         if i.id of post_dict
                             i.set post_dict[i.id]
