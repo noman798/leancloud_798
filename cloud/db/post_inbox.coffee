@@ -45,7 +45,6 @@ DB class PostInbox
             query.lessThan('ID', params.since)
 
         query.descending('ID')
-        query.include("post")
         query.include("post.owner")
         query.limit PAGE_LIMIT
         query.find(
@@ -53,6 +52,12 @@ DB class PostInbox
                 result = []
                 for i in post_inbox_list
                     post = i.get 'post'
+                    owner = i.get 'owner'
+                    if owner
+                        post.set 'owner',{
+                            id:owner.id
+                            username:owner.get 'username'
+                        }
                     post.set "is_submit", 1
                     publisher = i.get 'publisher'
                     if publisher
