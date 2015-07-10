@@ -39,6 +39,8 @@ module.exports = (full_note, callback)->
             content = replaceAll(content, from_str, to_str)
         html = enml.HTMLOfENML content, full_note.resources
         html = strLeft(html,"</body>")
+        html = replaceAll(html, "<div","<p")
+        html = replaceAll(html, "</div>","</p>")
         html = strRight(strRight(html,"<body"),">")
         callback html
 
