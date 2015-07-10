@@ -6,7 +6,7 @@ module.exports = (html) ->
     result = split.exec(html)
     if result
         r = result[0]
-        brief = html.slice(0, split.lastIndex-r.length+6)
+        brief = html.slice(0, split.lastIndex-r.length+4)
         body = html.slice(split.lastIndex-5)
         brief = to_markdown(brief, {
             converters:[
