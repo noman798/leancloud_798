@@ -1,7 +1,7 @@
 to_markdown = require('to-markdown')
 
 module.exports = (html) ->
-    regexp = """</div><div>\\s*===\\s*</div><div>"""
+    regexp = """</p><p>\\s*===\\s*</p><p>"""
     split = new RegExp(regexp,"g")
     result = split.exec(html)
     if result
@@ -16,7 +16,7 @@ module.exports = (html) ->
                         return innerHTML
                 }
                 {
-                    filter:"div"
+                    filter:"p"
                     replacement:(innerHTML)->
                         return "\n"+innerHTML+"\n"
                 }
