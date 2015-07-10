@@ -46,6 +46,7 @@ DB class PostInbox
 
         query.descending('ID')
         query.include("post")
+        query.include("post.owner")
         query.limit PAGE_LIMIT
         query.find(
             success:(post_inbox_list)->
@@ -169,6 +170,7 @@ DB class PostInbox
             query.lessThan('ID', params.since)
         query.descending('ID')
         query.limit PAGE_LIMIT
+        query.include 'owner'
         query.find(
             success:(post_list)->
                 result = []
