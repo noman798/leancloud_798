@@ -3,8 +3,19 @@ _site_new = (host, options)->
     Site.by_host {host:host}, success:(site) ->
         if site
             site.set options
+            site.save()
         else
-            Site.host_new options ,{
+            Site.new {
+                name:options.name
+                owner:""
+                slogo:""
+                logo:""
+                tag_list:""
+                name_cn:"天使汇 · 程序部"
+            }
+            Site.host_new {
+                options
+            } ,{
                 success:(site)->
                     console.log site
             }
