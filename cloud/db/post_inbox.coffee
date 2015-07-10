@@ -52,7 +52,7 @@ DB class PostInbox
                 result = []
                 for i in post_inbox_list
                     post = i.get 'post'
-                    owner = i.get 'owner'
+                    owner = post.get 'owner'
                     if owner
                         post.set 'owner',{
                             id:owner.id
