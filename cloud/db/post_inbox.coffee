@@ -32,13 +32,21 @@ DB class PostInbox
         params.owner_id = AV.User.current().id
         PostInbox._by_user(params, options)
     
+    @by_site_rmed:(params, options)->
+        params.rm = 1
+        PostInbox.by_site(params, options)
+
+    @by_site_published:(params, options)->
+        params.publish = 1
+        PostInbox.by_site(params, options)
+
     @by_site:(params, options)->
         query = DB.PostInbox.$
         query.equalTo "site", AV.Object.createWithoutData("Site", params.site_id)
-        if query.rm
+        if params.rm
             query.exists "rmer"
         else
-            if query.publish
+            if params.publish
                 query.exists "publisher"
             else
                 query.doesNotExist "publisher"
