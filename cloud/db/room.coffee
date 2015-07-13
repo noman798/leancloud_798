@@ -1,11 +1,14 @@
 DB = require "cloud/_db"
 redis = require "cloud/_redis"
 {R} = redis
+Q = require "q"
 
 R "RoomMemberRoomId",":"
 R "RoomMemberMessageReadCount",":"
 
 APP_ID = process.env.LC_APP_ID
+SITE_USER_LEVEL = require("cloud/db/site_user_level")
+
 ###
 每个网站可以自定义创建一个或多个公众聊天室
 -公众频道
@@ -13,32 +16,96 @@ APP_ID = process.env.LC_APP_ID
 
 记录每个站点默认有的公众频道
 
-DB SiteChannel
-    site_id
-    channel_list = [
-         
-    ]
-    用relation来存对应的频道
+###
 
+DB class SiteChannel
+    constructor: (
+        @site_id
+        @room_list
+    ) ->
+        super
+    #用relation来存对应的频道
+
+    @by_site_id: (params, options) ->
+        query = SiteChannel.$
+        query.equalTo({site_id: params.site_id})
+        query.first({
+            success: (site_channel) ->
+                site_room = []
+                room_list = site_channel.get('room_list')
+                for i in room_list
+                    redis.hget(R.ROOM_LOG_READ_COUNT+user_id, room_id, (err, read_count) ->
+                        redis.hget(R.ROOM_LOG_COUNT+room.id, room.id, (err, count) ->
+                            site_room.push [i.id, i.get('name'), count, read_count]
+                        )
+                    )
+                Q.all(site_room).then (params)->
+                    options.success params 
+        })
+
+###
 {
-    site_channel:[
+    site_room:[
         [
             id
             name
-            unread_count
+            total_count
+            read_count
         ]
     ]
 }
+{
+###
+
+    _new:(params, options) ->
+        SiteChannel.$.get_or_create({
+            site_id: params.site_id
+        }, {
+            create:(o)->
+                room = AV.Object.new('_Conversation')
+                room.set('name', params.room_name)
+                room_list = [room]
+                o.set('room_list', room_list)
+            success:(o)->
+                room = AV.Object.new('_Conversation')
+                room_list = o.get('room_list')
+                o.set('room_list', room_list.push(room))
+                o.save()
+        })
+        options.success ''
+
+
+    _set:(site_id, room_list) ->
+    _set:(params, options) ->
+        query = SiteChannel.$
+        query.get(params.site_id, {
+            success: (site_channel) ->
+                room_list = []
+                for i in room_list
+                    room = AV.Object.createWithoutData('_Conversation', i)
+                    room_list.push room
+                site_channel.set('room_list', params.room_list)
+                site_channel.save()
+        })
+        options.success ''
+
+
+
+    new:SITE_USER_LEVEL.$.ROOT @_new
+
+    set:SITE_USER_LEVEL.$.ROOT @_set
+
+    readed:(room_id)->
+        redis.hset(
+            R.ROOM_LOG_READ_COUNT+user_id,
+            room_id,
+            count
+        )
+
 
 _messageReceived: (req, res) ->
     redis.hincr R.ROOM_LOG_COUNT, room_id
 
-readed:()->
-    redis.hset(
-        R.ROOM_LOG_READ_COUNT+user_id,
-        room_id,
-        count
-    )
 
 ###
 
@@ -60,7 +127,7 @@ readed:()->
 #
 #       文章回复 -> 没有的时候不显示
 #
-###       @我 -> 
+#       @我 -> 
 #      以上频道不能删除不能退出
 
 # -留言对话
@@ -126,7 +193,7 @@ DB class RoomMember
 #
 #
 #
-#    @by_user:()-> #[[channel], [friend]]
+#    @by_user:()-> #[[room], [friend]]
 #    # 根据最近联系时间倒序排列，只返回最近30天有联系过的, 最多100个, 当前用户,  每个人用户会set一个unread
 #    # query.include('room')
 #        query = RoomMember.$
@@ -159,7 +226,7 @@ DB class RoomMember
 #
 #    @hide:(id)->
 #
-#    @exit:()-> #只能exit channel，不能exit私聊
+#    @exit:()-> #只能exit room，不能exit私聊
 #        #query.doesNotExist
 #        #query.exists
 #        #xxx.unset 'is_exit'

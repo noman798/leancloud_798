@@ -1,6 +1,8 @@
 require "cloud/db/oauth"
 require "cloud/db/post"
 DB = require "cloud/_db"
+redis = require "cloud/_redis"
+{R} = redis
 SITE_USER_LEVEL = require("cloud/db/site_user_level")
 PAGE_LIMIT = 20
 #TODO tag_list by site
@@ -147,6 +149,7 @@ DB class PostInbox
             DB.SiteUserLevel._level_current_user params.site_id,(level)->
                 # 如果是管理员/编辑就直接发布，否则是投稿等待审核
                 if level >= SITE_USER_LEVEL.WRITER
+                    redis.hincr R.USRER_SUBMIT_COUNT AV.User.current().id    # submitted
                     PostInbox.publish {
                         params
                     }, options
@@ -210,8 +213,9 @@ DB class PostInbox
                         if i.id of post_dict
                             i.set post_dict[i.id]
                         _post_owner i
-                    options.success post_list
+                    
+                    redis.hget(R.USER_SUBMIT_COUNT+params.owner_id, params.owner_id,
+                        (err, count) ->
+                        options.success [count, post_list]
+                    )
         )
-
-
-
