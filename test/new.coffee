@@ -2,7 +2,8 @@ require "cloud/db/site"
 require "cloud/db/custom_css"
 DB = require "cloud/_db"
 
-USER_ID = "559bbcb4e4b023682f148e98"
+#USER_ID = "559bbcb4e4b023682f148e98"
+USER_ID = "556eb0b8e4b0925e000409b9"
 
 owner = AV.Object.createWithoutData('User', USER_ID)
 _site_new = (host, options, css)->
@@ -48,9 +49,7 @@ _site_new(
         tag_list:["系列教程", "招人启事"]
     }
     """
-#BODY .Rbar > .bg {
-background-image: url(//dn-noman.qbox.me/ewbgss);
-}
+#BODY .Rbar > .bg { background-image: url(//dn-noman.qbox.me/ewbgss); }
 #BODY > .Rbar .Rbody .scrollbar-macosx .body .profile .logo .bg {
 background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #F00), color-stop(50%, #d00), to(#a00));
 background: -webkit-linear-gradient(top, #F00 0, #d00 50%, #a00 100%);
