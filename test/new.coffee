@@ -39,6 +39,7 @@ _site_new(
             [ "weibo" , "http://weibo.com/tech2ipo"],
             [ "weixin" , "//dn-acac.qbox.me/tech2ipoqrcode.jpg"],
         ]
+        tag_list:["系列教程", "招人启事"]
     }
 )
 
@@ -55,6 +56,7 @@ _site_new(
             [ "weibo" , "http://weibo.com/tech2ipo"],
             [ "weixin" , "//dn-acac.qbox.me/tech2ipoqrcode.jpg"],
         ]
+        tag_list:["每日资讯","深度观点","人物特写","公司行业","产品快报"]
     }
 )
 
