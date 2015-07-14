@@ -38,6 +38,7 @@ DB class CustomCss
     
     @_get:(site_id, callback)->
         query = CustomCss.$
+        site = AV.Object.createWithoutData("Site", site_id)
         query.equalTo {site}
         query.first(
             success:(css)->
