@@ -15,12 +15,23 @@ DB class CustomCss
         params
         options
     )->
-        CustomCss(
-        
+        CustomCss.$.get_or_create(
+            {
+                site_id
+            }
+            {
+            
+                success:(o)->
+                    if o.get 'css' == params.css
+                        return
+                    o.set css:params.css
+                    o.save success:(o)->
+                        redis.hset R.CustomCss, site.id, o.updatedAt
+                        options.success ''
+            }
         )
 
-    @get:(
-        params
-        options
-    )->
+    @_get:(site_id, callback)->
+        redis.hget R.CustomCss, site_id, (err, time)->
+            callback(time or 0)
 

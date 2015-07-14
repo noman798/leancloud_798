@@ -4,7 +4,7 @@ DB = require "cloud/_db"
 redis = require "cloud/_redis"
 {R} = redis
 SITE_USER_LEVEL = require("cloud/db/site_user_level")
-PAGE_LIMIT = 20
+PAGE_LIMIT = 4
 
 R "POST_INBOX_SUBMIT_COUNT"
 R "POST_INBOX_PUBLISH_COUNT"
