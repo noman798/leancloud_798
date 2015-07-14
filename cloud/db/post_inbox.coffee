@@ -81,6 +81,9 @@ DB class PostInbox
                         post.set 'publisher', publisher
                     result.push post
                 options.success result
+                redis.hget(R.POST_INBOX_SUBMIT_COUNT, params.site_id, (err, submit_count) ->
+                    redis.hget(R.POST_INBOX_PUBLISH_COUNT, params.site_id, (err, publish_count) ->
+                        redis.hget(R.POST_INBOX_REJECT_COUNT, params.site_id, (err, reject_count) ->
         )
 
 
@@ -116,7 +119,6 @@ DB class PostInbox
                     site_name = each_oauth.get('site').get('name')
                     owner = post.get 'owner'
                     if site_tag_list.indexOf(site_name.toLowerCase())>=0
-                        redis.hincrby R.USER_SUBMIT_COUNT, owner.id
                         PostInbox.submit({
                             site_id : each_oauth.get('site').id
                             owner
