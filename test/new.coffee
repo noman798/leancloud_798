@@ -1,3 +1,4 @@
+owner = AV.Object.createWithoutData('User', "556eb0b8e4b0925e000409b9")
 
 _site_new = (host, options)->
     Site.by_host {host:host}, success:(site) ->
@@ -7,23 +8,42 @@ _site_new = (host, options)->
         else
             Site.new {
                 name:options.name
-                owner:""
-                slogo:""
-                logo:""
-                tag_list:""
-                name_cn:"天使汇 · 程序部"
-            }
-            Site.host_new {
-                options
-            } ,{
-                success:(site)->
-                    console.log site
-            }
+                owner:owner
+                slogo:options.slogo
+                logo:options.logo
+                tag_list:options.tag_list
+                name_cn:options.name_cn
+                link_list:options.link_list
+            }, success:(site)->
+                Site.host_new {
+                    host
+                    site:site.id
+                } ,{
+                    success:(site_host)->
+                        console.log site_host
+                }
+
+_site_new(
+    "coder.angelcrunch.com"
+    {
+        name:"AngelCrunch"
+        name_cn:"天使汇 · 程序部"
+        slogo:"「 天使汇 · 程序部 」"
+        logo:"//dn-acac.qbox.me/tech2ipoTECH2IPOIcon.svg"
+        link_list: [
+            [ "email" , "TECH2IPO@PE.VC"],
+            [ "twitter" , "http://twitter.com/TECH2IPO"],
+            [ "weibo" , "http://weibo.com/tech2ipo"],
+            [ "weixin" , "//dn-acac.qbox.me/tech2ipoqrcode.jpg"],
+        ]
+    }
+)
 
 _site_new(
     "tech2ipo.com"
     {
         name:"TECH2IPO"
+        name_cn:"创见"
         slogo:"「 创造 & 见证 」"
         logo:"//dn-acac.qbox.me/tech2ipoTECH2IPOIcon.svg"
         link_list: [
