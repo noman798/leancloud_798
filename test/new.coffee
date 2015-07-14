@@ -10,7 +10,7 @@ _site_new = (host, options, css)->
             options.owner = owner
             site.set options
             site.save()
-            CustomCss._set(site.id, css)
+            DB.CustomCss._set(site.id, css)
         else
             DB.Site.new {
                 name:options.name
@@ -28,7 +28,7 @@ _site_new = (host, options, css)->
                     success:(site_host)->
                         console.log "site_host set", host
                 }
-                CustomCss._set(site.id, css)
+                DB.CustomCss._set(site.id, css)
 
 _site_new(
     "coder.angelcrunch.com"
