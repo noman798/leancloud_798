@@ -140,6 +140,9 @@ DB class PostInbox
                 if level < SITE_USER_LEVEL.WRITER
                     return
                 o.get('post').fetch (post)->
+                    redis.hincrby R.POST_INBOX_SUBMIT_COUNT,  site_id, -1
+                    redis.hincrby R.POST_INBOX_PUBLISH_COUNT,  site_id
+                    redis.hincrby R.USER_SUBMIT_COUNT, post.get('owner').id
                     PostInbox._post_set post, params
                     DB.SiteTagPost.$.get_or_create(
                         data
@@ -149,8 +152,6 @@ DB class PostInbox
                     )
 
                 o.set 'publisher', AV.User.current()
-                redis.hincrby R.POST_INBOX_SUBMIT_COUNT,  site_id, -1
-                redis.hincrby R.POST_INBOX_PUBLISH_COUNT,  site_id
                 o.save()
         options.success ''
 
@@ -173,11 +174,11 @@ DB class PostInbox
                     }, options
                 else    # 审核
                     if incr
-                        redis.hincrby R.POST_INBOX_SUBMIT_COUNT, site_id   # submitted
+                        redis.hincrby R.POST_INBOX_SUBMIT_COUNT, site_id
                     options.success ''
 
 
-    @rm:(params, options)->    # 拒绝
+    @rm:(params, options)->    # 拒绝unsubmit
         # 管理员/编辑 或者 投稿者本人可以删除
         PostInbox._get params, (o)->
             if o
@@ -185,8 +186,8 @@ DB class PostInbox
                     o.get('post').fetch (post)->
                         PostInbox._post_set post, params
                         current = AV.User.current()
+                        redis.hincrby R.POST_INBOX_REJECT_COUNT, site_id
                         redis.hincrby R.POST_INBOX_SUBMIT_COUNT, site_id, -1
-                        redis.hincrby R.USER_SUBMIT_COUNT, owner.id, -1
                         if post.get('owner').id == current.id
                             o.destroy()
                         else

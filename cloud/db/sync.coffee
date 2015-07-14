@@ -109,7 +109,8 @@ DB class EvernoteSync
                                                         data
                                                         {
                                                         success:(post)->
-                                                            redis.hincrby R.USER_POST_COUNT, oauth.get('user').id
+                                                            if post.get('owner') and !id
+                                                                redis.hincrby R.USER_POST_COUNT, oauth.get('user').id
                                                             DB.PostInbox._submit_by_evernote(oauth.get('user'), post, site_tag_list)
                                                             success post
                                                             -- to_update_count
@@ -176,7 +177,8 @@ DB class EvernoteSync
                         console.log err
             )
         )
-            
+
+
      @count: (params, options) ->
         q = EvernoteSyncCount.$
         q.equalTo {
