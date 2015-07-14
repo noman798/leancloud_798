@@ -8,3 +8,4 @@ module.exports =
     POST_INBOX_RM_COUNT:'s'
     USER_PUBLISH_COUNT:'t'
     USER_POST_COUNT:'u'
+    CustomCss:'v'
