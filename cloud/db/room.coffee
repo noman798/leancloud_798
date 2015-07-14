@@ -34,13 +34,13 @@ DB class SiteChannel
                 site_room = []
                 room_list = site_channel.get('room_list')
                 for i in room_list
-                    redis.hget(R.ROOM_LOG_READ_COUNT+user_id, room_id, (err, read_count) ->
+                    redis.hget(R.ROOM_LOG_READ_COUNT+user_id, user_id, (err, read_count) ->
                         redis.hget(R.ROOM_LOG_COUNT+room.id, room.id, (err, count) ->
                             site_room.push [i.id, i.get('name'), count, read_count]
                         )
                     )
                 Q.all(site_room).then (params)->
-                    options.success params 
+                    options.success params
         })
 
 ###
