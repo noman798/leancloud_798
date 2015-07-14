@@ -11,23 +11,24 @@ DB class CustomCss
     )->
         super
    
-    @set:(
-        params
-        options
+    @_set:(
+        site_id
+        css
     )->
+        site = AV.Object.createWithoutData("Site", site_id)
+
         CustomCss.$.get_or_create(
             {
-                site_id
+                site
             }
             {
             
                 success:(o)->
-                    if o.get 'css' == params.css
+                    if o.get 'css' == css
                         return
-                    o.set css:params.css
+                    o.set css:css
                     o.save success:(o)->
-                        redis.hset R.CustomCss, site.id, o.updatedAt
-                        options.success ''
+                        redis.hset R.CustomCss, site_id, o.updatedAt
             }
         )
 
