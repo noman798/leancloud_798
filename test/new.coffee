@@ -1,12 +1,15 @@
+require "cloud/db/site"
+DB = require "cloud/_db"
+
 owner = AV.Object.createWithoutData('User', "556eb0b8e4b0925e000409b9")
 
 _site_new = (host, options)->
-    Site.by_host {host:host}, success:(site) ->
+    DB.Site.by_host {host:host}, success:(site) ->
         if site
             site.set options
             site.save()
         else
-            Site.new {
+            DB.Site.new {
                 name:options.name
                 owner:owner
                 slogo:options.slogo
@@ -15,7 +18,7 @@ _site_new = (host, options)->
                 name_cn:options.name_cn
                 link_list:options.link_list
             }, success:(site)->
-                Site.host_new {
+                DB.Site.host_new {
                     host
                     site:site.id
                 } ,{
