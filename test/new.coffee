@@ -33,7 +33,7 @@ _site_new(
         name:"AngelCrunch"
         name_cn:"天使汇 · 程序部"
         slogo:"「 天使汇 · 程序部 」"
-        logo:"//dn-acac.qbox.me/tech2ipoTECH2IPOIcon.svg"
+        logo:"//dn-noman.qbox.me/ac_logo.svg"
         link_list: [
             [ "email" , "TECH2IPO@PE.VC"],
             [ "twitter" , "http://twitter.com/TECH2IPO"],
