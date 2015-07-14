@@ -1,6 +1,7 @@
 require "cloud/db/site"
 require "cloud/db/post"
 require "cloud/db/oauth"
+require "cloud/db/custom_css"
 require "cloud/db/site_user_level"
 qiniu_token = require "cloud/db/qiniu_token"
 DB = require "cloud/_db"
@@ -38,18 +39,20 @@ View class Space
                     return response.error({})
                 site = DB.Site(_site)
                 DB.SiteUserLevel._level_current_user _site.id, (level)->
-                    response.success(
-                        [
-                            site.id
-                            site.name
-                            site.name_cn
-                            site.tag_list
-                            site.logo
-                            site.slogo
-                            site.link_list
-                            level
-                        ]
-                    )
+                    DB.CustomCss._get_updatedAt _site.id, (updatedAt)->
+                        response.success(
+                            [
+                                site.id
+                                site.name
+                                site.name_cn
+                                site.tag_list
+                                site.logo
+                                site.slogo
+                                site.link_list
+                                level
+                                updatedAt
+                            ]
+                        )
 
             error: response.error
         )
