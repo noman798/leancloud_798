@@ -8,8 +8,8 @@ PAGE_LIMIT = 20
 
 R "POST_INBOX_SUBMIT_COUNT"
 R "POST_INBOX_PUBLISH_COUNT"
-R "POST_INBOX_REJECT_COUNT"
-R "USER_SUBMIT_COUNT"
+R "POST_INBOX_RM_COUNT"
+R "USER_PUBLISH_COUNT"
 
 #TODO tag_list by site
 #待审核， 已退回，已发布
@@ -30,11 +30,7 @@ DB class PostInbox
         @rmer
     )->
         super
-    
-    @by_current_published:(params, options)->
-        params.owner_id = AV.User.current().id
-        params.publisher = 1
-        PostInbox.by_site(params, options)
+   
 
     @by_current:(params, options)->
         params.owner_id = AV.User.current().id
@@ -42,6 +38,11 @@ DB class PostInbox
     
     @by_site_rmed:(params, options)->
         params.rm = 1
+        PostInbox.by_site(params, options)
+
+    @by_current_published:(params, options)->
+        params.owner_id = AV.User.current().id
+        params.publisher = 1
         PostInbox.by_site(params, options)
 
     @by_site_published:(params, options)->
@@ -53,10 +54,13 @@ DB class PostInbox
         query.equalTo "site", AV.Object.createWithoutData("Site", params.site_id)
         if params.rm
             query.exists "rmer"
+            key = "RM"
         else
             if params.publish
+                key = "PULISH"
                 query.exists "publisher"
             else
+                key = "SUBMIT"
                 query.doesNotExist "publisher"
 
         if params.owner_id
@@ -80,12 +84,11 @@ DB class PostInbox
                     if publisher
                         post.set 'publisher', publisher
                     result.push post
-                options.success result
-                redis.hget(R.POST_INBOX_SUBMIT_COUNT, params.site_id, (err, submit_count) ->
-                    redis.hget(R.POST_INBOX_PUBLISH_COUNT, params.site_id, (err, publish_count) ->
-                        redis.hget(R.POST_INBOX_REJECT_COUNT, params.site_id, (err, reject_count) ->
-        )
 
+                redis.hget(R["POST_INBOX_#{key}_COUNT"], params.site_id, (err, count) ->
+                    options.success [count, result]
+                )
+        )
 
     @_get: (params, callback, create)->
         data = {
@@ -142,9 +145,16 @@ DB class PostInbox
                 if level < SITE_USER_LEVEL.WRITER
                     return
                 o.get('post').fetch (post)->
-                    redis.hincrby R.POST_INBOX_SUBMIT_COUNT,  site_id, -1
-                    redis.hincrby R.POST_INBOX_PUBLISH_COUNT,  site_id
-                    redis.hincrby R.USER_SUBMIT_COUNT, post.get('owner').id
+
+                    if not o.get 'publisher'
+                        if o.get 'rmer'
+                            key = R.POST_INBOX_RM_COUNT
+                        else
+                            key = R.POST_INBOX_SUBMIT_COUNT
+                        redis.hincrby key, site_id, -1
+                        redis.hincrby R.POST_INBOX_PUBLISH_COUNT,  site_id
+                        redis.hincrby R.USER_PUBLISH_COUNT, post.get('owner').id
+
                     PostInbox._post_set post, params
                     DB.SiteTagPost.$.get_or_create(
                         data
@@ -188,7 +198,7 @@ DB class PostInbox
                     o.get('post').fetch (post)->
                         PostInbox._post_set post, params
                         current = AV.User.current()
-                        redis.hincrby R.POST_INBOX_REJECT_COUNT, site_id
+                        redis.hincrby R.POST_INBOX_RM_COUNT, site_id
                         redis.hincrby R.POST_INBOX_SUBMIT_COUNT, site_id, -1
                         if post.get('owner').id == current.id
                             o.destroy()
