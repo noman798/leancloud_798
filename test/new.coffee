@@ -2,7 +2,9 @@ require "cloud/db/site"
 require "cloud/db/custom_css"
 DB = require "cloud/_db"
 
-owner = AV.Object.createWithoutData('User', "559bbcb4e4b023682f148e98")
+USER_ID = "559bbcb4e4b023682f148e98"
+
+owner = AV.Object.createWithoutData('User', USER_ID)
 _site_new = (host, options, css)->
     console.log "new site "+host
     DB.Site.by_host {host:host}, success:(site) ->
