@@ -1,18 +1,24 @@
 require "cloud/db/site"
 require "cloud/db/custom_css"
+SITE_USER_LEVEL = require "cloud/db/site_user_level"
 DB = require "cloud/_db"
 
-USER_ID = "559bbcb4e4b023682f148e98"
 
-owner = AV.Object.createWithoutData('User', USER_ID)
-_site_new = (host, options, css)->
+
+_site_new = (owner_id, host, options, css)->
     console.log "new site "+host
+    owner = AV.Object.createWithoutData('User', owner_id)
+
+    _callback = (site)->
+        DB.CustomCss._set(site.id, css)
+        DB.SiteUserLevel._set owner_id, site.id, SITE_USER_LEVEL.ROOT
+
     DB.Site.by_host {host:host}, success:(site) ->
         if site
             options.owner = owner
             site.set options
             site.save()
-            DB.CustomCss._set(site.id, css)
+            _callback site
         else
             DB.Site.new {
                 name:options.name
@@ -28,11 +34,12 @@ _site_new = (host, options, css)->
                     id:site.id
                 } ,{
                     success:(site_host)->
-                        console.log "site_host set", host
                 }
-                DB.CustomCss._set(site.id, css)
+                _callback site
 
+USER_ID = "559bbcb4e4b023682f148e98"
 _site_new(
+    USER_ID
     "coder.angelcrunch.com"
     {
         name:"AngelCrunch"
@@ -66,6 +73,7 @@ left: 0;
 )
 
 _site_new(
+    USER_ID
     "tech2ipo.com"
     {
         name:"TECH2IPO"
