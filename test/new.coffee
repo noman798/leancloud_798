@@ -26,9 +26,15 @@ _site_new(
         name:"TECH2IPO"
         slogo:"「 创造 & 见证 」"
         logo:"//dn-acac.qbox.me/tech2ipoTECH2IPOIcon.svg"
-
+        link_list: [
+            [ "email" , "TECH2IPO@PE.VC"],
+            [ "twitter" , "http://twitter.com/TECH2IPO"],
+            [ "weibo" , "http://weibo.com/tech2ipo"],
+            [ "weixin" , "//dn-acac.qbox.me/tech2ipoqrcode.jpg"],
+        ]
     }
 )
+
 
 #$.SETUP.tech2ipo = ->
 #    _site_new URL_RSS, success:(site)->

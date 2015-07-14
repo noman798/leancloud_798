@@ -44,14 +44,9 @@ View class Space
                             site.name
                             site.name_cn
                             site.tag_list
-                            '//dn-acac.qbox.me/tech2ipoTECH2IPOIcon.svg'
-                            '「 创造 & 见证 」'
-                            [
-                                [ "email" , "TECH2IPO@PE.VC"]
-                                [ "twitter" , "http://twitter.com/TECH2IPO"],
-                                [ "weibo" , "http://weibo.com/tech2ipo"],
-                                [ "weixin" , "//dn-acac.qbox.me/tech2ipoqrcode.jpg"],
-                            ]
+                            site.logo
+                            site.slogo
+                            site.link_list
                             level
                         ]
                     )
