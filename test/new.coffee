@@ -20,10 +20,10 @@ _site_new = (host, options)->
             }, success:(site)->
                 DB.Site.host_new {
                     host
-                    site:site.id
+                    id:site.id
                 } ,{
                     success:(site_host)->
-                        console.log site_host
+                        console.log "site_host set", host
                 }
 
 _site_new(
