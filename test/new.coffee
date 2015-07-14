@@ -49,9 +49,7 @@ _site_new(
         tag_list:["系列教程", "招人启事"]
     }
     """
-#BODY .Rbar > .bg {
-background-image: url(//dn-noman.qbox.me/ewbgss);
-}
+#BODY .Rbar > .bg { background-image: url(//dn-noman.qbox.me/ewbgss); }
 #BODY > .Rbar .Rbody .scrollbar-macosx .body .profile .logo .bg {
 background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #F00), color-stop(50%, #d00), to(#a00));
 background: -webkit-linear-gradient(top, #F00 0, #d00 50%, #a00 100%);
