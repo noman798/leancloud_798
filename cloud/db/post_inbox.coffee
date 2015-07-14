@@ -30,11 +30,7 @@ DB class PostInbox
         @rmer
     )->
         super
-    
-    @by_current_published:(params, options)->
-        params.owner_id = AV.User.current().id
-        params.publisher = 1
-        PostInbox.by_site(params, options)
+   
 
     @by_current:(params, options)->
         params.owner_id = AV.User.current().id
@@ -42,6 +38,11 @@ DB class PostInbox
     
     @by_site_rmed:(params, options)->
         params.rm = 1
+        PostInbox.by_site(params, options)
+
+    @by_current_published:(params, options)->
+        params.owner_id = AV.User.current().id
+        params.publisher = 1
         PostInbox.by_site(params, options)
 
     @by_site_published:(params, options)->
@@ -80,7 +81,7 @@ DB class PostInbox
                     if publisher
                         post.set 'publisher', publisher
                     result.push post
-                options.success result
+                options.success [322,result]
         )
 
 
