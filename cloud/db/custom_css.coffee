@@ -15,6 +15,7 @@ DB class CustomCss
         site_id
         css
     )->
+        console.log "set css", site_id, css
         if css == undefined
             return
 
