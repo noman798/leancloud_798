@@ -1,8 +1,6 @@
 require "cloud/db/oauth"
 require "cloud/db/post"
 DB = require "cloud/_db"
-redis = require "cloud/_redis"
-{R} = redis
 SITE_USER_LEVEL = require("cloud/db/site_user_level")
 PAGE_LIMIT = 20
 
@@ -95,16 +93,12 @@ DB class PostInbox
             site : AV.Object.createWithoutData("Site", params.site_id)
             post : AV.Object.createWithoutData("Post", params.post_id)
         }
-        is_new = false
         DB.Post.$.get(params.post_id).done (post)->
             data.owner = post.get('owner')
             PostInbox.$.get_or_create(
                 data
                 {
-                    create:(post_inbox)->
-                        is_new = true
-                    success:(post_inbox)->
-                        callback(post_inbox, is_new)
+                    success:callback
                 }
             )
         data
@@ -120,11 +114,10 @@ DB class PostInbox
             success: (oauth_list) ->
                 for each_oauth in oauth_list
                     site_name = each_oauth.get('site').get('name')
-                    owner = post.get 'owner'
                     if site_tag_list.indexOf(site_name.toLowerCase())>=0
                         PostInbox.submit({
                             site_id : each_oauth.get('site').id
-                            owner
+                            owner:post.get 'owner'
                             post_id
                         }, {
                             success:(o) ->
@@ -169,28 +162,22 @@ DB class PostInbox
 
     @submit:(params, options)->
         # 如果已经存在就不重复投稿
-        PostInbox._get params, (o, incr)->
-
+        PostInbox._get params, (o)->
             if o.get 'rmer'
-                incr = true
                 o.unset 'rmer'
                 o.save()
-
-            site_id = params.site_id
-            DB.SiteUserLevel._level_current_user site_id,(level)->
+            DB.SiteUserLevel._level_current_user params.site_id,(level)->
                 # 如果是管理员/编辑就直接发布，否则是投稿等待审核
                 if level >= SITE_USER_LEVEL.WRITER
-                    user_id = AV.User.curren().id
                     PostInbox.publish {
                         params
                     }, options
-                else    # 审核
-                    if incr
-                        redis.hincrby R.POST_INBOX_SUBMIT_COUNT, site_id
+                else
+                    #
                     options.success ''
 
 
-    @rm:(params, options)->    # 拒绝unsubmit
+    @rm:(params, options)->
         # 管理员/编辑 或者 投稿者本人可以删除
         PostInbox._get params, (o)->
             if o
@@ -248,10 +235,8 @@ DB class PostInbox
                         if i.id of post_dict
                             i.set post_dict[i.id]
                         _post_owner i
-
-                    redis.hget(R.POST_INBOX_SUBMIT_COUNT, params.owner_id,
-                        (err, count) ->
-                            count = (count or 0)-0
-                            options.success [count, post_list]
-                    )
+                    options.success([1320,post_list])
         )
+
+
+
