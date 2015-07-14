@@ -31,7 +31,7 @@ DB class CustomCss
                         return
                     o.set css:css
                     o.save success:(o)->
-                        redis.hset R.CustomCss, site_id, o.updatedAt
+                        redis.hset R.CustomCss, site_id, (o.updatedAt-0)
             }
         )
     
