@@ -6,6 +6,7 @@ owner = AV.Object.createWithoutData('User', "556eb0b8e4b0925e000409b9")
 _site_new = (host, options)->
     DB.Site.by_host {host:host}, success:(site) ->
         if site
+            options.owner = owner
             site.set options
             site.save()
         else
