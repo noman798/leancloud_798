@@ -15,7 +15,6 @@ DB class CustomCss
         site_id
         css
     )->
-        console.log "set css", site_id, css
         if css == undefined
             return
 
@@ -50,5 +49,8 @@ DB class CustomCss
 
     @_get_updatedAt:(site_id, callback)->
         redis.hget R.CustomCss, site_id, (err, time)->
-            callback(time or 0)
+            r = 0
+            if time
+                r = time - 0
+            callback r
 
