@@ -1,8 +1,16 @@
 require "cloud/db/oauth"
 require "cloud/db/post"
 DB = require "cloud/_db"
+redis = require "cloud/_redis"
+{R} = redis
 SITE_USER_LEVEL = require("cloud/db/site_user_level")
 PAGE_LIMIT = 20
+
+R "POST_INBOX_SUBMIT_COUNT"
+R "POST_INBOX_PUBLISH_COUNT"
+R "POST_INBOX_REJECT_COUNT"
+R "USER_SUBMIT_COUNT"
+
 #TODO tag_list by site
 #待审核， 已退回，已发布
 
@@ -73,21 +81,32 @@ DB class PostInbox
                     if publisher
                         post.set 'publisher', publisher
                     result.push post
+<<<<<<< local
                 options.success [322,result]
+=======
+                options.success result
+                redis.hget(R.POST_INBOX_SUBMIT_COUNT, params.site_id, (err, submit_count) ->
+                    redis.hget(R.POST_INBOX_PUBLISH_COUNT, params.site_id, (err, publish_count) ->
+                        redis.hget(R.POST_INBOX_REJECT_COUNT, params.site_id, (err, reject_count) ->
+>>>>>>> other
         )
 
 
-    @_get: (params, callback)->
+    @_get: (params, callback, create)->
         data = {
             site : AV.Object.createWithoutData("Site", params.site_id)
             post : AV.Object.createWithoutData("Post", params.post_id)
         }
+        is_new = false
         DB.Post.$.get(params.post_id).done (post)->
             data.owner = post.get('owner')
             PostInbox.$.get_or_create(
                 data
                 {
-                    success:callback
+                    create:(post_inbox)->
+                        is_new = true
+                    success:(post_inbox)->
+                        callback(post_inbox, is_new)
                 }
             )
         data
@@ -103,10 +122,11 @@ DB class PostInbox
             success: (oauth_list) ->
                 for each_oauth in oauth_list
                     site_name = each_oauth.get('site').get('name')
+                    owner = post.get 'owner'
                     if site_tag_list.indexOf(site_name.toLowerCase())>=0
                         PostInbox.submit({
                             site_id : each_oauth.get('site').id
-                            owner:post.get 'owner'
+                            owner
                             post_id
                         }, {
                             success:(o) ->
@@ -127,6 +147,9 @@ DB class PostInbox
                 if level < SITE_USER_LEVEL.WRITER
                     return
                 o.get('post').fetch (post)->
+                    redis.hincrby R.POST_INBOX_SUBMIT_COUNT,  site_id, -1
+                    redis.hincrby R.POST_INBOX_PUBLISH_COUNT,  site_id
+                    redis.hincrby R.USER_SUBMIT_COUNT, post.get('owner').id
                     PostInbox._post_set post, params
                     DB.SiteTagPost.$.get_or_create(
                         data
@@ -141,22 +164,33 @@ DB class PostInbox
 
     @submit:(params, options)->
         # 如果已经存在就不重复投稿
-        PostInbox._get params, (o)->
+        PostInbox._get params, (o, incr)->
+
             if o.get 'rmer'
+                incr = true
                 o.unset 'rmer'
                 o.save()
-            DB.SiteUserLevel._level_current_user params.site_id,(level)->
+
+            site_id = params.site_id
+            DB.SiteUserLevel._level_current_user site_id,(level)->
                 # 如果是管理员/编辑就直接发布，否则是投稿等待审核
                 if level >= SITE_USER_LEVEL.WRITER
+                    user_id = AV.User.curren().id
                     PostInbox.publish {
                         params
                     }, options
+<<<<<<< local
                 else
                     #
+=======
+                else    # 审核
+                    if incr
+                        redis.hincrby R.POST_INBOX_SUBMIT_COUNT, site_id
+>>>>>>> other
                     options.success ''
 
 
-    @rm:(params, options)->
+    @rm:(params, options)->    # 拒绝unsubmit
         # 管理员/编辑 或者 投稿者本人可以删除
         PostInbox._get params, (o)->
             if o
@@ -164,6 +198,8 @@ DB class PostInbox
                     o.get('post').fetch (post)->
                         PostInbox._post_set post, params
                         current = AV.User.current()
+                        redis.hincrby R.POST_INBOX_REJECT_COUNT, site_id
+                        redis.hincrby R.POST_INBOX_SUBMIT_COUNT, site_id, -1
                         if post.get('owner').id == current.id
                             o.destroy()
                         else
@@ -212,8 +248,14 @@ DB class PostInbox
                         if i.id of post_dict
                             i.set post_dict[i.id]
                         _post_owner i
+<<<<<<< local
                     options.success([1320,post_list])
+=======
+
+                    redis.hget(R.POST_INBOX_SUBMIT_COUNT, params.owner_id,
+                        (err, count) ->
+                            count = (count or 0)-0
+                            options.success [count, post_list]
+                    )
+>>>>>>> other
         )
-
-
-
