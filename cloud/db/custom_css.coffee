@@ -34,8 +34,19 @@ DB class CustomCss
                         redis.hset R.CustomCss, site_id, o.updatedAt
             }
         )
-
+    
     @_get:(site_id, callback)->
+        query = CustomCss.$
+        query.equalTo {site}
+        query.first(
+            success:(css)->
+                if css
+                    callback(css.get 'css')
+                else
+                    callback ''
+        )
+
+    @_get_updatedAt:(site_id, callback)->
         redis.hget R.CustomCss, site_id, (err, time)->
             callback(time or 0)
 
