@@ -1,14 +1,16 @@
 require "cloud/db/site"
+require "cloud/db/custom_css"
 DB = require "cloud/_db"
 
 owner = AV.Object.createWithoutData('User', "556eb0b8e4b0925e000409b9")
 
-_site_new = (host, options)->
+_site_new = (host, options, css)->
     DB.Site.by_host {host:host}, success:(site) ->
         if site
             options.owner = owner
             site.set options
             site.save()
+            CustomCss._set(site.id, css)
         else
             DB.Site.new {
                 name:options.name
@@ -26,6 +28,7 @@ _site_new = (host, options)->
                     success:(site_host)->
                         console.log "site_host set", host
                 }
+                CustomCss._set(site.id, css)
 
 _site_new(
     "coder.angelcrunch.com"
@@ -42,6 +45,22 @@ _site_new(
         ]
         tag_list:["系列教程", "招人启事"]
     }
+    """
+#BODY .Rbar > .bg {
+background-image: url(//dn-noman.qbox.me/ewbgss);
+}
+#BODY > .Rbar .Rbody .scrollbar-macosx .body .profile .logo .bg {
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #F00), color-stop(50%, #d00), to(#a00));
+background: -webkit-linear-gradient(top, #F00 0, #d00 50%, #a00 100%);
+background: linear-gradient(top, #F00 0, #d00 50%, #a00 100%);
+}
+#BODY > .Rbar .cover0 {
+background: RGBA(0, 0, 0, 0.3) !important;
+}
+#BODY > .Rbar .Rbody .scrollbar-macosx .body .profile .logo .bg .svg {
+left: 0;
+}
+    """
 )
 
 _site_new(

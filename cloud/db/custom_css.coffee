@@ -15,6 +15,9 @@ DB class CustomCss
         site_id
         css
     )->
+        if css == undefined
+            return
+
         site = AV.Object.createWithoutData("Site", site_id)
 
         CustomCss.$.get_or_create(
