@@ -125,3 +125,34 @@ DB class Site
                 rss.save().done ->
                     options.success rss
 
+    @_site_new : (owner_id, host, options, css)->
+        console.log "new site "+host
+        owner = AV.Object.createWithoutData('User', owner_id)
+
+        _callback = (site)->
+            DB.CustomCss._set(site.id, css)
+            DB.SiteUserLevel._set owner_id, site.id, SITE_USER_LEVEL.ROOT
+
+        DB.Site.by_host {host:host}, success:(site) ->
+            if site
+                options.owner = owner
+                site.set options
+                site.save()
+                _callback site
+            else
+                DB.Site.new {
+                    name:options.name
+                    owner:owner
+                    slogo:options.slogo
+                    logo:options.logo
+                    tag_list:options.tag_list
+                    name_cn:options.name_cn
+                    link_list:options.link_list
+                }, success:(site)->
+                    DB.Site.host_new {
+                        host
+                        id:site.id
+                    } ,{
+                        success:(site_host)->
+                            _callback site
+                    }
