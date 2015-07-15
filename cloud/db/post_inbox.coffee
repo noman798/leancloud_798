@@ -136,7 +136,10 @@ DB class PostInbox
         post.set({tag_list, title, brief})
         post.save()
 
-
+    @save:(params, options)->
+        DB.Post.get(params.post_id).done (post)->
+            PostInbox._post_set post, params
+    
     @publish:(params, options)->
         #管理员发布的时候可以设置标签
         data = PostInbox._get params,(o, is_new)->
