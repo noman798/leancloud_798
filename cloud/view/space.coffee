@@ -1,6 +1,7 @@
 require "cloud/db/site"
 require "cloud/db/post"
 require "cloud/db/oauth"
+require "cloud/db/custom_css"
 require "cloud/db/site_user_level"
 qiniu_token = require "cloud/db/qiniu_token"
 DB = require "cloud/_db"
@@ -38,23 +39,20 @@ View class Space
                     return response.error({})
                 site = DB.Site(_site)
                 DB.SiteUserLevel._level_current_user _site.id, (level)->
-                    response.success(
-                        [
-                            site.id
-                            site.name
-                            site.name_cn
-                            site.tag_list
-                            '//dn-acac.qbox.me/tech2ipoTECH2IPOIcon.svg'
-                            '「 创造 & 见证 」'
+                    DB.CustomCss._get_updatedAt _site.id, (updatedAt)->
+                        response.success(
                             [
-                                [ "email" , "TECH2IPO@PE.VC"]
-                                [ "twitter" , "http://twitter.com/TECH2IPO"],
-                                [ "weibo" , "http://weibo.com/tech2ipo"],
-                                [ "weixin" , "//dn-acac.qbox.me/tech2ipoqrcode.jpg"],
+                                site.id
+                                site.name
+                                site.name_cn
+                                site.tag_list
+                                site.logo
+                                site.slogo
+                                site.link_list
+                                level
+                                updatedAt
                             ]
-                            level
-                        ]
-                    )
+                        )
 
             error: response.error
         )
