@@ -74,12 +74,9 @@ DB class EvernoteSync
 
 
                             _fetch = (note, update_count)->
-                                console.log 'to_fetch'
-                                console.log 'note', note
                                 ++ to_update_count
                                 guid = note.guid
                                 store.getNote(guid, true, true, false, false, (err, full_note) ->
-                                    console.log full_note
                                     if err
                                         console.log err
                                         return
@@ -96,7 +93,6 @@ DB class EvernoteSync
                                                     site_tag_list.push each_tag
 
                                         evernote2html full_note, (html)->
-                                            console.log full_note
                                             [brief,html] = brief2markdown(html)
                                             EvernotePost.new(
                                                 guid
@@ -161,7 +157,6 @@ DB class EvernoteSync
                                             return
     
                                         for note in li.notes
-                                            console.log note.title
                                             if note.updateSequenceNum <= update_count
                                                 break
                                             _fetch note, li.updateCount
