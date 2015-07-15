@@ -42,7 +42,7 @@ DB class PostInbox
 
     @by_current_published:(params, options)->
         params.owner_id = AV.User.current().id
-        params.publisher = 1
+        params.publish = 1
         PostInbox.by_site(params, options)
 
     @by_site_published:(params, options)->
@@ -269,11 +269,7 @@ DB class PostInbox
                             i.set post_dict[i.id]
                         _post_owner i
 
-                    if params.publisher
-                        key = "PUBLISH"
-                    else
-                        key = "POST"
-                    redis.hget(R["USRE_#{key}_COUNT"], params.owner_id, (err, count)->
+                    redis.hget(R.USRE_POST_COUNT, params.owner_id, (err, count)->
                         options.success [count or 0, post_list]
                     )
         )
