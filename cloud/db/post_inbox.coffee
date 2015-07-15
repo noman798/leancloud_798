@@ -2,7 +2,7 @@ require "cloud/db/oauth"
 require "cloud/db/post"
 DB = require "cloud/_db"
 SITE_USER_LEVEL = require("cloud/db/site_user_level")
-PAGE_LIMIT = 4
+PAGE_LIMIT = 20
 
 redis = require "cloud/_redis"
 {R} = redis
