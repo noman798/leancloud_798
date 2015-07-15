@@ -1,5 +1,9 @@
 require "cloud/db/site_tag_post_count"
 require "cloud/db/user_read"
+
+{EventEmitter} = require 'events'
+POST_EVENT = new EventEmitter
+
 _post_is_star = require "cloud/db/_post_is_star"
 DB = require "cloud/_db"
 View = require "cloud/_view"
