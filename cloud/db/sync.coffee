@@ -114,7 +114,6 @@ DB class EvernoteSync
                                                         data
                                                         {
                                                         success:(post)->
-                                                            console.log 'post'
                                                             if post.get('owner') and !id
                                                                 redis.hincrby R.USER_POST_COUNT, oauth.id, 1
                                                             DB.PostInbox._submit_by_evernote(oauth.get('user'), post, site_tag_list)
@@ -153,7 +152,6 @@ DB class EvernoteSync
                                 store.findNotesMetadata(
                                     filter, offset, limit, spec
                                     (err, li) ->
-                                        console.log li.length
                                         if err or not li
                                             console.log err
                                             return
@@ -163,6 +161,7 @@ DB class EvernoteSync
                                             return
     
                                         for note in li.notes
+                                            console.log note.title
                                             if note.updateSequenceNum <= update_count
                                                 break
                                             _fetch note, li.updateCount

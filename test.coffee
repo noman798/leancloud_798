@@ -6,8 +6,8 @@
 #console.log "run test"
 #require "test/site_user_level"
 DB = require "cloud/_db"
-require "test/sync_test"
-#require "test/redis_count_test"
+#require "test/sync_test"
+require "test/redis_count_test"
 require "cloud/db/post"
 
 
