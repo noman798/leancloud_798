@@ -43,21 +43,7 @@ DB class SiteChannel
                     options.success params
         })
 
-###
-{
-    site_room:[
-        [
-            id
-            name
-            total_count
-            read_count
-        ]
-    ]
-}
-{
-###
-
-    _new:(params, options) ->
+    @_new:(params, options) ->
         SiteChannel.$.get_or_create({
             site_id: params.site_id
         }, {
@@ -75,8 +61,7 @@ DB class SiteChannel
         options.success ''
 
 
-    _set:(site_id, room_list) ->
-    _set:(params, options) ->
+    @_set:(params, options) ->
         query = SiteChannel.$
         query.get(params.site_id, {
             success: (site_channel) ->
@@ -91,17 +76,12 @@ DB class SiteChannel
 
 
 
-    new:SITE_USER_LEVEL.$.ROOT @_new
+    @new:SITE_USER_LEVEL.$.ROOT @_new
 
-    set:SITE_USER_LEVEL.$.ROOT @_set
+    @set:SITE_USER_LEVEL.$.ROOT @_set
 
-    readed:(room_id)->
-        redis.hset(
-            R.ROOM_LOG_READ_COUNT+user_id,
-            room_id,
-            count
-        )
-
+    @readed:(room_id)->
+        redis.hset(R.ROOM_LOG_READ_COUNT+user_id, room_id, count)
 
 _messageReceived: (req, res) ->
     redis.hincr R.ROOM_LOG_COUNT, room_id

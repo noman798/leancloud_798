@@ -4,6 +4,8 @@ DB = require "cloud/_db"
 SITE_USER_LEVEL = require("cloud/db/site_user_level")
 PAGE_LIMIT = 20
 
+redis = require "cloud/_redis"
+{R} = redis
 R "POST_INBOX_SUBMIT_COUNT"
 R "POST_INBOX_PUBLISH_COUNT"
 R "POST_INBOX_RM_COUNT"
@@ -135,6 +137,7 @@ DB class PostInbox
         #管理员发布的时候可以设置标签
         data = PostInbox._get params,(o)->
             DB.SiteUserLevel._level_current_user params.site_id,(level)->
+
                 if level < SITE_USER_LEVEL.WRITER
                     return
                 o.get('post').fetch (post)->
@@ -144,9 +147,9 @@ DB class PostInbox
                             key = R.POST_INBOX_RM_COUNT
                         else
                             key = R.POST_INBOX_SUBMIT_COUNT
-                        redis.hincrby key, site_id, -1
-                        redis.hincrby R.POST_INBOX_PUBLISH_COUNT,  site_id
-                        redis.hincrby R.USER_PUBLISH_COUNT, post.get('owner').id
+                        redis.hincrby key, params.site_id, -1
+                        redis.hincrby R.POST_INBOX_PUBLISH_COUNT,  params.site_id, 1
+                        redis.hincrby R.USER_PUBLISH_COUNT, post.get('owner').id, 1
 
                     PostInbox._post_set post, params
                     DB.SiteTagPost.$.get_or_create(
@@ -156,8 +159,8 @@ DB class PostInbox
                             site_tag_post.save()
                     )
 
-                o.set 'publisher', AV.User.current()
-                o.save()
+                    o.set 'publisher', AV.User.current()
+                    o.save()
         options.success ''
 
     @submit:(params, options)->
@@ -173,7 +176,6 @@ DB class PostInbox
                         params
                     }, options
                 else
-                    #
                     options.success ''
 
 
@@ -185,8 +187,8 @@ DB class PostInbox
                     o.get('post').fetch (post)->
                         PostInbox._post_set post, params
                         current = AV.User.current()
-                        redis.hincrby R.POST_INBOX_RM_COUNT, site_id
-                        redis.hincrby R.POST_INBOX_SUBMIT_COUNT, site_id, -1
+                        redis.hincrby R.POST_INBOX_RM_COUNT, params.site_id, 1
+                        redis.hincrby R.POST_INBOX_SUBMIT_COUNT, params.site_id, -1
                         if post.get('owner').id == current.id
                             o.destroy()
                         else
@@ -235,8 +237,12 @@ DB class PostInbox
                         if i.id of post_dict
                             i.set post_dict[i.id]
                         _post_owner i
-                    options.success([1320,post_list])
+
+                    if params.publisher
+                        key = "PUBLISH"
+                    else
+                        key = "POST"
+                    redis.hget(R["USRE_#{key}_COUNT"], params.owner_id, (err, count)->
+                        options.success [count, post_list]
+                    )
         )
-
-
-

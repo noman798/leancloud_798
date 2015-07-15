@@ -5,6 +5,11 @@ require 'cloud/db/post_inbox'
 require "cloud/db/post"
 require "enml-js"
 DB = require "cloud/_db"
+
+redis = require "cloud/_redis"
+{R} = redis
+R "USER_POST_COUNT"
+
 Evernote = require('evernote').Evernote
 {Thrift, NoteStoreClient, Client} = Evernote
 
@@ -69,13 +74,17 @@ DB class EvernoteSync
 
 
                             _fetch = (note, update_count)->
+                                console.log 'to_fetch'
+                                console.log 'note', note
                                 ++ to_update_count
                                 guid = note.guid
                                 store.getNote(guid, true, true, false, false, (err, full_note) ->
+                                    console.log full_note
                                     if err
                                         console.log err
                                         return
                                     store.getNoteTagNames(guid, (err, taglist) ->
+
                                         tag_list = []
                                         site_tag_list = []
                                         for each_tag in taglist
@@ -87,6 +96,7 @@ DB class EvernoteSync
                                                     site_tag_list.push each_tag
 
                                         evernote2html full_note, (html)->
+                                            console.log full_note
                                             [brief,html] = brief2markdown(html)
                                             EvernotePost.new(
                                                 guid
@@ -104,6 +114,9 @@ DB class EvernoteSync
                                                         data
                                                         {
                                                         success:(post)->
+                                                            console.log 'post'
+                                                            if post.get('owner') and !id
+                                                                redis.hincrby R.USER_POST_COUNT, oauth.id, 1
                                                             DB.PostInbox._submit_by_evernote(oauth.get('user'), post, site_tag_list)
                                                             success post
                                                             -- to_update_count
@@ -140,6 +153,7 @@ DB class EvernoteSync
                                 store.findNotesMetadata(
                                     filter, offset, limit, spec
                                     (err, li) ->
+                                        console.log li.length
                                         if err or not li
                                             console.log err
                                             return
