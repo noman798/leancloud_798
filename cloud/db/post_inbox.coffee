@@ -90,17 +90,21 @@ DB class PostInbox
                 )
         )
 
-    @_get: (params, callback, create)->
+    @_get: (params, callback)->
         data = {
             site : AV.Object.createWithoutData("Site", params.site_id)
             post : AV.Object.createWithoutData("Post", params.post_id)
         }
+        is_new = false
         DB.Post.$.get(params.post_id).done (post)->
             data.owner = post.get('owner')
             PostInbox.$.get_or_create(
                 data
                 {
-                    success:callback
+                    create:(post_inbox)->
+                        is_new = true
+                    success:(post_inbox)->
+                        callback(post_inbox, is_new)
                 }
             )
         data
@@ -163,10 +167,11 @@ DB class PostInbox
                     o.save()
         options.success ''
 
-    @submit:(params, options)->
+    @submit:(params, options, is_new)->
         # 如果已经存在就不重复投稿
         PostInbox._get params, (o)->
             if o.get 'rmer'
+                is_new = 1
                 o.unset 'rmer'
                 o.save()
             DB.SiteUserLevel._level_current_user params.site_id,(level)->
@@ -176,6 +181,8 @@ DB class PostInbox
                         params
                     }, options
                 else
+                    if is_new
+                        redis.hincrby R.POST_INBOX_SUBMIT_COUNT, site_id
                     options.success ''
 
 
