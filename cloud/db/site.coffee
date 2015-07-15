@@ -1,5 +1,6 @@
 $ = require "underscore"
 $.mixin(require("underscore.string").exports())
+SITE_USER_LEVEL = require "cloud/db/site_user_level"
 
 DB = require "cloud/_db"
 
