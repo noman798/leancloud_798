@@ -4,6 +4,10 @@ _post_is_star = require "cloud/db/_post_is_star"
 DB = require "cloud/_db"
 View = require "cloud/_view"
 
+redis = require "cloud/_redis"
+{R} = redis
+R "USER_POST_COUNT"
+
 PAGE_LIMIT = 20
 
 DB class SiteTagPost
@@ -203,11 +207,9 @@ DB class PostHtml extends Post
             else
                 options.success blog.$
 
-        id = params.id
         if 'id' of params
+            id = params.id
             delete params.id
-
-        if id
             Post.$.get(
                 id
                 success:(post)->
@@ -215,12 +217,15 @@ DB class PostHtml extends Post
                     _ post
             )
         else
+
             params.kind = Post.KIND.HTML
-            params.owner = params.owner or AV.User.current()
+            params.owner = owner = params.owner or AV.User.current()
             blog = new PostHtml()
             blog.$setACL()
             _ blog
 
+            if owner
+                redis.hincrby R.USER_POST_COUNT, owner.id, 1
 
 DB class PostChat extends Post
     @new : (params, options) ->

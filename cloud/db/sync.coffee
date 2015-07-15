@@ -6,9 +6,6 @@ require "cloud/db/post"
 require "enml-js"
 DB = require "cloud/_db"
 
-redis = require "cloud/_redis"
-{R} = redis
-R "USER_POST_COUNT"
 
 Evernote = require('evernote').Evernote
 {Thrift, NoteStoreClient, Client} = Evernote
@@ -110,8 +107,6 @@ DB class EvernoteSync
                                                         data
                                                         {
                                                         success:(post)->
-                                                            if post.get('owner') and !id
-                                                                redis.hincrby R.USER_POST_COUNT, oauth.id, 1
                                                             DB.PostInbox._submit_by_evernote(oauth.get('user'), post, site_tag_list)
                                                             success post
                                                             -- to_update_count
