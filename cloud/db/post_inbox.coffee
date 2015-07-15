@@ -92,7 +92,7 @@ DB class PostInbox
                     result.push post
 
                 redis.hget(R["POST_INBOX_#{key}_COUNT"], params.site_id, (err, count) ->
-                    options.success [count, result]
+                    options.success [count or 6, result]
                 )
         )
 
@@ -274,6 +274,6 @@ DB class PostInbox
                     else
                         key = "POST"
                     redis.hget(R["USRE_#{key}_COUNT"], params.owner_id, (err, count)->
-                        options.success [count, post_list]
+                        options.success [count or 0, post_list]
                     )
         )
