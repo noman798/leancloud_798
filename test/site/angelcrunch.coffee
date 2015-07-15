@@ -1,6 +1,5 @@
 require "cloud/db/site"
 require "cloud/db/custom_css"
-SITE_USER_LEVEL = require "cloud/db/site_user_level"
 DB = require "cloud/_db"
 
 #USER_ID = "559bbcb4e4b023682f148e98"
@@ -56,30 +55,3 @@ DB.Site._site_new(
         tag_list:["每日资讯","深度观点","人物特写","公司行业","产品快报"]
     }
 )
-
-
-#$.SETUP.tech2ipo = ->
-#    _site_new URL_RSS, success:(site)->
-#        console.log site
-#        
-#        for host in [
-#            "tech2ipo.com"
-#            "alpha.tech2ipo.com"
-#            "tech2ipo.798.space"
-#            "797.space"
-#            "798.space"
-#            "tech2ipo.797.space"
-#            "r.io"
-#            "majia.space"
-#        ]
-#            AV.Cloud.run "Site.host_new" , {
-#                id:site.objectId
-#                host
-#            },{
-#                success:(site)->
-#                    console.log "host_new success", site.host_list
-#                error:(site)->
-#                    console.log "host_new error", site
-#            }
-#        AV.Cloud.run "Site.tag_list_set", {
-#            id:site.id
