@@ -222,10 +222,8 @@ DB class PostInbox
         }
         #DB.PostInbox.$.find(params).first().done (post_inbox)->
         DB.PostInbox.$.equalTo(data).first().done (post_inbox)->
-            console.log 'post_inbox', post_inbox.id
             if post_inbox and not post_inbox.get 'rmer'
                 post_inbox.get('post').fetch (post)->
-                    console.log 'getpost', post.id
                     PostInbox._post_set post, params
 
                     current = AV.User.current()
@@ -236,30 +234,22 @@ DB class PostInbox
                         else
                             key = R.POST_INBOX_SUBMIT_COUNT
                         redis.hincrby key, params.site_id, -1
+                        redis.hincrby R.USER_PUBLISH_COUNT, post.get('owner').id, -1
 
-                    console.log 'owener.id', post.get('owner').id
-                    console.log 'current.id', current.id
 
                     if post.get('owner').id == current.id
-                        console.log '====='
                         post_inbox.destroy()
                         _count()
                     else
-                        console.log '!!!!!!!!'
                         DB.SiteUserLevel._level_current_user params.site_id,(level)->
-                            console.log 'level', level, SITE_USER_LEVEL.EDITOR
                             if level >= SITE_USER_LEVEL.EDITOR
                                 post_inbox.set 'rmer',current
                                 post_inbox.save()
                                 _count()
                                 redis.hincrby R.POST_INBOX_RM_COUNT, params.site_id, 1
 
-                    query = DB.SiteTagPost.$.equalTo(data)
-                    query.find({
-                        success:(site_tag_post)->
-                            console.log 'site_tag_post', site_tag_post.id
+                    DB.SiteTagPost.$.equalTo(data).first().done (site_tag_post)->
                             site_tag_post.destroy()
-                    })
 
             options.success ''
 
