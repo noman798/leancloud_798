@@ -208,16 +208,17 @@ DB class PostHtml extends Post
                 options.success blog.$
 
         if 'id' of params
+            console.log 'id'
             id = params.id
             delete params.id
             Post.$.get(
                 id
                 success:(post)->
+                    console.log 'post'
                     post = new DB.Post post
                     _ post
             )
         else
-
             params.kind = Post.KIND.HTML
             params.owner = owner = params.owner or AV.User.current()
             blog = new PostHtml()
