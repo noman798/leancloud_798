@@ -80,9 +80,15 @@ DB class PostInbox
                     post = i.get 'post'
                     _post_owner post
                     post.set "is_submit", 1
+
                     publisher = i.get 'publisher'
                     if publisher
                         post.set 'publisher', publisher
+
+                    rmer = i.get 'rmer'
+                    if rmer
+                        post.set 'rmer', rmer
+
                     result.push post
 
                 redis.hget(R["POST_INBOX_#{key}_COUNT"], params.site_id, (err, count) ->
