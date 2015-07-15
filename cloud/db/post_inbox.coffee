@@ -183,7 +183,7 @@ DB class PostInbox
                     }, options
                 else
                     if is_new
-                        redis.hincrby R.POST_INBOX_SUBMIT_COUNT, site_id
+                        redis.hincrby R.POST_INBOX_SUBMIT_COUNT, params.site_id
                     options.success ''
 
 
@@ -260,11 +260,7 @@ DB class PostInbox
                             i.set post_dict[i.id]
                         _post_owner i
 
-                    if params.publisher
-                        key = "PUBLISH"
-                    else
-                        key = "POST"
-                    redis.hget(R["USRE_#{key}_COUNT"], params.owner_id, (err, count)->
+                    redis.hget(R.USRE_POST_COUNT, params.owner_id, (err, count)->
                         options.success [count, post_list]
                     )
         )

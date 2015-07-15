@@ -9,3 +9,5 @@ module.exports =
     POST_INBOX_RM_COUNT:'s'
     USER_POST_COUNT:'u'
     USER_PUBLISH_COUNT:'t'
+    RoomMemberRoomId:'e'
+    RoomMemberMessageReadCount:'f'
