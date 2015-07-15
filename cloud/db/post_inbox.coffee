@@ -139,7 +139,7 @@ DB class PostInbox
 
     @publish:(params, options)->
         #管理员发布的时候可以设置标签
-        data = PostInbox._get params,(o)->
+        data = PostInbox._get params,(o, is_new)->
             DB.SiteUserLevel._level_current_user params.site_id,(level)->
 
                 if level < SITE_USER_LEVEL.WRITER
@@ -147,11 +147,12 @@ DB class PostInbox
                 o.get('post').fetch (post)->
 
                     if not o.get 'publisher'
-                        if o.get 'rmer'
-                            key = R.POST_INBOX_RM_COUNT
-                        else
-                            key = R.POST_INBOX_SUBMIT_COUNT
-                        redis.hincrby key, params.site_id, -1
+                        if not is_new
+                            if o.get 'rmer'
+                                key = R.POST_INBOX_RM_COUNT
+                            else
+                                key = R.POST_INBOX_SUBMIT_COUNT
+                            redis.hincrby key, params.site_id, -1
                         redis.hincrby R.POST_INBOX_PUBLISH_COUNT,  params.site_id, 1
                         redis.hincrby R.USER_PUBLISH_COUNT, post.get('owner').id, 1
 
@@ -167,9 +168,9 @@ DB class PostInbox
                     o.save()
         options.success ''
 
-    @submit:(params, options, is_new)->
+    @submit:(params, options)->
         # 如果已经存在就不重复投稿
-        PostInbox._get params, (o)->
+        PostInbox._get params, (o, is_new)->
             if o.get 'rmer'
                 is_new = 1
                 o.unset 'rmer'
@@ -188,21 +189,35 @@ DB class PostInbox
 
     @rm:(params, options)->
         # 管理员/编辑 或者 投稿者本人可以删除
-        PostInbox._get params, (o)->
-            if o
-                if not o.rmer
-                    o.get('post').fetch (post)->
-                        PostInbox._post_set post, params
-                        current = AV.User.current()
-                        redis.hincrby R.POST_INBOX_RM_COUNT, params.site_id, 1
-                        redis.hincrby R.POST_INBOX_SUBMIT_COUNT, params.site_id, -1
-                        if post.get('owner').id == current.id
-                            o.destroy()
+        data = {
+            site : AV.Object.createWithoutData("Site", params.site_id)
+            post : AV.Object.createWithoutData("Post", params.post_id)
+        }
+        DB.PostInbox.$.find(params).first().done (post_inbox)->
+            if post_inbox and not post_inbox.get 'rmer'
+                post_inbox.get('post').fetch (post)->
+                    PostInbox._post_set post, params
+
+                    current = AV.User.current()
+
+                    _count = ->
+                        if post_inbox.get 'publisher'
+                            key = R.POST_INBOX_PUBLISH_COUNT
                         else
-                            DB.SiteUserLevel._level_current_user params.site_id,(level)->
-                                if level >= SITE_USER_LEVEL.EDITOR
-                                    o.set 'rmer',current
-                                    o.save()
+                            key = R.POST_INBOX_SUBMIT_COUNT
+
+                        redis.hincrby key, params.site_id, -1
+
+                    if post.get('owner').id == current.id
+                        o.destroy()
+                        _count()
+                    else
+                        DB.SiteUserLevel._level_current_user params.site_id,(level)->
+                            if level >= SITE_USER_LEVEL.EDITOR
+                                o.set 'rmer',current
+                                o.save()
+                                _count()
+                                redis.hincrby R.POST_INBOX_RM_COUNT, params.site_id, 1
             options.success ''
 
 
