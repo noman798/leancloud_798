@@ -14,10 +14,10 @@ DB.Site._site_new(
         slogo:"「 天使汇 · 程序部 」"
         logo:"//dn-noman.qbox.me/ac_logo.svg"
         link_list: [
-            [ "email" , "TECH2IPO@PE.VC"],
-            [ "twitter" , "http://twitter.com/TECH2IPO"],
-            [ "weibo" , "http://weibo.com/tech2ipo"],
-            [ "weixin" , "//dn-acac.qbox.me/tech2ipoqrcode.jpg"],
+            [ "email" , "contact@pe.vc"],
+            [ "twitter" , "http://twitter.com/angelcrunch"],
+            [ "weibo" , "http://weibo.com/2125394667/about"],
+            [ "weixin" , "//dn-acac.qbox.me/tech2ipohelp-invest-qr.png"],
         ]
         tag_list:["系列教程", "招人启事"]
     }
