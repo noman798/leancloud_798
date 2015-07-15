@@ -145,6 +145,24 @@ DB class PostInbox
     @save:(params, options)->
         DB.Post.get(params.post_id).done (post)->
             PostInbox._post_set post, params
+            PostInbox._get params, (o, is_new)->
+                if is_new
+                    redis.hincrby R.POST_INBOX_SUBMIT_COUNT, params.site_id, 1
+                else
+                    if o.get 'publisher'
+                        o.unset 'publisher'
+                        redis.hincrby R.POST_INBOX_PUBLISH_COUNT,  params.site_id, -1
+                        redis.hincrby R.USER_PUBLISH_COUNT,  params.site_id, -1
+
+                    if o.get 'rmer'
+                        o.unset 'rmer'
+                        redis.hincrby R.POST_INBOX_RM_COUNT, params.site_id, -1
+
+                    o.save()
+
+        options.success ''
+
+
     
     @publish:(params, options)->
         #管理员发布的时候可以设置标签
@@ -192,7 +210,7 @@ DB class PostInbox
                     }, options
                 else
                     if is_new
-                        redis.hincrby R.POST_INBOX_SUBMIT_COUNT, site_id
+                        redis.hincrby R.POST_INBOX_SUBMIT_COUNT, params.site_id, 1
                     options.success ''
 
 
@@ -202,7 +220,8 @@ DB class PostInbox
             site : AV.Object.createWithoutData("Site", params.site_id)
             post : AV.Object.createWithoutData("Post", params.post_id)
         }
-        DB.PostInbox.$.find(params).first().done (post_inbox)->
+        #DB.PostInbox.$.find(params).first().done (post_inbox)->
+        DB.PostInbox.$.equalTo(data).first().done (post_inbox)->
             if post_inbox and not post_inbox.get 'rmer'
                 post_inbox.get('post').fetch (post)->
                     PostInbox._post_set post, params
@@ -227,6 +246,13 @@ DB class PostInbox
                                 o.save()
                                 _count()
                                 redis.hincrby R.POST_INBOX_RM_COUNT, params.site_id, 1
+
+                    query = DB.SiteTagPost.$.equalTo(data)
+                    query.find({
+                        success:(site_tag_post)->
+                            site_tag_post.destroy()
+                    })
+
             options.success ''
 
 
