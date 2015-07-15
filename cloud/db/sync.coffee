@@ -74,7 +74,6 @@ DB class EvernoteSync
                                 ++ to_update_count
                                 guid = note.guid
                                 store.getNote(guid, true, true, false, false, (err, full_note) ->
-                                    console.log 'full_note', full_note.title
                                     if err
                                         console.log err
                                         return
@@ -92,7 +91,6 @@ DB class EvernoteSync
 
                                         evernote2html full_note, (html)->
                                             [brief,html] = brief2markdown(html)
-                                            console.log 'html', html
                                             EvernotePost.new(
                                                 guid
                                                 (id, success)->
@@ -109,7 +107,6 @@ DB class EvernoteSync
                                                         data
                                                         {
                                                         success:(post)->
-                                                            console.log post.id
                                                             DB.PostInbox._submit_by_evernote(oauth.get('user'), post, site_tag_list)
                                                             success post
                                                             -- to_update_count
@@ -146,7 +143,6 @@ DB class EvernoteSync
                                 store.findNotesMetadata(
                                     filter, offset, limit, spec
                                     (err, li) ->
-                                        console.log  li
                                         if err or not li
                                             console.log err
                                             return
@@ -156,7 +152,6 @@ DB class EvernoteSync
                                             return
     
                                         for note in li.notes
-                                            console.log  note.title
                                             if note.updateSequenceNum <= update_count
                                                 break
                                             _fetch note, li.updateCount

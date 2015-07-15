@@ -207,14 +207,12 @@ DB class PostHtml extends Post
             else
                 options.success blog.$
 
-        if 'id' of params
-            console.log 'id'
-            id = params.id
-            delete params.id
+        id = params.id #id maybe is 0
+        delete params.id
+        if id
             Post.$.get(
                 id
                 success:(post)->
-                    console.log 'post'
                     post = new DB.Post post
                     _ post
             )
