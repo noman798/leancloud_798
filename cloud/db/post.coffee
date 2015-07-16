@@ -91,6 +91,11 @@ DB class Post
                         owner = post.get 'owner'
                         if owner and owner.id == current.id
                             _rm()
+                        else
+                            DB.SiteUserLevel._level_current_user params.site_id, (level)->
+                                if level >= SITE_USER_LEVEL.EDITOR
+                                    _rm()
+
 
                 options.success('')
         })
