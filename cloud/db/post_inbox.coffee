@@ -21,6 +21,30 @@ _post_owner = (post)->
         username:owner.get 'username'
     }
 
+_rm_count = (post_inbox) ->
+    if post_inbox.get 'publisher'
+        key = R.POST_INBOX_PUBLISH_COUNT
+    else
+        key = R.POST_INBOX_SUBMIT_COUNT
+    redis.hincrby key, post_inbox.site.id, -1
+    redis.hincrby R.USER_PUBLISH_COUNT, post_inbox.get('owner').id, -1
+
+Post.EVENT.on "rm",(post)->
+    q = DB.SiteTagPost.$
+    q.equalTo({
+        post
+    })
+    q.destroyAll()
+
+    DB.PostInbox.$.equalTo({
+        post
+    }).find().done (post_inbox_list)->
+        for post_inbox in post_inbox_list
+            _rm_count post_inbox
+            post_inbox.destroy()
+        options.success ''
+    
+
 DB class PostInbox
     constructor : (
         @site
@@ -223,7 +247,6 @@ DB class PostInbox
         }
         #DB.PostInbox.$.find(params).first().done (post_inbox)->
         DB.PostInbox.$.equalTo(data).first().done (post_inbox)->
-            console.log 'rm'
             if post_inbox and not post_inbox.get 'rmer'
                 post_inbox.get('post').fetch (post)->
                     PostInbox._post_set post, params
@@ -231,14 +254,7 @@ DB class PostInbox
                     current = AV.User.current()
 
                     _count = ->
-                        console.log 'count'
-                        if post_inbox.get 'publisher'
-                            key = R.POST_INBOX_PUBLISH_COUNT
-                        else
-                            key = R.POST_INBOX_SUBMIT_COUNT
-                        redis.hincrby key, params.site_id, -1
-                        redis.hincrby R.USER_PUBLISH_COUNT, post.get('owner').id, -1
-
+                        _rm_count post_inbox
 
                     if post.get('owner').id == current.id
                         post_inbox.destroy()
@@ -253,8 +269,7 @@ DB class PostInbox
                                 redis.hincrby R.POST_INBOX_RM_COUNT, params.site_id, 1
 
                     DB.SiteTagPost.$.equalTo(data).first().done (site_tag_post)->
-                            console.log 'dest'
-                            site_tag_post.destroy()
+                        site_tag_post.destroy()
 
             options.success ''
 

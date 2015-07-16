@@ -69,7 +69,7 @@ DB class Post
     )->
         super
    
-    EVENT = new EventEmitter
+    @EVENT = new EventEmitter
     
     @rm : View.logined (params, options) ->
         query = Post.$
