@@ -57,7 +57,7 @@ DB class PostInbox
             key = "RM"
         else
             if params.publish
-                key = "PULISH"
+                key = "PUBLISH"
                 query.exists "publisher"
             else
                 key = "SUBMIT"
@@ -293,7 +293,8 @@ DB class PostInbox
                             i.set post_dict[i.id]
                         _post_owner i
 
-                    redis.hget(R.USRE_POST_COUNT, params.owner_id, (err, count)->
+                    redis.hget(R.USER_POST_COUNT, params.owner_id, (err, count)->
                         options.success [count or 0, post_list]
                     )
+
         )
