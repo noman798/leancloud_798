@@ -186,8 +186,7 @@ DB class PostInbox
                         redis.hincrby R.POST_INBOX_RM_COUNT, params.site_id, -1
 
                     o.save()
-                    DB.SiteTagPost.$.equalTo(data).first().done (site_tag_post)->
-                        site_tag_post?.destroy()
+                    DB.SiteTagPost.$.equalTo(data).destroyAll()
 
         options.success ''
 
@@ -271,8 +270,7 @@ DB class PostInbox
                                 _count()
                                 redis.hincrby R.POST_INBOX_RM_COUNT, params.site_id, 1
 
-                    DB.SiteTagPost.$.equalTo(data).first().done (site_tag_post)->
-                        site_tag_post?.destroy()
+                    DB.SiteTagPost.$.equalTo(data).destroyAll()
 
             options.success ''
 
