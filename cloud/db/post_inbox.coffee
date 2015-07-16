@@ -26,14 +26,12 @@ _rm_count = (post_inbox) ->
         key = R.POST_INBOX_PUBLISH_COUNT
     else
         key = R.POST_INBOX_SUBMIT_COUNT
-    redis.hincrby key, post_inbox.site.id, -1
+    redis.hincrby key, post_inbox.get('site').id, -1
     redis.hincrby R.USER_PUBLISH_COUNT, post_inbox.get('owner').id, -1
 
 DB.Post.EVENT.on "rm",(post)->
     q = DB.SiteTagPost.$
-    q.equalTo({
-        post
-    })
+    q.equalTo({post})
     q.destroyAll()
 
     DB.PostInbox.$.equalTo({
@@ -262,7 +260,6 @@ DB class PostInbox
                     else
                         DB.SiteUserLevel._level_current_user params.site_id,(level)->
                             if level >= SITE_USER_LEVEL.EDITOR
-                                console.log 'level', level, SITE_USER_LEVEL.EDITOR
                                 post_inbox.set 'rmer',current
                                 post_inbox.save()
                                 _count()
