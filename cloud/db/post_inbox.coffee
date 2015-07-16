@@ -170,7 +170,7 @@ DB class PostInbox
         DB.Post.$.get(params.post_id).done (post)->
             PostInbox._post_set post, params
             data = PostInbox._get params, (o, is_new)->
-                if is_new
+                if is_new or o.get 'publisher' or o.get 'rmer'
                     redis.hincrby R.POST_INBOX_SUBMIT_COUNT, params.site_id, 1
                 else
                     if o.get 'publisher'
