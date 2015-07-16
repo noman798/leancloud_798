@@ -143,7 +143,7 @@ DB class PostInbox
         post.save()
 
     @save:(params, options)->
-        DB.Post.get(params.post_id).done (post)->
+        DB.Post.$.get(params.post_id).done (post)->
             PostInbox._post_set post, params
             PostInbox._get params, (o, is_new)->
                 if is_new
