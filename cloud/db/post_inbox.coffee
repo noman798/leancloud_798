@@ -196,10 +196,10 @@ DB class PostInbox
             DB.SiteUserLevel._level_current_user params.site_id,(level)->
 
                 if level < SITE_USER_LEVEL.WRITER
+                    options.success ''
                     return
                 o.get('post').fetch (post)->
-
-                    if not o.get 'publisher' or o.get 'rmer'
+                    if (not o.get 'publisher') or o.get 'rmer'
                         if not is_new
                             if o.get 'rmer'
                                 key = R.POST_INBOX_RM_COUNT
@@ -212,7 +212,7 @@ DB class PostInbox
                     PostInbox._post_set post, params
                     DB.SiteTagPost.$.get_or_create(
                         data
-                        (site_tag_post)->
+                        success:(site_tag_post)->
                             site_tag_post.set 'tag_list', params.tag_list or post.get('tag_list')
                             site_tag_post.save()
                     )
