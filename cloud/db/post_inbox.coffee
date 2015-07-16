@@ -29,7 +29,7 @@ _rm_count = (post_inbox) ->
     redis.hincrby key, post_inbox.site.id, -1
     redis.hincrby R.USER_PUBLISH_COUNT, post_inbox.get('owner').id, -1
 
-Post.EVENT.on "rm",(post)->
+DB.Post.EVENT.on "rm",(post)->
     q = DB.SiteTagPost.$
     q.equalTo({
         post
