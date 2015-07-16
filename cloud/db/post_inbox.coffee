@@ -116,7 +116,7 @@ DB class PostInbox
                     result.push post
 
                 redis.hget(R["POST_INBOX_#{key}_COUNT"], params.site_id, (err, count) ->
-                    options.success [count or 6, result]
+                    options.success [count or 0, result]
                 )
         )
 
@@ -173,7 +173,7 @@ DB class PostInbox
                 if is_new
                     redis.hincrby R.POST_INBOX_SUBMIT_COUNT, params.site_id, 1
                 else
-                    if o.get 'publisher' or o.get 'rmer'
+                    if o.get('publisher') or o.get('rmer')
                         redis.hincrby R.POST_INBOX_SUBMIT_COUNT, params.site_id, 1
 
                     if o.get 'publisher'
@@ -201,7 +201,7 @@ DB class PostInbox
                     options.success ''
                     return
                 o.get('post').fetch (post)->
-                    if (not o.get 'publisher') or o.get 'rmer'
+                    if (not o.get 'publisher') or o.get('rmer')
                         if not is_new
                             if o.get 'rmer'
                                 key = R.POST_INBOX_RM_COUNT
