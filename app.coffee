@@ -2,12 +2,16 @@ express = require('express')
 path = require('path')
 cookieParser = require('cookie-parser')
 bodyParser = require('body-parser')
+
+AV = require 'leanengine'
 app = express()
+
 
 # 设置 view 引擎
 app.set 'views', path.join(__dirname, 'ejs')
 app.set 'view engine', 'ejs'
 app.use express.static('public')
+
 
 module.exports = app
 
