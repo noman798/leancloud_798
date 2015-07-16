@@ -2,6 +2,7 @@ require "cloud/db/site_tag_post_count"
 require "cloud/db/user_read"
 {EventEmitter} = require 'events'
 _post_is_star = require "cloud/db/_post_is_star"
+SITE_USER_LEVEL = require "cloud/db/site_user_level"
 DB = require "cloud/_db"
 View = require "cloud/_view"
 
@@ -68,13 +69,30 @@ DB class Post
     )->
         super
    
+    EVENT = new EventEmitter
     
     @rm : View.logined (params, options) ->
         query = Post.$
+        query.include 'post'
         query.get(params.id, {
             success:(o) ->
-                o.set('rmer', AV.User.current())
-                o.save success:options.success
+                owner = o.get('owner')
+                current = AV.User.current()
+                _rm = ->
+                    o.set('rmer', current)
+                    o.save()
+                    Post.EVENT.emit 'rm', o
+
+                if owner and owner.id == current.id
+                    _rm()
+                else
+                    post = o.get('post')
+                    if post
+                        owner = post.get 'owner'
+                        if owner and owner.id == current.id
+                            _rm()
+
+                options.success('')
         })
 
     @by_id: (params, options) ->
@@ -191,10 +209,6 @@ DB class PostHtml extends Post
     )->
         super
 
-
-    EVENT = new EventEmitter
-
-    @rm : (params, options)->
 
     @new : (params, options) ->
         _ = (blog)->
