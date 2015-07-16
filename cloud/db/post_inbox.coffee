@@ -240,6 +240,7 @@ DB class PostInbox
         )
         if params.since
             query.lessThan('ID', params.since)
+        query.doesNotExist "rmer"
         query.descending('ID')
         query.limit PAGE_LIMIT
         query.include 'owner'
