@@ -32,7 +32,7 @@ DB class PostInbox
         super
    
 
-    @by_current:(params, options)->
+    @by_current:(params, options)->    # user current
         params.owner_id = AV.User.current().id
         PostInbox._by_user(params, options)
     
@@ -40,7 +40,7 @@ DB class PostInbox
         params.rm = 1
         PostInbox.by_site(params, options)
 
-    @by_current_published:(params, options)->
+    @by_current_published:(params, options)->    # user published
         params.owner_id = AV.User.current().id
         params.publish = 1
         PostInbox.by_site(params, options)
@@ -62,6 +62,7 @@ DB class PostInbox
             else
                 key = "SUBMIT"
                 query.doesNotExist "publisher"
+            query.doesNotExist 'rmer'
 
         if params.owner_id
             owner = AV.Object.createWithoutData('User', params.owner_id)
@@ -222,6 +223,7 @@ DB class PostInbox
         }
         #DB.PostInbox.$.find(params).first().done (post_inbox)->
         DB.PostInbox.$.equalTo(data).first().done (post_inbox)->
+            console.log 'rm'
             if post_inbox and not post_inbox.get 'rmer'
                 post_inbox.get('post').fetch (post)->
                     PostInbox._post_set post, params
@@ -229,6 +231,7 @@ DB class PostInbox
                     current = AV.User.current()
 
                     _count = ->
+                        console.log 'count'
                         if post_inbox.get 'publisher'
                             key = R.POST_INBOX_PUBLISH_COUNT
                         else
@@ -243,12 +246,14 @@ DB class PostInbox
                     else
                         DB.SiteUserLevel._level_current_user params.site_id,(level)->
                             if level >= SITE_USER_LEVEL.EDITOR
+                                console.log 'level', level, SITE_USER_LEVEL.EDITOR
                                 post_inbox.set 'rmer',current
                                 post_inbox.save()
                                 _count()
                                 redis.hincrby R.POST_INBOX_RM_COUNT, params.site_id, 1
 
                     DB.SiteTagPost.$.equalTo(data).first().done (site_tag_post)->
+                            console.log 'dest'
                             site_tag_post.destroy()
 
             options.success ''
