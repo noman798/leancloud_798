@@ -1,9 +1,6 @@
 require "cloud/db/site_tag_post_count"
 require "cloud/db/user_read"
-
 {EventEmitter} = require 'events'
-POST_EVENT = new EventEmitter
-
 _post_is_star = require "cloud/db/_post_is_star"
 DB = require "cloud/_db"
 View = require "cloud/_view"
@@ -193,6 +190,11 @@ DB class PostHtml extends Post
         @tag_list
     )->
         super
+
+
+    EVENT = new EventEmitter
+
+    @rm : (params, options)->
 
     @new : (params, options) ->
         _ = (blog)->
