@@ -170,9 +170,12 @@ DB class PostInbox
         DB.Post.$.get(params.post_id).done (post)->
             PostInbox._post_set post, params
             data = PostInbox._get params, (o, is_new)->
-                if is_new or o.get 'publisher' or o.get 'rmer'
+                if is_new
                     redis.hincrby R.POST_INBOX_SUBMIT_COUNT, params.site_id, 1
                 else
+                    if o.get 'publisher' or o.get 'rmer'
+                        redis.hincrby R.POST_INBOX_SUBMIT_COUNT, params.site_id, 1
+
                     if o.get 'publisher'
                         o.unset 'publisher'
                         redis.hincrby R.POST_INBOX_PUBLISH_COUNT,  params.site_id, -1
@@ -184,7 +187,7 @@ DB class PostInbox
 
                     o.save()
                     DB.SiteTagPost.$.equalTo(data).first().done (site_tag_post)->
-                        site_tag_post.destroy()
+                        site_tag_post?.destroy()
 
         options.success ''
 
@@ -269,7 +272,7 @@ DB class PostInbox
                                 redis.hincrby R.POST_INBOX_RM_COUNT, params.site_id, 1
 
                     DB.SiteTagPost.$.equalTo(data).first().done (site_tag_post)->
-                        site_tag_post.destroy()
+                        site_tag_post?.destroy()
 
             options.success ''
 
