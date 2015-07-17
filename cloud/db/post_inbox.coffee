@@ -25,13 +25,17 @@ _post_owner = (post)->
 _rm_count = (post_inbox) ->
     if post_inbox.get 'publisher'
         key = R.POST_INBOX_PUBLISH_COUNT
-        redis.hincrby R.USER_PUBLISH_COUNT, post_inbox.get('owner').id, -1
+        owner = post_inbox.get 'owner'
+        if owner
+            redis.hincrby R.USER_PUBLISH_COUNT, owner.id, -1
     else
         key = R.POST_INBOX_SUBMIT_COUNT
     redis.hincrby key, post_inbox.get('site').id, -1
 
 DB.Post.EVENT.on "rm",(post)->
-    redis.hincrby R.USER_POST_COUNT, post.get('owner').id, -1
+    owner = post.get 'owner'
+    if owner
+        redis.hincrby R.USER_POST_COUNT, owner.id, -1
     q = DB.SiteTagPost.$
     q.equalTo({post})
     q.destroyAll()
@@ -205,9 +209,7 @@ DB class PostInbox
                     options.success ''
                     return
                 o.get('post').fetch (post)->
-                    console.log 0
                     if (not o.get 'publisher') or o.get('rmer')
-                        console.log 2
                         if not is_new
                             if o.get 'rmer'
                                 key = R.POST_INBOX_RM_COUNT
@@ -215,7 +217,9 @@ DB class PostInbox
                                 key = R.POST_INBOX_SUBMIT_COUNT
                             redis.hincrby key, params.site_id, -1
                         redis.hincrby R.POST_INBOX_PUBLISH_COUNT,  params.site_id, 1
-                        redis.hincrby R.USER_PUBLISH_COUNT, post.get('owner').id, 1
+                        owner =  post.get 'owner'
+                        if owner
+                            redis.hincrby R.USER_PUBLISH_COUNT, owner.id, 1
                     PostInbox._post_set post, params
                     DB.SiteTagPost.$.get_or_create(
                         data
@@ -263,8 +267,8 @@ DB class PostInbox
 
                     _count = ->
                         _rm_count post_inbox
-
-                    if post.get('owner').id == current.id
+                    owner = post.get('owner')
+                    if (not owner) or owner.id == current.id
                         post_inbox.destroy()
                         _count()
                     else
