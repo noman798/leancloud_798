@@ -52,6 +52,8 @@ module.exports = (full_note, callback)->
             _html = html
             if startsWith(_html, br)
                 _html = strRight(_html, br)
+            if endsWith(_html, '<p></p>')
+                _html = strRight(_html, '<p></p>')
             if endsWith(_html, br)
                 _html = strLeftBack(_html, br)
             if _html == html
