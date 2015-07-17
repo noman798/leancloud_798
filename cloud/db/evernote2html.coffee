@@ -3,6 +3,7 @@ config = require 'cloud/config'
 replaceAll = require 'underscore.string/replaceAll'
 strLeft = require 'underscore.string/strLeft'
 strRight = require 'underscore.string/strRight'
+strLeftBack = require 'underscore.string/strLeftBack'
 qiniu_token = require 'cloud/db/qiniu_token'
 qiniu = require 'qiniu'
 enml = require 'enml-js'
@@ -41,7 +42,21 @@ module.exports = (full_note, callback)->
         html = strLeft(html,"</body>")
         html = replaceAll(html, "<div","<p")
         html = replaceAll(html, "</div>","</p>")
-        html = strRight(strRight(html,"<body"),">")
+       
+        while 1
+            _html = strLeftBack(html, '<p><br clear="none"/></p>')
+            if _html == html
+                break
+            html = _html
+
+
+        html = replaceAll('''</p><p><br clear="none"/></p>''',"</P>")
+        html = replaceAll('''</p><p>''',"<br>")
+        html = replaceAll('''<P>''',"</p>")
+
+        #html = replaceAll(html,'<p><br clear="none"/></p>', '')
+
+
         callback html
 
     
