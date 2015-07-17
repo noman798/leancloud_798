@@ -73,12 +73,10 @@ DB class Post
     @EVENT = new EventEmitter
     
     @rm : View.logined (params, options) ->
-        console.log '.....rm'
         query = Post.$
         query.include 'post'
         query.get(params.id, {
             success:(o) ->
-                console.log 'o', o.id
                 owner = o.get('owner')
                 current = AV.User.current()
                 _rm = ->
@@ -90,10 +88,9 @@ DB class Post
                     _rm()
                 else
                     post = o.get('post')
-                    console.log 'post_id', post.id
                     if post
                         owner = post.get 'owner'
-                        if owner and owner.id == current.id
+                        if owner and (owner.id == current.id)
                             _rm()
                         else
                             DB.SiteUserLevel._level_current_user params.site_id, (level)->
