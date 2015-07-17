@@ -50,9 +50,9 @@ module.exports = (full_note, callback)->
             html = _html
 
 
-        html = replaceAll('''</p><p><br clear="none"/></p>''',"</P>")
-        html = replaceAll('''</p><p>''',"<br>")
-        html = replaceAll('''<P>''',"</p>")
+        html = replaceAll(html, '''</p><p><br clear="none"/></p>''',"</P>")
+        html = replaceAll(html, '''</p><p>''',"<br>")
+        html = replaceAll(html, '''<P>''',"</p>")
 
         #html = replaceAll(html,'<p><br clear="none"/></p>', '')
 
