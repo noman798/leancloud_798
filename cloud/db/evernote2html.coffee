@@ -46,10 +46,11 @@ module.exports = (full_note, callback)->
 
         html = replaceAll(html, "<div","<p")
         html = replaceAll(html, "</div>","</p>")
-       
         br = '<p><br clear="none"/></p>'
         while 1
             _html = html
+            _html = replaceAll(_html, '''<p><p>''',"<p>")
+            _html = replaceAll(_html, '''</p></p>''',"</p>")
             if startsWith(_html, br)
                 _html = strRight(_html, br)
             if endsWith(_html, '<p></p>')
@@ -60,11 +61,9 @@ module.exports = (full_note, callback)->
                 break
             html = _html
 
-
         html = replaceAll(html, '''</p><p><br clear="none"/></p>''',"</P>")
         html = replaceAll(html, '''</p><p>''',"<br>")
         html = replaceAll(html, '''</P>''',"</p>")
-        console.log "html", html
 
 
         callback html
