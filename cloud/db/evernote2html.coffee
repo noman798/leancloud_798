@@ -2,8 +2,10 @@
 config = require 'cloud/config'
 replaceAll = require 'underscore.string/replaceAll'
 strLeft = require 'underscore.string/strLeft'
-strRight = require 'underscore.string/strRight'
 strLeftBack = require 'underscore.string/strLeftBack'
+strRight = require 'underscore.string/strRight'
+endsWith = require 'underscore.string/endsWith'
+startsWith = require 'underscore.string/startsWith'
 qiniu_token = require 'cloud/db/qiniu_token'
 qiniu = require 'qiniu'
 enml = require 'enml-js'
@@ -40,12 +42,19 @@ module.exports = (full_note, callback)->
             content = replaceAll(content, from_str, to_str)
         html = enml.HTMLOfENML content, full_note.resources
         html = strLeft(html,"</body>")
+        html = strRight(strRight(html,"<body"),">")
+
         html = replaceAll(html, "<div","<p")
         html = replaceAll(html, "</div>","</p>")
        
+        br = '<p><br clear="none"/></p>'
         while 1
-            _html = strLeftBack(html, '<p><br clear="none"/></p>')
-            _html = strRight(html, '<p><br clear="none"/></p>')
+            _html = html
+            if startsWith(_html, br)
+                _html = strRight(_html, br)
+            if endsWith(_html, br)
+                _html = strLeftBack(_html, br)
+            console.log _html,"!"
             if _html == html
                 break
             html = _html
@@ -53,9 +62,8 @@ module.exports = (full_note, callback)->
 
         html = replaceAll(html, '''</p><p><br clear="none"/></p>''',"</P>")
         html = replaceAll(html, '''</p><p>''',"<br>")
-        html = replaceAll(html, '''<P>''',"</p>")
-
-        #html = replaceAll(html,'<p><br clear="none"/></p>', '')
+        html = replaceAll(html, '''</P>''',"</p>")
+        console.log "html", html
 
 
         callback html
