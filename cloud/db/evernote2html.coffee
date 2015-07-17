@@ -54,7 +54,6 @@ module.exports = (full_note, callback)->
                 _html = strRight(_html, br)
             if endsWith(_html, br)
                 _html = strLeftBack(_html, br)
-            console.log _html,"!"
             if _html == html
                 break
             html = _html
