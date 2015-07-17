@@ -99,7 +99,7 @@ DB class PostInbox
             query.lessThan('ID', params.since)
 
         query.descending('ID')
-        query.include("post.owner")
+        query.include(["post.owner"])
         query.limit PAGE_LIMIT
         query.find(
             success:(post_inbox_list)->
@@ -110,9 +110,10 @@ DB class PostInbox
                     q.equalTo({post})
                     q.first({
                         success: (site_tag_post) ->
-                            post.set('tag_list', site_tag_post.get('tag_list'))
-                        error: (err) ->
-                            post
+                            if site_tag_post
+                                tag_list = site_tag_post.get('tag_list')
+                                if tag_list and tag_list.length
+                                    post.set('tag_list', tag_list)
                     })
 
                 for i in post_inbox_list
