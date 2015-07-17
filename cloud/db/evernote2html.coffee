@@ -45,6 +45,7 @@ module.exports = (full_note, callback)->
        
         while 1
             _html = strLeftBack(html, '<p><br clear="none"/></p>')
+            _html = strRight(html, '<p><br clear="none"/></p>')
             if _html == html
                 break
             html = _html
