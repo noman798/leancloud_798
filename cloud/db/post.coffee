@@ -12,6 +12,7 @@ R "USER_POST_COUNT"
 
 PAGE_LIMIT = 20
 
+
 DB class SiteTagPost
     constructor : (
         @tag_list
@@ -72,10 +73,12 @@ DB class Post
     @EVENT = new EventEmitter
     
     @rm : View.logined (params, options) ->
+        console.log '.....rm'
         query = Post.$
         query.include 'post'
         query.get(params.id, {
             success:(o) ->
+                console.log 'o', o.id
                 owner = o.get('owner')
                 current = AV.User.current()
                 _rm = ->
@@ -87,6 +90,7 @@ DB class Post
                     _rm()
                 else
                     post = o.get('post')
+                    console.log 'post_id', post.id
                     if post
                         owner = post.get 'owner'
                         if owner and owner.id == current.id
@@ -94,6 +98,7 @@ DB class Post
                         else
                             DB.SiteUserLevel._level_current_user params.site_id, (level)->
                                 if level >= SITE_USER_LEVEL.EDITOR
+                                    console.log 'level', level
                                     _rm()
 
 
@@ -112,13 +117,24 @@ DB class Post
                         success:(post) ->
                             if post
                                 post.set('site_id',site.id)
+
+
                                 DB.PostStar.is_star(
                                     user
                                     params.ID
                                     (is_star)->
                                         if is_star
                                             post.set('is_star', 1)
-                                        options.success post
+
+                                        q = SiteTagPost.$
+                                        q.equalTo({post})
+                                        q.first({
+                                            success: (site_tag_post) ->
+                                                post.set('tag_list', site_tag_post.get('tag_list'))
+                                                options.success post
+                                            error:(err)->
+                                                options.success post
+                                        })
                                 )
                             else
                                 options.success 0
