@@ -103,6 +103,9 @@ DB class PostInbox
                 result = []
                 for i in post_inbox_list
                     post = i.get 'post'
+                    if not post
+                        i.destroy()
+                        continue
                     _post_owner post
                     post.set "is_submit", 1
 
