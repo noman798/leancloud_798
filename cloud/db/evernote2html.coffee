@@ -10,6 +10,7 @@ enml = require 'enml-js'
 Q = require "q"
 Evernote = require('evernote').Evernote
 {Thrift, NoteStoreClient, Client} = Evernote
+
 qiniu_upload = (i)  ->
     Q.Promise (resolve)->
         token = qiniu_token()
