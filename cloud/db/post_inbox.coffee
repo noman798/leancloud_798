@@ -16,10 +16,11 @@ R "USER_PUBLISH_COUNT"
 
 _post_owner = (post)->
     owner = post.get 'owner'
-    post.set 'owner',{
-        id:owner.id
-        username:owner.get 'username'
-    }
+    if owner
+        post.set 'owner',{
+            id:owner.id
+            username:owner.get 'username'
+        }
 
 _rm_count = (post_inbox) ->
     if post_inbox.get 'publisher'
