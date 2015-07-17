@@ -205,7 +205,9 @@ DB class PostInbox
                     options.success ''
                     return
                 o.get('post').fetch (post)->
+                    console.log 0
                     if (not o.get 'publisher') or o.get('rmer')
+                        console.log 2
                         if not is_new
                             if o.get 'rmer'
                                 key = R.POST_INBOX_RM_COUNT
@@ -214,7 +216,6 @@ DB class PostInbox
                             redis.hincrby key, params.site_id, -1
                         redis.hincrby R.POST_INBOX_PUBLISH_COUNT,  params.site_id, 1
                         redis.hincrby R.USER_PUBLISH_COUNT, post.get('owner').id, 1
-
                     PostInbox._post_set post, params
                     DB.SiteTagPost.$.get_or_create(
                         data
