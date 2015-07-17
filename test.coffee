@@ -1,4 +1,5 @@
 
+###
 require "test/redis_count_test"
 require "cloud/db/post_inbox"
 DB = require "cloud/_db"
@@ -13,4 +14,4 @@ DB.PostInbox.by_site {
         for i in li
             console.log i.get 'owner'
 }
-
+###
