@@ -131,7 +131,7 @@ DB class Post
                                                 if site_tag_post
                                                     tag_list = site_tag_post.get('tag_list')
                                                     if tag_list and tag_list.length
-                                                    post.set('tag_list', site_tag_post.get('tag_list'))
+                                                        post.set('tag_list', site_tag_post.get('tag_list'))
                                                 options.success post
                                             error:(err)->
                                                 options.success post
