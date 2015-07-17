@@ -228,8 +228,4 @@ DB class EvernotePost
 
 
 DB.Post.EVENT.on "rm", (post) ->
-    EvernotePost.$.equalTo({
-        post
-    }).find().done (post_list) ->
-        for i in post_list
-            i.destroy()
+    EvernotePost.$.equalTo({ post }).destroyAll()

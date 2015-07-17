@@ -39,10 +39,12 @@ DB.Post.EVENT.on "rm",(post)->
     q = DB.SiteTagPost.$
     q.equalTo({post})
     q.destroyAll()
+    console.log 'post_inbox'
 
     DB.PostInbox.$.equalTo({
         post
     }).find().done (post_inbox_list)->
+        console.log 'post_inbox find'
         for post_inbox in post_inbox_list
             _rm_count post_inbox
             post_inbox.destroy()
@@ -105,6 +107,17 @@ DB class PostInbox
         query.find(
             success:(post_inbox_list)->
                 result = []
+
+                _set_tag_list = (post) ->
+                    q = DB.SiteTagPost.$
+                    q.equalTo({post})
+                    q.first({
+                        success: (site_tag_post) ->
+                            post.set('tag_list', site_tag_post.get('tag_list'))
+                        error: (err) ->
+                            post
+                    })
+
                 for i in post_inbox_list
                     post = i.get 'post'
                     if not post
@@ -120,7 +133,7 @@ DB class PostInbox
                     rmer = i.get 'rmer'
                     if rmer
                         post.set 'rmer', rmer
-
+                    _set_tag_list(post)
                     result.push post
 
                 redis.hget(R["POST_INBOX_#{key}_COUNT"], params.site_id, (err, count) ->
