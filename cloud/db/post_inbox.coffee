@@ -39,16 +39,13 @@ DB.Post.EVENT.on "rm",(post)->
     q = DB.SiteTagPost.$
     q.equalTo({post})
     q.destroyAll()
-    console.log 'post_inbox'
 
     DB.PostInbox.$.equalTo({
         post
     }).find().done (post_inbox_list)->
-        console.log 'post_inbox find'
         for post_inbox in post_inbox_list
             _rm_count post_inbox
             post_inbox.destroy()
-        options.success ''
     
 
 DB class PostInbox

@@ -79,7 +79,9 @@ DB class Post
             success:(o) ->
                 owner = o.get('owner')
                 current = AV.User.current()
+                is_rm = 0
                 _rm = ->
+                    is_rm = 1
                     o.set('rmer', current)
                     o.save()
                     Post.EVENT.emit 'rm', o
@@ -92,12 +94,11 @@ DB class Post
                         owner = post.get 'owner'
                         if owner and (owner.id == current.id)
                             _rm()
-                        else
-                            DB.SiteUserLevel._level_current_user params.site_id, (level)->
-                                if level >= SITE_USER_LEVEL.EDITOR
-                                    console.log 'level', level
-                                    _rm()
 
+                if not is_rm
+                    DB.SiteUserLevel._level_current_user params.site_id, (level)->
+                        if level >= SITE_USER_LEVEL.EDITOR
+                            _rm()
 
                 options.success('')
         })
