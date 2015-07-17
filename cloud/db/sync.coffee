@@ -21,6 +21,7 @@ _oauth_get = (params, callback)->
             callback oauth, store
     })
 
+
 DB class EvernoteSyncCount
     constructor : (
         @oauth_id
@@ -224,3 +225,11 @@ DB class EvernotePost
                         o.set {post}
                         o.save()
         })
+
+
+DB.Post.EVENT.on "rm", (post) ->
+    EvernotePost.$.equalTo({
+        post
+    }).find().done (post_list) ->
+        for i in post_list
+            i.destroy()
