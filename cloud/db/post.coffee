@@ -111,11 +111,11 @@ DB class Post
                     user = AV.User.current()
                     query = Post.$
                     query.equalTo("ID", params.ID)
+                    query.include("owner")
                     query.first {
                         success:(post) ->
                             if post
                                 post.set('site_id',site.id)
-
 
                                 DB.PostStar.is_star(
                                     user
