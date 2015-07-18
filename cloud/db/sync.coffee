@@ -148,11 +148,11 @@ DB class EvernoteSync
                                 store.findNotesMetadata(
                                     filter, offset, limit, spec
                                     (err, li) ->
-                                        updateCount = li.updateCount
                                         if err or not li
                                             console.log err
                                             return
 
+                                        updateCount = li.updateCount
                                         if not li.notes.length
                                             the_end()
                                             return
