@@ -9,7 +9,7 @@ redis = require "cloud/_redis"
 R "POST_INBOX_SUBMIT_COUNT"
 R "POST_INBOX_PUBLISH_COUNT"
 R "POST_INBOX_RM_COUNT"
-R "USER_PUBLISH_COUNT"
+R "USER_PUBLISH_COUNT",":"
 
 #TODO tag_list by site
 #待审核， 已退回，已发布
@@ -23,14 +23,15 @@ _post_owner = (post)->
         }
 
 _rm_count = (post_inbox) ->
+    site_id = post_inbox.get('site').id
     if post_inbox.get 'publisher'
         key = R.POST_INBOX_PUBLISH_COUNT
         owner = post_inbox.get 'owner'
         if owner
-            redis.hincrby R.USER_PUBLISH_COUNT, owner.id, -1
+            redis.hincrby R.USER_PUBLISH_COUNT+site_id, owner.id, -1
     else
         key = R.POST_INBOX_SUBMIT_COUNT
-    redis.hincrby key, post_inbox.get('site').id, -1
+    redis.hincrby key, site_id, -1
 
 DB.Post.EVENT.on "rm",(post)->
     owner = post.get 'owner'
