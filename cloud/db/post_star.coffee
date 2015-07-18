@@ -17,8 +17,11 @@ DB class PostStar
 
 
     @is_star: (user, post_id, callback)->
-        redis.sismember R.PostStar + id_b64(user.id), post_id, (err, is_star)->
-            callback is_star
+        if user and user.id
+            redis.sismember R.PostStar + id_b64(user.id), post_id, (err, is_star)->
+                callback is_star
+        else
+            callback 0
 
     @by_user: (params, options) ->
         user = params.user or AV.User.current()
