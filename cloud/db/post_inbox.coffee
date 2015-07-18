@@ -192,23 +192,24 @@ DB class PostInbox
         post.save()
 
     @save:(params, options)->
+        {site_id} = params
         DB.Post.$.get(params.post_id).done (post)->
             PostInbox._post_set post, params
             data = PostInbox._get params, (o, is_new)->
                 if is_new
-                    redis.hincrby R.POST_INBOX_SUBMIT_COUNT, params.site_id, 1
+                    redis.hincrby R.POST_INBOX_SUBMIT_COUNT, site_id, 1
                 else
                     if o.get('publisher') or o.get('rmer')
-                        redis.hincrby R.POST_INBOX_SUBMIT_COUNT, params.site_id, 1
+                        redis.hincrby R.POST_INBOX_SUBMIT_COUNT, site_id, 1
 
                     if o.get 'publisher'
                         o.unset 'publisher'
-                        redis.hincrby R.POST_INBOX_PUBLISH_COUNT,  params.site_id, -1
-                        redis.hincrby R.USER_PUBLISH_COUNT,  params.site_id, -1
+                        redis.hincrby R.POST_INBOX_PUBLISH_COUNT,  site_id, -1
+                        redis.hincrby R.USER_PUBLISH_COUNT+site_id,  site_id, -1
 
                     if o.get 'rmer'
                         o.unset 'rmer'
-                        redis.hincrby R.POST_INBOX_RM_COUNT, params.site_id, -1
+                        redis.hincrby R.POST_INBOX_RM_COUNT, site_id, -1
 
                     o.save()
                     DB.SiteTagPost.$.equalTo(data).destroyAll()
@@ -217,8 +218,9 @@ DB class PostInbox
 
 
     @_publish:(user, params, options)->
+        {site_id}=params
         data = PostInbox._get params,(o, is_new)->
-            DB.SiteUserLevel._level user.id, params.site_id,(level)->
+            DB.SiteUserLevel._level user.id, site_id,(level)->
                 if level < SITE_USER_LEVEL.WRITER
                     options.success ''
                     return
@@ -233,7 +235,7 @@ DB class PostInbox
                         redis.hincrby R.POST_INBOX_PUBLISH_COUNT,  params.site_id, 1
                         owner =  post.get 'owner'
                         if owner
-                            redis.hincrby R.USER_PUBLISH_COUNT, owner.id, 1
+                            redis.hincrby R.USER_PUBLISH_COUNT+site_id, owner.id, 1
                     PostInbox._post_set post, params
                     DB.SiteTagPost.$.get_or_create(
                         data
