@@ -246,6 +246,7 @@ DB class PostInbox
     @submit:(params, options)->
         # 如果已经存在就不重复投稿
         PostInbox._get params, (o, is_new)->
+            console.log o.toJSON()
             if o.get 'rmer'
                 is_new = 1
                 o.unset 'rmer'
@@ -253,7 +254,6 @@ DB class PostInbox
             DB.SiteUserLevel._level_current_user params.site_id,(level)->
                 # 如果是管理员/编辑就直接发布，否则是投稿等待审核
                 if level >= SITE_USER_LEVEL.WRITER
-                    console.log level,typeof level
                     PostInbox.publish {
                         params
                     }, options
