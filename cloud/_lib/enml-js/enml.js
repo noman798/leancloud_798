@@ -380,21 +380,6 @@
 
   var XMLWriter;
   var SaxParser;
-  if(typeof exports == 'undefined'){
-
-    XMLWriter = window.XMLWriter;
-    SaxParser = window.SaxParser;
-
-    //Browser Code
-    window.enml = {};
-
-    window.enml.ENMLOfPlainText = ENMLOfPlainText;
-    window.enml.HTMLOfENML      = HTMLOfENML;
-    window.enml.PlainTextOfENML = PlainTextOfENML;
-    window.enml.TodosOfENML     = TodosOfENML;
-    window.enml.CheckTodoInENML = CheckTodoInENML;
-  }
-  else{
 
     //Node JS
     XMLWriter = require('./lib/xml-writer');
@@ -405,6 +390,5 @@
     exports.PlainTextOfENML = PlainTextOfENML;
     exports.TodosOfENML     = TodosOfENML;
     exports.CheckTodoInENML = CheckTodoInENML;
-  }
 
 })();
