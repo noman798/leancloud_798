@@ -254,7 +254,6 @@ DB class PostInbox
                 o.save()
             DB.SiteUserLevel._level submiter.id, params.site_id,(level)->
                 # 如果是管理员/编辑就直接发布，否则是投稿等待审核
-                console.log "level", level, params
                 if level >= SITE_USER_LEVEL.WRITER
                     PostInbox.publish {
                         params

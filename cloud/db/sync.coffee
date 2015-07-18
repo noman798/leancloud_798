@@ -61,6 +61,7 @@ DB class EvernoteSync
                 update_count = 0
                 if evernote_sync
                     update_count = evernote_sync.get('update_count')
+                
 
                 EvernoteSyncCount.$.get_or_create(
                     {
@@ -72,7 +73,7 @@ DB class EvernoteSync
                             to_update_count = 0
 
 
-                            _fetch = (note, update_count)->
+                            _fetch = (note)->
                                 ++ to_update_count
                                 guid = note.guid
                                 store.getNote(guid, true, true, false, false, (err, full_note) ->
@@ -112,7 +113,7 @@ DB class EvernoteSync
                                                             DB.PostInbox._submit_by_evernote(oauth.get('user'), post, site_tag_list)
                                                             success post
                                                             -- to_update_count
-                                                            if to_update_count
+                                                            if to_update_count > 0
                                                                 counter.increment 'count'
                                                                 counter.save()
                                                             else
@@ -122,12 +123,14 @@ DB class EvernoteSync
                                             )
                                     )
                                 )
+                            updateCount = update_count
                             the_end = ->
                                 EvernoteSyncCount.rm oauth_id
                                 EvernoteSync.new {
                                     oauth_id
-                                    update_count
+                                    update_count: updateCount
                                 }
+                            
                             filter = new Evernote.NoteFilter()
                             filter.words = """tag:@*"""
                             filter.order = Evernote.NoteSortOrder.UPDATE_SEQUENCE_NUMBER
@@ -145,6 +148,7 @@ DB class EvernoteSync
                                 store.findNotesMetadata(
                                     filter, offset, limit, spec
                                     (err, li) ->
+                                        updateCount = li.updateCount
                                         if err or not li
                                             console.log err
                                             return
@@ -156,7 +160,7 @@ DB class EvernoteSync
                                         for note in li.notes
                                             if note.updateSequenceNum <= update_count
                                                 break
-                                            _fetch note, li.updateCount
+                                            _fetch note
                                     
                                 )
                             _ 0
