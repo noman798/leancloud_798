@@ -170,14 +170,15 @@ DB class PostInbox
                 for each_oauth in oauth_list
                     site_name = each_oauth.get('site').get('name')
                     if site_tag_list.indexOf(site_name.toLowerCase())>=0
-                        PostInbox.submit({
-                            site_id : each_oauth.get('site').id
-                            owner:post.get 'owner'
-                            post_id
-                        }, {
-                            success:(o) ->
-                                0
-                        })
+                        PostInbox._submit(
+                            post.get('owner').id
+                            {
+                                site_id : each_oauth.get('site').id
+                                post_id
+                            }, {
+                                success:(o) ->
+                                    0
+                            })
 
         })
 
@@ -242,8 +243,8 @@ DB class PostInbox
                     o.set 'publisher', AV.User.current()
                     o.save()
         options.success ''
-
-    @submit:(params, options)->
+    
+    @_submit:(sumbiter, params, options)->
         # 如果已经存在就不重复投稿
         PostInbox._get params, (o, is_new)->
             console.log o.toJSON()
@@ -251,7 +252,7 @@ DB class PostInbox
                 is_new = 1
                 o.unset 'rmer'
                 o.save()
-            DB.SiteUserLevel._level_current_user params.site_id,(level)->
+            DB.SiteUserLevel._level sumbiter.id, params.site_id,(level)->
                 # 如果是管理员/编辑就直接发布，否则是投稿等待审核
                 if level >= SITE_USER_LEVEL.WRITER
                     PostInbox.publish {
@@ -262,6 +263,8 @@ DB class PostInbox
                         redis.hincrby R.POST_INBOX_SUBMIT_COUNT, params.site_id, 1
                     options.success ''
 
+    @submit:(params, options)->
+        PostInbox._submit(AV.User.current(),params, options)
 
     @rm:(params, options)->
         # 管理员/编辑 或者 投稿者本人可以删除
