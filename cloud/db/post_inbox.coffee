@@ -167,11 +167,14 @@ DB class PostInbox
         query.equalTo('user', user)
         query.find({
             success: (oauth_list) ->
+                console.log "oauth_list", oauth_list
                 for each_oauth in oauth_list
                     site_name = each_oauth.get('site').get('name')
+                    console.log site_name,site_tag_list
                     if site_tag_list.indexOf(site_name.toLowerCase())>=0
+                        console.log "submit", site_name
                         PostInbox._submit(
-                            post.get('owner').id
+                            user.id
                             {
                                 site_id : each_oauth.get('site').id
                                 post_id

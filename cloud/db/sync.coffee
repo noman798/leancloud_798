@@ -96,12 +96,12 @@ DB class EvernoteSync
                                                 guid
                                                 (id, success)->
                                                     data = {
-                                                            title: full_note.title
-                                                            html
-                                                            owner:oauth.get 'user'
-                                                            tag_list
-                                                            id
-                                                        }
+                                                        title: full_note.title
+                                                        html
+                                                        owner:oauth.get 'user'
+                                                        tag_list
+                                                        id
+                                                    }
                                                     if brief
                                                         data.brief = brief
                                                     DB.PostHtml.new(
