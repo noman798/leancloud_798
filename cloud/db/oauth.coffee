@@ -1,6 +1,7 @@
 require "cloud/db/site"
 require "cloud/db/sync"
 DB = require "cloud/_db"
+trim = require("underscore.string/trim")
 #NODE_ENV = process.env.NODE_ENV || 'development'
 
 DB class Oauth

@@ -1,4 +1,5 @@
 require "cloud/db/oauth"
+trim = require("underscore.string/trim")
 evernote2html = require "cloud/db/evernote2html"
 brief2markdown = require "cloud/db/brief2markdown"
 require 'cloud/db/post_inbox'
@@ -86,7 +87,7 @@ DB class EvernoteSync
                                             if each_tag.charAt(0) != '@'
                                                 tag_list.push each_tag
                                             else
-                                                each_tag = each_tag.slice(1).toLowerCase()
+                                                each_tag = trim each_tag.slice(1).toLowerCase()
                                                 if each_tag != "blog"
                                                     site_tag_list.push each_tag
 
