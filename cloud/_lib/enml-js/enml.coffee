@@ -55,16 +55,7 @@ base64ArrayBuffer = (bytes) ->
     base64
 
 
-###*
-* HTMLOfENML
-* Convert ENML into HTML for showing in web browsers.
-*
-* @param { string } text (ENML)
-* @param    { Map <string (hash), url (string) || { url: (string), title: (string) } >, Optional } resources
-* @return string - HTML
-###
-
-HTMLOfENML = (text, resources) ->
+enml2html = (text, resources) ->
     resources = resources or []
     resource_map = {}
     resources.forEach (resource) ->
@@ -183,4 +174,4 @@ HTMLOfENML = (text, resources) ->
     writer.toString()
 
 
-exports.HTMLOfENML = HTMLOfENML
+module.exports = enml2html
