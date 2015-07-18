@@ -2,8 +2,11 @@ DB = require "cloud/_db"
 require "cloud/db/sync"
 AV.User.current = -> AV.Object.createWithoutData('User', '5566f0cee4b09f185e943711')
 
-DB.Evernote.sync {
+DB.EvernoteSync.sync {
     id: "559bbce9e4b0a35bc4d36b77"
+},{
+    success:->
+        console.log 'success'
 }
 ###
 require "test/redis_count_test"

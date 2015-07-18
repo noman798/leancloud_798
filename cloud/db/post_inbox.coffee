@@ -172,7 +172,7 @@ DB class PostInbox
                     if site_tag_list.indexOf(site_name.toLowerCase())>=0
                         console.log "submit", site_name
                         PostInbox._submit(
-                            user.id
+                            user
                             {
                                 site_id : each_oauth.get('site').id
                                 post_id
@@ -245,14 +245,14 @@ DB class PostInbox
                     o.save()
         options.success ''
     
-    @_submit:(sumbiter, params, options)->
+    @_submit:(submiter, params, options)->
         # 如果已经存在就不重复投稿
         PostInbox._get params, (o, is_new)->
             if o.get 'rmer'
                 is_new = 1
                 o.unset 'rmer'
                 o.save()
-            DB.SiteUserLevel._level sumbiter.id, params.site_id,(level)->
+            DB.SiteUserLevel._level submiter.id, params.site_id,(level)->
                 # 如果是管理员/编辑就直接发布，否则是投稿等待审核
                 console.log "level", level, params
                 if level >= SITE_USER_LEVEL.WRITER
