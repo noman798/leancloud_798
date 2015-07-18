@@ -170,7 +170,6 @@ DB class PostInbox
                 for each_oauth in oauth_list
                     site_name = each_oauth.get('site').get('name')
                     if site_tag_list.indexOf(site_name.toLowerCase())>=0
-                        console.log "submit", site_name
                         PostInbox._submit(
                             user
                             {
@@ -180,7 +179,6 @@ DB class PostInbox
                                 success:(o) ->
                                     0
                             })
-
         })
 
     @_post_set: (post, {tag_list, title, brief})->
@@ -212,11 +210,9 @@ DB class PostInbox
         options.success ''
 
 
-    
-    @publish:(params, options)->
-        #管理员发布的时候可以设置标签
+    @_publish:(user, params, options)->
         data = PostInbox._get params,(o, is_new)->
-            DB.SiteUserLevel._level_current_user params.site_id,(level)->
+            DB.SiteUserLevel._level user.id, params.site_id,(level)->
 
                 if level < SITE_USER_LEVEL.WRITER
                     options.success ''
@@ -244,7 +240,10 @@ DB class PostInbox
                     o.set 'publisher', AV.User.current()
                     o.save()
         options.success ''
-    
+
+    @publish:(params, options)->
+        PostInbox._publish AV.User.current(), params, options
+
     @_submit:(submiter, params, options)->
         # 如果已经存在就不重复投稿
         PostInbox._get params, (o, is_new)->
@@ -255,7 +254,7 @@ DB class PostInbox
             DB.SiteUserLevel._level submiter.id, params.site_id,(level)->
                 # 如果是管理员/编辑就直接发布，否则是投稿等待审核
                 if level >= SITE_USER_LEVEL.WRITER
-                    PostInbox.publish {
+                    PostInbox._publish submiter, {
                         params
                     }, options
                 else
