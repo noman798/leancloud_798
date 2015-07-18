@@ -18,3 +18,4 @@ DB.PostInbox.by_site {
             console.log i.get 'owner'
 }
 ###
+#AV.User.current = -> AV.Object.createWithoutData('User', '5566f0cee4b09f185e943711')
