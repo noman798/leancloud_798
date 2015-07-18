@@ -1,6 +1,12 @@
+
+
+trim = require("underscore.string/trim")
 RE_DISABLE_CHAR_IN_USERNAME = RegExp(/[(\t)(\ )(\~)(\!)(\@)(\#)(\$)(\%)(\^)(\&)(\*)(\()(\))(\+)(\=)(\[)(\])(\{)(\})(\|)(\\)(\;)(\:)(\')(\")(\,)(\.)(\/)(\<)(\>)(\?)(\)]+/)
 
 check=(o,error) ->
+    for k,v of o
+        o[k]=trim v
+
     if not o.username
         error.username = "请输入昵称"
     else if RE_DISABLE_CHAR_IN_USERNAME.test(o.username)
