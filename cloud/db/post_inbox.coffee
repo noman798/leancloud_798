@@ -167,13 +167,18 @@ DB class PostInbox
         query.equalTo('user', user)
         query.find({
             success: (oauth_list) ->
+                exist = {}
                 for each_oauth in oauth_list
                     site_name = each_oauth.get('site').get('name')
                     if site_tag_list.indexOf(site_name.toLowerCase())>=0
+                        site_id = each_oauth.get('site').id
+                        if site_id of exist
+                            continue
+                        exist[site_id]=1
                         PostInbox._submit(
                             user
                             {
-                                site_id : each_oauth.get('site').id
+                                site_id
                                 post_id
                             }, {
                                 success:(o) ->
@@ -213,7 +218,6 @@ DB class PostInbox
     @_publish:(user, params, options)->
         data = PostInbox._get params,(o, is_new)->
             DB.SiteUserLevel._level user.id, params.site_id,(level)->
-
                 if level < SITE_USER_LEVEL.WRITER
                     options.success ''
                     return
@@ -254,9 +258,7 @@ DB class PostInbox
             DB.SiteUserLevel._level submiter.id, params.site_id,(level)->
                 # 如果是管理员/编辑就直接发布，否则是投稿等待审核
                 if level >= SITE_USER_LEVEL.WRITER
-                    PostInbox._publish submiter, {
-                        params
-                    }, options
+                    PostInbox._publish submiter,params, options
                 else
                     if is_new
                         redis.hincrby R.POST_INBOX_SUBMIT_COUNT, params.site_id, 1
