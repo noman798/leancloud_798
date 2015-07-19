@@ -2,6 +2,7 @@ SaxParser = require('./lib/xml-parser').SaxParser
 XMLWriter = require('./lib/xml-writer')
 
 trim = require("underscore.string/trim")
+replaceAll = require("underscore.string/replaceAll")
 
 
 base64ArrayBuffer = (bytes) ->
@@ -75,11 +76,10 @@ enml2html = (text, resources) ->
         cb.onStartElementNS (elem, attrs, prefix, uri, namespaces) ->
             if elem == 'en-note'
                 0
-           # else if elem == "div"
-           #     if attrs.length > 0
-           #         console.log attrs
-           #         attrs = []
-
+            else if elem == "div"
+                if attrs.length > 0
+                    attrs = []
+                writer.startElement elem
             else if elem == "br"
                 attrs = []
                 writer.startElement elem
@@ -171,7 +171,10 @@ enml2html = (text, resources) ->
         return
     )
     parser.parseString text
-    writer.toString()
+    html = writer.toString()
+    html = replaceAll( html ,"<div>", "")
+    html = replaceAll( html ,"</div>", "\n")
+    html = replaceAll( html ,"<br/>", "\n")
 
 
 module.exports = enml2html
