@@ -8,7 +8,9 @@ endsWith = require 'underscore.string/endsWith'
 startsWith = require 'underscore.string/startsWith'
 qiniu_token = require 'cloud/db/qiniu_token'
 qiniu = require 'qiniu'
-enml = require 'enml-js'
+#enml = require 'enml-js'
+
+enml2html = require "cloud/_lib/enml/enml"
 
 Q = require "q"
 Evernote = require('evernote').Evernote
@@ -43,7 +45,8 @@ module.exports = (full_note, callback)->
             to_str = """<img src="#{config.QINIU.HTTP}#{i.key}"/>"""
             content = replaceAll(content, from_str, to_str)
 
-        html = enml.HTMLOfENML content, full_note.resources
+        #html = enml.HTMLOfENML content, full_note.resources
+        html = enml2html content, full_note.resources
         html = strLeft(html,"</body>")
         html = strRight(strRight(html,"<body"),">")
 
