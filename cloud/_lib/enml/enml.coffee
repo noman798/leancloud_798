@@ -69,19 +69,7 @@ enml2html = (text, resources) ->
         linkTitle = undefined
         cb.onStartElementNS (elem, attrs, prefix, uri, namespaces) ->
             if elem == 'en-note'
-                writer.startElement 'html'
-                writer.startElement 'head'
-                writer.startElement 'meta'
-                writer.writeAttribute 'http-equiv', 'Content-Type'
-                writer.writeAttribute 'content', 'text/html; charset=UTF-8'
-                writer.endElement()
-                writer.endElement()
-                writer.startElement 'body'
-                if !(attrs and attrs[0] and attrs[0][0] and attrs[0][0] == 'style')
-                    writer.writeAttribute 'style', 'word-wrap: break-word; -webkit-nbsp-mode: space; -webkit-line-break: after-white-space;'
-            else if elem == 'en-todo'
-                writer.startElement 'input'
-                writer.writeAttribute 'type', 'checkbox'
+                0
             else if elem == 'en-media'
                 type = null
                 hash = null
@@ -140,10 +128,7 @@ enml2html = (text, resources) ->
             return
         cb.onEndElementNS (elem, prefix, uri) ->
             if elem == 'en-note'
-                writer.endElement()
-                #body
-                writer.endElement()
-                #html
+                0
             else if elem == 'en-media'
                 if mediaTagStarted
                     writer.endElement()
