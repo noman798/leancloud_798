@@ -5,12 +5,46 @@ trim = require("underscore.string/trim")
 rtrim = require("underscore.string/rtrim")
 replaceAll = require("underscore.string/replaceAll")
 startsWith = require("underscore.string/startsWith")
+WHITESPACE = "\r\n\t 　 "
 
 blockquote = (line_list)->
-    r = []
+    line_list.push ""
+    line_list.push "."
+    r = ['<p>']
+    pre_is_blockquote = 0
+    pre_is_empty = 0
+
     for i in line_list
+        console.log ">",i
+        if not trim(i,WHITESPACE).length
+            pre_is_empty = 1
+            continue
+        if pre_is_empty
+            r.push "</p>"
+            r.push "<p>"
+            pre_is_empty = 0
+        else if r.length > 1
+            r.push "<br>"
+
+        if startsWith(i,"    ")
+            i = i.slice(4)
+            if not pre_is_blockquote
+                r.push '<blockquote>'
+                pre_is_blockquote = 1
+        else
+            if pre_is_blockquote
+                pre_is_blockquote = 0
+                r.push "</blockquote>"
         r.push i
-    r
+        #if i.length
+        #    r.push "<br>\n"
+        #    pre_is_empty = 0
+        #else
+        #    pre_is_empty = 1
+    r.pop()
+    r.pop()
+
+    r.join ''
 
 base64ArrayBuffer = (bytes) ->
     base64 = ''
@@ -207,7 +241,7 @@ enml2html = (text, resources) ->
     r = []
     pre = null
     for i in html
-        i = rtrim(i,"\r\n\t 　")
+        i = rtrim(i,WHITESPACE)
         if pre == "" and i == ""
             continue
         else
@@ -215,8 +249,6 @@ enml2html = (text, resources) ->
             pre = i
 
     blockquote(r)
-    r.join '\n'
-        
 
 #    r = ["<p>"]
 #    pre = null
