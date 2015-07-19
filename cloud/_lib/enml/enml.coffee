@@ -79,7 +79,7 @@ enml2html = (text, resources) ->
             if elem == 'en-note'
                 0
             else if (elem == "div") or (elem == 'pre')
-                writer.startElement elem
+                writer.startElement 'div'
                 if attrs.length
                     for [k,v] in attrs
                         if k == 'style'
