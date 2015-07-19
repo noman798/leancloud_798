@@ -75,14 +75,13 @@ enml2html = (text, resources) ->
         cb.onStartElementNS (elem, attrs, prefix, uri, namespaces) ->
             if elem == 'en-note'
                 0
-            else if elem == "div"
+           # else if elem == "div"
+           #     if attrs.length > 0
+           #         console.log attrs
+           #         attrs = []
 
-                if attrs.length > 0
-                    console.log attrs
-                    attrs = []
-
-            else if elem == "br"
-                attrs = []
+           #else if elem == "br"
+           #     attrs = []
             else if elem == 'en-media'
             
                 type = null
@@ -141,10 +140,10 @@ enml2html = (text, resources) ->
         cb.onEndElementNS (elem, prefix, uri) ->
             if elem == 'en-note'
                 0
-            else if elem == "div"
-                0
-            else if elem == "br"
-                writer.text "\n"
+            #else if elem == "div"
+            #    0
+            #else if elem == "br"
+            #    writer.text "\n"
             else if elem == 'en-media'
                 if mediaTagStarted
                     writer.endElement()
@@ -164,9 +163,8 @@ enml2html = (text, resources) ->
                 writer.endElement()
             return
         cb.onCharacters (chars) ->
-            chars = trim((trim(chars).length),"\r\n")
+            chars = trim(chars,"\r\n\t 　")
             if chars.length
-                console.log "-", chars, chars.length
                 writer.text chars
             return
         return
