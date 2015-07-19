@@ -80,8 +80,9 @@ enml2html = (text, resources) ->
            #         console.log attrs
            #         attrs = []
 
-           #else if elem == "br"
-           #     attrs = []
+            else if elem == "br"
+                attrs = []
+                writer.startElement elem
             else if elem == 'en-media'
             
                 type = null
