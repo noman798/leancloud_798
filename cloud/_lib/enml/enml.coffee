@@ -15,7 +15,7 @@ blockquote = (line_list)->
     pre_is_empty = 0
 
     for i in line_list
-        console.log ">",i
+        #console.log ">",i
         if not trim(i,WHITESPACE).length
             pre_is_empty = 1
             continue
