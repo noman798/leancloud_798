@@ -1,6 +1,7 @@
 XMLWriter = require('./lib/xml-writer')
 SaxParser = require('./lib/xml-parser').SaxParser
-    
+trim = require("underscore.string/trim")
+
 
 base64ArrayBuffer = (bytes) ->
     base64 = ''
@@ -67,15 +68,32 @@ enml2html = (text, resources) ->
         mediaTagStarted = false
         linkTagStarted = false
         linkTitle = undefined
+
+
+        div_char_count = 0
+        div_br_count = 0
+        div_en_count = 0
+
         cb.onStartElementNS (elem, attrs, prefix, uri, namespaces) ->
             if elem == 'en-note'
                 0
-            #else if elem == "div"
-                0
+            else if elem == "div"
+                div_char_count = 0
+                div_br_count = 0
+                div_en_count = 0
+
+                if attrs.length > 0
+                    console.log attrs
+                    attrs = []
+
             else if elem == "br"
+                div_br_count += 1
                 attrs = []
                 writer.startElement elem
             else if elem == 'en-media'
+            
+                ++ div_en_count
+
                 type = null
                 hash = null
                 width = 0
@@ -134,7 +152,7 @@ enml2html = (text, resources) ->
         cb.onEndElementNS (elem, prefix, uri) ->
             if elem == 'en-note'
                 0
-            #else if elem == "div"
+            else if elem == "div"
                 0
             #else if elem == "br"
                 0
@@ -157,6 +175,7 @@ enml2html = (text, resources) ->
                 writer.endElement()
             return
         cb.onCharacters (chars) ->
+            div_char_count += (trim(chars).length)
             writer.text chars
             return
         return
