@@ -227,7 +227,7 @@ enml2html = (text, resources) ->
                 writer.text "    "
             chars = rtrim(chars,"\r\n\t 　")
             if chars.length
-                writer.text chars 
+                writer.text chars
             return
         return
     )
