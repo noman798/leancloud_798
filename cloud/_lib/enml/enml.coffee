@@ -2,6 +2,7 @@ SaxParser = require('./lib/xml-parser').SaxParser
 XMLWriter = require('./lib/xml-writer')
 
 trim = require("underscore.string/trim")
+rtrim = require("underscore.string/rtrim")
 replaceAll = require("underscore.string/replaceAll")
 
 
@@ -87,7 +88,7 @@ enml2html = (text, resources) ->
                             for i in v
                                 [css,value] = i.split(':')
                                 if css == "padding-left"
-                                    writer.text "> "
+                                    writer.text "    "
                     attrs = []
             else if elem == "br"
                 attrs = []
@@ -173,7 +174,7 @@ enml2html = (text, resources) ->
                 writer.endElement()
             return
         cb.onCharacters (chars) ->
-            chars = trim(chars,"\r\n\t 　")
+            chars = rtrim(chars,"\r\n\t 　")
             if chars.length
                 writer.text chars
             return
@@ -191,7 +192,7 @@ enml2html = (text, resources) ->
     r = []
     pre = null
     for i in html
-        i = trim(i,"\r\n\t 　")
+        i = rtrim(i,"\r\n\t 　")
         if pre == "" and i == ""
             continue
         else
