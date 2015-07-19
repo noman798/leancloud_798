@@ -21,8 +21,6 @@ blockquote = (line_list)->
             continue
         if pre_is_empty
             r.push "</p>"
-            r.push "<p>"
-            pre_is_empty = 0
         else if r.length > 1
             r.push "<br>"
 
@@ -35,6 +33,10 @@ blockquote = (line_list)->
             if pre_is_blockquote
                 pre_is_blockquote = 0
                 r.push "</blockquote>"
+
+        if pre_is_empty
+            r.push "<p>"
+            pre_is_empty = 0
         r.push i
         #if i.length
         #    r.push "<br>\n"
