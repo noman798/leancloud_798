@@ -87,7 +87,7 @@ enml2html = (text, resources) ->
                             for i in v
                                 [css,value] = i.split(':')
                                 if css == "padding-left"
-                                    writer.text ">>> "
+                                    writer.text "> "
                     attrs = []
             else if elem == "br"
                 attrs = []
