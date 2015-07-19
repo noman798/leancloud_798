@@ -80,6 +80,15 @@ enml2html = (text, resources) ->
                 0
             else if (elem == "div") or (elem == 'pre')
                 writer.startElement elem
+                if attrs.length
+                    for [k,v] in attrs
+                        if k == 'style'
+                            v = v.split(";")
+                            for i in v
+                                [css,value] = i.split(':')
+                                if css == "padding-left"
+                                    writer.text ">>> "
+                    attrs = []
             else if elem == "br"
                 attrs = []
                 writer.startElement elem
