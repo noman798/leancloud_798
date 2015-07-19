@@ -164,3 +164,15 @@ enml2html = require "./enml"
 
 console.log enml2html enml
 
+###
+
+div -> br 
+    结束上一个p， 开始一个新p
+    如果之前没有开始p，则追加一格br
+单个 div -> br
+hr 结束 p
+文章结尾 结束 p
+
+
+###
+
