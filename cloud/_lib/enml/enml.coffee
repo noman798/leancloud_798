@@ -1,9 +1,6 @@
 XMLWriter = require('./lib/xml-writer')
 SaxParser = require('./lib/xml-parser').SaxParser
     
-    #Node JS
-    # Convert Uint8Array to base64 string
-    #    https://gist.github.com/jonleighton/958841
 
 base64ArrayBuffer = (bytes) ->
     base64 = ''
