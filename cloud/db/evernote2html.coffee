@@ -36,12 +36,12 @@ module.exports = (full_note, callback)->
     content = full_note.content
 
     Q.all(to_fetch).then (params)->
+        console.log content
         for i in params
             hash = new Buffer(i.data.bodyHash).toString('hex')
             from_str = """<en-media hash="#{hash}" type="#{i.mime}"></en-media>"""
             to_str = """<img src="#{config.QINIU.HTTP}#{i.key}"/>"""
             content = replaceAll(content, from_str, to_str)
-
 
         html = enml.HTMLOfENML content, full_note.resources
         html = strLeft(html,"</body>")
