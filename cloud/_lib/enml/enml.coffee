@@ -77,8 +77,6 @@ enml2html = (text, resources) ->
             if elem == 'en-note'
                 0
             else if elem == "div"
-                if attrs.length > 0
-                    attrs = []
                 writer.startElement elem
             else if elem == "br"
                 attrs = []
@@ -174,7 +172,42 @@ enml2html = (text, resources) ->
     html = writer.toString()
     html = replaceAll( html ,"<div>", "")
     html = replaceAll( html ,"</div>", "\n")
+    html = replaceAll( html ,"<p>", "")
+    html = replaceAll( html ,"</p>", "\n")
     html = replaceAll( html ,"<br/>", "\n")
+    html = trim(html,"\r\n\t 　")
+    html = html.split("\n")
+    r = []
+    pre = null
+    for i in html
+        i = trim(i,"\r\n\t 　")
+        if pre == "" and i == ""
+            continue
+        else
+            r.push i
+            pre = i
+    r.join '\n'
+        
 
+#    r = ["<p>"]
+#    pre = null
+#    for i in html
+#        i = trim(i,"\r\n\t 　")
+#        if pre == '' and i == ''
+#            r.push "</p>\n<p>"
+#        else
+#            if pre
+#                r.push "<br>"
+#            r.push i
+#        pre = i
+#
+#    r.join('')+"</p>"
 
 module.exports = enml2html
+
+
+
+
+
+
+
