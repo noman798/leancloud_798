@@ -68,7 +68,11 @@ enml2html = (text, resources) ->
         linkTagStarted = false
         linkTitle = undefined
         cb.onStartElementNS (elem, attrs, prefix, uri, namespaces) ->
-            if elem == 'en-note'
+            if elem == "div"
+                console.log 1
+            else if elem == "br"
+                console.log 2
+            else if elem == 'en-note'
                 0
             else if elem == 'en-media'
                 type = null
