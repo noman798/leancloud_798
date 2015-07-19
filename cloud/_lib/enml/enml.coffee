@@ -74,6 +74,7 @@ enml2html = (text, resources) ->
         linkTagStarted = false
         linkTitle = undefined
 
+        in_blockquote = 0
         blockquote_depth = 0
 
         cb.onStartElementNS (elem, attrs, prefix, uri, namespaces) ->
@@ -88,8 +89,10 @@ enml2html = (text, resources) ->
                             for i in v
                                 [css,value] = i.split(':')
                                 if css == "padding-left"
-                                    writer.text "    "
+                                    in_blockquote = 1
                     attrs = []
+                if in_blockquote
+                    blockquote_depth+=1
             else if elem == "br"
                 attrs = []
                 writer.startElement elem
@@ -152,6 +155,10 @@ enml2html = (text, resources) ->
             if elem == 'en-note'
                 0
             else if (elem == "div") or (elem == "pre")
+                if in_blockquote
+                    blockquote_depth-=1
+                    if not blockquote_depth
+                        in_blockquote = 0
                 writer.endElement()
             #else if elem == "br"
             #    writer.text "\n"
@@ -174,6 +181,8 @@ enml2html = (text, resources) ->
                 writer.endElement()
             return
         cb.onCharacters (chars) ->
+            if in_blockquote
+                writer.text "    "
             chars = rtrim(chars,"\r\n\t 　")
             if chars.length
                 writer.text chars

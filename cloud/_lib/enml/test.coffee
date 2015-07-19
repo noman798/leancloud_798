@@ -80,7 +80,7 @@ enml = """<?xml version="1.0" encoding="UTF-8"?>
 <br clear="none"/>
 </div>
 <div>
-<pre style="padding-left: 30px;" xml:space="preserve">黑客与画家的共同之处，在于他们都是创作者。与作曲家、建筑师、作家一样，黑客和画家都是试图创作出优秀的作品。他们本质上都不是在做研究，虽然在创作过程中，他们可能会发现一些新技术（那样当然更好）。
+<pre style="padding-left: 30px;" xml:space="preserve">黑客与画家的共同之处，在于他们都是创作者。与作曲家、建筑师、作家一样，黑客和画家都是试图创作出优秀的作品。<br/>他们本质上都不是在做研究，虽然在创作过程中，他们可能会发现一些新技术（那样当然更好）。
 </pre>
 <div style="padding-left: 30px;">
 <br clear="none"/>
