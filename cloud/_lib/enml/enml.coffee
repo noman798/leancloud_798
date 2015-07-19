@@ -73,10 +73,12 @@ enml2html = (text, resources) ->
         linkTagStarted = false
         linkTitle = undefined
 
+        blockquote_depth = 0
+
         cb.onStartElementNS (elem, attrs, prefix, uri, namespaces) ->
             if elem == 'en-note'
                 0
-            else if elem == "div"
+            else if (elem == "div") or (elem == 'pre')
                 writer.startElement elem
             else if elem == "br"
                 attrs = []
@@ -139,8 +141,8 @@ enml2html = (text, resources) ->
         cb.onEndElementNS (elem, prefix, uri) ->
             if elem == 'en-note'
                 0
-            #else if elem == "div"
-            #    0
+            else if (elem == "div") or (elem == "pre")
+                writer.endElement()
             #else if elem == "br"
             #    writer.text "\n"
             else if elem == 'en-media'
