@@ -4,7 +4,13 @@ XMLWriter = require('./lib/xml-writer')
 trim = require("underscore.string/trim")
 rtrim = require("underscore.string/rtrim")
 replaceAll = require("underscore.string/replaceAll")
+startsWith = require("underscore.string/startsWith")
 
+blockquote = (line_list)->
+    r = []
+    for i in line_list
+        r.push i
+    r
 
 base64ArrayBuffer = (bytes) ->
     base64 = ''
@@ -207,6 +213,8 @@ enml2html = (text, resources) ->
         else
             r.push i
             pre = i
+
+    blockquote(r)
     r.join '\n'
         
 
