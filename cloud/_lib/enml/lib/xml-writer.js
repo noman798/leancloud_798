@@ -245,7 +245,7 @@ XMLWriter.prototype = {
         if (!this.tags && !this.comment && !this.pi && !this.cdata) return this;
         if (this.attributes && this.attribute) {
             ++this.texts;
-            this.write(content.replace('&', '&amp;').replace('"', '&quot;'));
+            this.write(content.replace('&', '&amp;').replace("  "," &nbsp;").replace('"', '&quot;'));
             return this;
         } else if (this.attributes && !this.attribute) {
             this.endAttributes();
