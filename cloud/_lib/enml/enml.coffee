@@ -131,7 +131,11 @@ enml2html = (text, resources) ->
                     return
             return
         cb.onEndElementNS (elem, prefix, uri) ->
-            if elem == 'en-note'
+            if elem == "div"
+                0
+            else if elem == "br"
+                0
+            else if elem == 'en-note'
                 0
             else if elem == 'en-media'
                 if mediaTagStarted
