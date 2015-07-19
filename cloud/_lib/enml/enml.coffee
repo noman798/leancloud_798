@@ -68,13 +68,13 @@ enml2html = (text, resources) ->
         linkTagStarted = false
         linkTitle = undefined
         cb.onStartElementNS (elem, attrs, prefix, uri, namespaces) ->
-            console.log "elem",elem
-            if elem == "div"
+            if elem == 'en-note'
+                0
+            #else if elem == "div"
                 0
             else if elem == "br"
-                0
-            else if elem == 'en-note'
-                0
+                attrs = []
+                writer.startElement elem
             else if elem == 'en-media'
                 type = null
                 hash = null
@@ -132,11 +132,11 @@ enml2html = (text, resources) ->
                     return
             return
         cb.onEndElementNS (elem, prefix, uri) ->
-            if elem == "div"
+            if elem == 'en-note'
                 0
-            else if elem == "br"
+            #else if elem == "div"
                 0
-            else if elem == 'en-note'
+            #else if elem == "br"
                 0
             else if elem == 'en-media'
                 if mediaTagStarted
