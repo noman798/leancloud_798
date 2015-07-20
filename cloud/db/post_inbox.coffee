@@ -235,7 +235,8 @@ DB class PostInbox
                     options.success ''
                     return
                 o.get('post').fetch (post)->
-                    if (not o.get 'publisher') or o.get('rmer')
+                    console.log "publish is new", is_new
+                    if (not o.get('publisher')) or o.get('rmer')
                         if not is_new
                             if o.get 'rmer'
                                 key = R.POST_INBOX_RM_COUNT
