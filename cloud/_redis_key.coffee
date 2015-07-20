@@ -11,3 +11,4 @@ module.exports =
     USER_PUBLISH_COUNT:'t'
     RoomMemberRoomId:'e'
     RoomMemberMessageReadCount:'f'
+    QINIU_PICTURE_HSET:'w'

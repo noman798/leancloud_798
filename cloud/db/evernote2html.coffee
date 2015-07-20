@@ -1,4 +1,3 @@
-
 config = require 'cloud/config'
 replaceAll = require 'underscore.string/replaceAll'
 strLeft = require 'underscore.string/strLeft'
@@ -9,6 +8,9 @@ startsWith = require 'underscore.string/startsWith'
 qiniu_token = require 'cloud/db/qiniu_token'
 qiniu = require 'qiniu'
 #enml = require 'enml-js'
+redis = require 'cloud/_redis'
+{R} = redis
+R 'QINIU_PICTURE_HSET'
 
 enml2html = require "cloud/_lib/enml/enml"
 
@@ -18,17 +20,25 @@ Evernote = require('evernote').Evernote
 
 qiniu_upload = (i)  ->
     Q.Promise (resolve)->
-        token = qiniu_token()
-        extra = new qiniu.io.PutExtra()
-        extra.mimeType = i.mime
-        qiniu.io.put(
-            token
-            null
-            i.data.body
-            extra
-            (err, ret) ->
-                i.key = ret.key
+        hash = new Buffer(i.data.bodyHash).toString('hex')
+        redis.hget(R.QINIU_PICTURE_HSET, hash, (err, key) ->
+            if key
+                i.key = key
                 resolve(i)
+            else
+                token = qiniu_token()
+                extra = new qiniu.io.PutExtra()
+                extra.mimeType = i.mime
+                qiniu.io.put(
+                    token
+                    null
+                    i.data.body
+                    extra
+                    (err, ret) ->
+                        i.key = ret.key
+                        redis.hset(R.QINIU_PICTURE_HSET, hash, i.key)
+                        resolve(i)
+                )
         )
 
 module.exports = (full_note, callback)->
@@ -38,7 +48,6 @@ module.exports = (full_note, callback)->
     content = full_note.content
 
     Q.all(to_fetch).then (params)->
-        console.log content
         for i in params
             hash = new Buffer(i.data.bodyHash).toString('hex')
             from_str = """<en-media hash="#{hash}" type="#{i.mime}"></en-media>"""
@@ -49,5 +58,3 @@ module.exports = (full_note, callback)->
         html = enml2html content, full_note.resources
 
         callback html
-
-    
