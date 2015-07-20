@@ -20,4 +20,4 @@ DB.Post.rm({
 }
 )
 
-#require "test/redis_count_test"
+require "test/redis_count_test"
