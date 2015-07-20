@@ -32,10 +32,15 @@ _rm_count = (post_inbox, real_rm) ->
         if owner
             redis.hincrby R.USER_PUBLISH_COUNT+site_id, owner.id, -1
     else
+        console.log "else",real_rm
         if real_rm
+            console.log "real_rm",post_inbox
+            console.log post_inbox.get 'rmer'
             if post_inbox.get 'rmer'
+                console.log "RM count"
                 key = R.POST_INBOX_RM_COUNT
             else
+                console.log "submit count"
                 key = R.POST_INBOX_SUBMIT_COUNT
         else
             key = R.POST_INBOX_SUBMIT_COUNT
