@@ -46,31 +46,6 @@ module.exports = (full_note, callback)->
 
         #html = enml.HTMLOfENML content, full_note.resources
         html = enml2html content, full_note.resources
-        html = strLeft(html,"</body>")
-        html = strRight(strRight(html,"<body"),">")
-
-        html = replaceAll(html, "<div","<p")
-        html = replaceAll(html, "</div>","</p>")
-        br = '<p><br clear="none"/></p>'
-        while 1
-            _html = html
-            _html = replaceAll(_html, '''<p><p>''',"<p>")
-            _html = replaceAll(_html, '''</p></p>''',"</p>")
-            if endsWith(_html, '<p></p>')
-                _html = strRight(_html, '<p></p>')
-            if startsWith(_html, br)
-                _html = strRight(_html, br)
-            if endsWith(_html, br)
-                _html = strLeftBack(_html, br)
-            if _html == html
-                break
-            html = _html
-
-        html = replaceAll(html, '''</p><p><br clear="none"/></p>''',"</P>")
-        html = replaceAll(html, '''<br clear="none"><br>''',"<br>")
-        html = replaceAll(html, '''</p><p>''',"<br>")
-        html = replaceAll(html, '''</P>''',"</p>")
-
 
         callback html
 

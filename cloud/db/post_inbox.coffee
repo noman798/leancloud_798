@@ -22,15 +22,23 @@ _post_owner = (post)->
             username:owner.get 'username'
         }
 
-_rm_count = (post_inbox) ->
+_rm_count = (post_inbox, real_rm) ->
     site_id = post_inbox.get('site').id
-    if post_inbox.get 'publisher'
+    publisher = post_inbox.get('publisher')
+        
+    if publisher
         key = R.POST_INBOX_PUBLISH_COUNT
         owner = post_inbox.get 'owner'
         if owner
             redis.hincrby R.USER_PUBLISH_COUNT+site_id, owner.id, -1
     else
-        key = R.POST_INBOX_SUBMIT_COUNT
+        if real_rm
+            if post_inbox.get 'rmer'
+                key = R.POST_INBOX_RM_COUNT
+            else
+                key = R.POST_INBOX_SUBMIT_COUNT
+        else
+            key = R.POST_INBOX_SUBMIT_COUNT
     redis.hincrby key, site_id, -1
 
 DB.Post.EVENT.on "rm",(post)->
@@ -40,12 +48,11 @@ DB.Post.EVENT.on "rm",(post)->
     q = DB.SiteTagPost.$
     q.equalTo({post})
     q.destroyAll()
-
     DB.PostInbox.$.equalTo({
         post
     }).find().done (post_inbox_list)->
         for post_inbox in post_inbox_list
-            _rm_count post_inbox
+            _rm_count post_inbox,1
             post_inbox.destroy()
     
 
@@ -125,13 +132,14 @@ DB class PostInbox
                     _post_owner post
                     post.set "is_submit", 1
 
+                    #方便前端显示退稿人
+                    rmer = i.get 'rmer'
+                    if rmer
+                        post.set 'rmer',rmer
+
                     publisher = i.get 'publisher'
                     if publisher
                         post.set 'publisher', publisher
-
-                    rmer = i.get 'rmer'
-                    if rmer
-                        post.set 'rmer', rmer
                     _set_tag_list(post)
                     result.push post
 
@@ -152,6 +160,7 @@ DB class PostInbox
                 data
                 {
                     create:(post_inbox)->
+                        console.log "create"
                         is_new = true
                     success:(post_inbox)->
                         callback(post_inbox, is_new)
@@ -159,8 +168,9 @@ DB class PostInbox
             )
         data
 
-    @_submit_by_evernote:(user, post, site_tag_list)->
+    @_submit_by_evernote:(post, site_tag_list)->
         post_id = post.id
+        user = post.get 'owner'
         #通过Oauth查找用户user_id绑定的所有站点可以通过 include site来获取这些站点的名称
         #遍历站点名toLowerCase，如site_tag_list存在，那么就发布此文章（注意同步post.tag_list）
         query = DB.Oauth.$
@@ -225,7 +235,8 @@ DB class PostInbox
                     options.success ''
                     return
                 o.get('post').fetch (post)->
-                    if (not o.get 'publisher') or o.get('rmer')
+                    console.log "publish is new", is_new
+                    if (not o.get('publisher')) or o.get('rmer')
                         if not is_new
                             if o.get 'rmer'
                                 key = R.POST_INBOX_RM_COUNT
@@ -244,7 +255,7 @@ DB class PostInbox
                             site_tag_post.save()
                     )
                     o.unset 'rmer'
-                    o.set 'publisher', AV.User.current()
+                    o.set 'publisher', user
                     o.save()
         options.success ''
 
@@ -294,15 +305,15 @@ DB class PostInbox
                         _count()
                     else
                         DB.SiteUserLevel._level_current_user params.site_id,(level)->
-                            console.log level,typeof level
                             if level >= SITE_USER_LEVEL.EDITOR
-                                console.log "rmer", current
-                                post_inbox.set 'rmer',current
-                                post_inbox.save success:->
-                                    console.log "rm success"
-                                    _count()
-                                    redis.hincrby R.POST_INBOX_RM_COUNT, params.site_id, 1
-
+                                post_inbox.set 'rmer', current
+                                post_inbox.save(
+                                    success:->
+                                        _count()
+                                        redis.hincrby R.POST_INBOX_RM_COUNT, params.site_id, 1
+                                    error:(err)->
+                                        console.log err
+                                )
 
             options.success ''
 
