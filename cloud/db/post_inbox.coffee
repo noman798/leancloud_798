@@ -167,8 +167,9 @@ DB class PostInbox
             )
         data
 
-    @_submit_by_evernote:(user, post, site_tag_list)->
+    @_submit_by_evernote:(post, site_tag_list)->
         post_id = post.id
+        user = post.get 'owner'
         #通过Oauth查找用户user_id绑定的所有站点可以通过 include site来获取这些站点的名称
         #遍历站点名toLowerCase，如site_tag_list存在，那么就发布此文章（注意同步post.tag_list）
         query = DB.Oauth.$
@@ -253,7 +254,7 @@ DB class PostInbox
                             site_tag_post.save()
                     )
                     o.unset 'rmer'
-                    o.set 'publisher', AV.User.current()
+                    o.set 'publisher', user
                     o.save()
         options.success ''
 

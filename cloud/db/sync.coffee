@@ -94,13 +94,14 @@ DB class EvernoteSync
 
                                         evernote2html full_note, (html)->
                                             [brief,html] = brief2markdown(html)
+                                            owner = oauth.get 'user'
                                             EvernotePost.new(
                                                 guid
                                                 (id, success)->
                                                     data = {
                                                         title: full_note.title
                                                         html
-                                                        owner:oauth.get 'user'
+                                                        owner
                                                         tag_list
                                                         id
                                                     }
@@ -110,7 +111,7 @@ DB class EvernoteSync
                                                         data
                                                         {
                                                         success:(post)->
-                                                            DB.PostInbox._submit_by_evernote(oauth.get('user'), post, site_tag_list)
+                                                            DB.PostInbox._submit_by_evernote(post, site_tag_list)
                                                             success post
                                                             -- to_update_count
                                                             if to_update_count > 0
