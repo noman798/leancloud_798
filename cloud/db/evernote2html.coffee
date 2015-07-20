@@ -38,7 +38,6 @@ module.exports = (full_note, callback)->
     content = full_note.content
 
     Q.all(to_fetch).then (params)->
-        console.log content
         for i in params
             hash = new Buffer(i.data.bodyHash).toString('hex')
             from_str = """<en-media hash="#{hash}" type="#{i.mime}"></en-media>"""
