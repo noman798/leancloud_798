@@ -252,17 +252,18 @@ DB class PostInbox
         PostInbox._publish AV.User.current(), params, options
 
     @_submit:(submiter, params, options)->
-        # 如果已经存在就不重复投稿
-        PostInbox._get params, (o, is_new)->
-            if o.get 'rmer'
-                is_new = 1
-                o.unset 'rmer'
-                o.save()
-            DB.SiteUserLevel._level submiter.id, params.site_id,(level)->
-                # 如果是管理员/编辑就直接发布，否则是投稿等待审核
-                if level >= SITE_USER_LEVEL.WRITER
-                    PostInbox._publish submiter,params, options
-                else
+        DB.SiteUserLevel._level submiter.id, params.site_id,(level)->
+            # 如果是管理员/编辑就直接发布，否则是投稿等待审核
+            if level >= SITE_USER_LEVEL.WRITER
+                PostInbox._publish submiter,params, options
+            else
+                # 如果已经存在就不重复投稿
+                PostInbox._get params, (o, is_new)->
+                    if o.get 'rmer'
+                        is_new = 1
+                        o.unset 'rmer'
+                        o.save success:->
+                            redis.hincrby R.POST_INBOX_RM_COUNT, params.site_id, -1
                     if is_new
                         redis.hincrby R.POST_INBOX_SUBMIT_COUNT, params.site_id, 1
                     options.success ''
