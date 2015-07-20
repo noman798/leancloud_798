@@ -128,10 +128,6 @@ DB class PostInbox
                     publisher = i.get 'publisher'
                     if publisher
                         post.set 'publisher', publisher
-
-                    rmer = i.get 'rmer'
-                    if rmer
-                        post.set 'rmer', rmer
                     _set_tag_list(post)
                     result.push post
 
@@ -293,15 +289,14 @@ DB class PostInbox
                         _count()
                     else
                         DB.SiteUserLevel._level_current_user params.site_id,(level)->
-                            console.log level,typeof level
                             if level >= SITE_USER_LEVEL.EDITOR
-                                console.log "rmer", current
-                                post_inbox.set 'rmer',current
-                                post_inbox.save success:->
-                                    console.log "rm success"
-                                    _count()
-                                    redis.hincrby R.POST_INBOX_RM_COUNT, params.site_id, 1
-
+                                post_inbox.save(
+                                    success:->
+                                        _count()
+                                        redis.hincrby R.POST_INBOX_RM_COUNT, params.site_id, 1
+                                    error:(err)->
+                                        console.log err,"error"
+                                )
 
             options.success ''
 
