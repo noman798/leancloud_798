@@ -25,7 +25,6 @@ _post_owner = (post)->
 _rm_count = (post_inbox, real_rm) ->
     site_id = post_inbox.get('site').id
     publisher = post_inbox.get('publisher')
-    
         
     if publisher
         key = R.POST_INBOX_PUBLISH_COUNT
@@ -33,7 +32,6 @@ _rm_count = (post_inbox, real_rm) ->
         if owner
             redis.hincrby R.USER_PUBLISH_COUNT+site_id, owner.id, -1
     else
-        console.log "else"
         if real_rm
             if post_inbox.get 'rmer'
                 key = R.POST_INBOX_RM_COUNT
@@ -163,7 +161,6 @@ DB class PostInbox
                 {
                     create:(post_inbox)->
                         is_new = true
-                        console.log "create is_new",is_new
                     success:(post_inbox)->
                         callback(post_inbox, is_new)
                 }
