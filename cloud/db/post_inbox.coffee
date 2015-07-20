@@ -125,6 +125,11 @@ DB class PostInbox
                     _post_owner post
                     post.set "is_submit", 1
 
+                    #方便前端显示退稿人
+                    rmer = i.get 'rmer'
+                    if rmer
+                        post.set 'rmer',rmer
+
                     publisher = i.get 'publisher'
                     if publisher
                         post.set 'publisher', publisher

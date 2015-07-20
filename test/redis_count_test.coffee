@@ -7,15 +7,16 @@ redis = require "cloud/_redis"
 {R} = redis
 
 
-site_id = "55a4d078e4b05001a77e7d5a"
+#site_id = "55a4d078e4b05001a77e7d5a"
+site_id = "556eb106e4b0925e00040e88"
 owner_id = "55a5f9dce4b0bd9f4b37c2eb"
 
 
 #redis.hincrby R.POST_INBOX_SUBMIT_COUNT, site_id, -1
 _set = () ->
-    redis.hset(R.POST_INBOX_SUBMIT_COUNT, site_id, 0)
-    redis.hset(R.POST_INBOX_PUBLISH_COUNT, site_id, 1)
-    redis.hset(R.POST_INBOX_RM_COUNT, site_id, 0)
+    redis.hset(R.POST_INBOX_SUBMIT_COUNT, site_id, 2)
+    redis.hset(R.POST_INBOX_PUBLISH_COUNT, site_id, 0)
+    redis.hset(R.POST_INBOX_RM_COUNT, site_id, 1)
     redis.hset(R.USER_POST_COUNT, owner_id, 0)
     redis.hset(R.USER_PUBLISH_COUNT, owner_id, 0)
 
