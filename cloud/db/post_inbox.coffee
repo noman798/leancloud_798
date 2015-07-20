@@ -35,8 +35,8 @@ _rm_post = (post_inbox) ->
             redis.hincrby R.USER_PUBLISH_COUNT+site_id, owner.id, -1
     else
         key = R.POST_INBOX_SUBMIT_COUNT
-    redis.hincrby key, site_id, -1
-    post_inbox.destroy()
+    post_inbox.destroy success:->
+        redis.hincrby key, site_id, -1
 
 DB.Post.EVENT.on "rm",(post)->
     q = DB.SiteTagPost.$
