@@ -125,7 +125,12 @@ DB class Post
                                     (is_star)->
                                         if is_star
                                             post.set('is_star', 1)
-
+                                        owner = post.get 'owner'
+                                        if owner
+                                            post.set 'owner', {
+                                                id:owner.id
+                                                username:owner.get 'username'
+                                            }
                                         q = SiteTagPost.$
                                         q.equalTo({post})
                                         q.first({
