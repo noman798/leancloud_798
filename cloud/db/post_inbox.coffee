@@ -163,6 +163,7 @@ DB class PostInbox
                 {
                     create:(post_inbox)->
                         is_new = true
+                        console.log "create is_new",is_new
                     success:(post_inbox)->
                         callback(post_inbox, is_new)
                 }
