@@ -290,12 +290,13 @@ DB class PostInbox
                     else
                         DB.SiteUserLevel._level_current_user params.site_id,(level)->
                             if level >= SITE_USER_LEVEL.EDITOR
+                                post_inbox.set 'rmer', current
                                 post_inbox.save(
                                     success:->
                                         _count()
                                         redis.hincrby R.POST_INBOX_RM_COUNT, params.site_id, 1
                                     error:(err)->
-                                        console.log err,"error"
+                                        console.log err
                                 )
 
             options.success ''
