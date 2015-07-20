@@ -160,7 +160,6 @@ DB class PostInbox
                 data
                 {
                     create:(post_inbox)->
-                        console.log "create"
                         is_new = true
                     success:(post_inbox)->
                         callback(post_inbox, is_new)
@@ -235,7 +234,6 @@ DB class PostInbox
                     options.success ''
                     return
                 o.get('post').fetch (post)->
-                    console.log "publish is new", is_new
                     if (not o.get('publisher')) or o.get('rmer')
                         if not is_new
                             if o.get 'rmer'
