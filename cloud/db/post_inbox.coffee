@@ -22,34 +22,23 @@ _post_owner = (post)->
             username:owner.get 'username'
         }
 
-_rm_count = (post_inbox, real_rm) ->
+_rm_post = (post_inbox) ->
     site_id = post_inbox.get('site').id
     publisher = post_inbox.get('publisher')
-        
-    if publisher
+    rmer = post_inbox.get('rmer')
+    if rmer
+        key = R.POST_INBOX_RM_COUNT
+    else if publisher
         key = R.POST_INBOX_PUBLISH_COUNT
         owner = post_inbox.get 'owner'
         if owner
             redis.hincrby R.USER_PUBLISH_COUNT+site_id, owner.id, -1
     else
-        console.log "else",real_rm
-        if real_rm
-            console.log "real_rm",post_inbox
-            console.log post_inbox.get 'rmer'
-            if post_inbox.get 'rmer'
-                console.log "RM count"
-                key = R.POST_INBOX_RM_COUNT
-            else
-                console.log "submit count"
-                key = R.POST_INBOX_SUBMIT_COUNT
-        else
-            key = R.POST_INBOX_SUBMIT_COUNT
+        key = R.POST_INBOX_SUBMIT_COUNT
     redis.hincrby key, site_id, -1
+    post_inbox.destroy()
 
 DB.Post.EVENT.on "rm",(post)->
-    owner = post.get 'owner'
-    if owner
-        redis.hincrby R.USER_POST_COUNT, owner.id, -1
     q = DB.SiteTagPost.$
     q.equalTo({post})
     q.destroyAll()
@@ -57,8 +46,8 @@ DB.Post.EVENT.on "rm",(post)->
         post
     }).find().done (post_inbox_list)->
         for post_inbox in post_inbox_list
-            _rm_count post_inbox,1
-            post_inbox.destroy()
+            _rm_post post_inbox
+
     
 
 DB class PostInbox
@@ -300,8 +289,19 @@ DB class PostInbox
                     current = AV.User.current()
 
                     _count = ->
-                        _rm_count post_inbox
+                        site_id = post_inbox.get('site').id
+                        publisher = post_inbox.get('publisher')
+                            
+                        if publisher
+                            key = R.POST_INBOX_PUBLISH_COUNT
+                            owner = post_inbox.get 'owner'
+                            if owner
+                                redis.hincrby R.USER_PUBLISH_COUNT+site_id, owner.id, -1
+                        else
+                            key = R.POST_INBOX_SUBMIT_COUNT
+                        redis.hincrby key, site_id, -1
                         DB.SiteTagPost.$.equalTo(data).destroyAll()
+
                     owner = post.get('owner')
                     if (not owner) or owner.id == current.id
                         post_inbox.destroy()

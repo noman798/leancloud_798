@@ -84,6 +84,8 @@ DB class Post
                     is_rm = 1
                     o.set('rmer', current)
                     o.save()
+                    if owner
+                        redis.hincrby R.USER_POST_COUNT, owner.id, -1
                     Post.EVENT.emit 'rm', o
 
                 if owner and owner.id == current.id
