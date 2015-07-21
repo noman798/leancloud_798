@@ -20,7 +20,11 @@
   <description><%= items[i].get('html') %></description>
   <pubDate><%= items[i].createdAt %></pubDate>
   <guid><%= rss_link %>/<%= items[i].get('ID')%></guid>
-  <dc:creator><%= items[i].get('author') %></dc:creator>
+  <% if (items[i].get('owner')) { %> 
+      <author><%= items[i].get('owner').get('username') %></author>
+  <% } else { %>
+      <author><%= items[i].get('author') %></author>
+  <% } %>
   </item>
 <% } %>
 </channel>
