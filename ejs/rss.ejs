@@ -1,20 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<rss version="2.0">
 <channel>
-<language>zh-cn</language>
 <title><%= rss_title %></title>
 <link><%= rss_link %></link>
-  <% if(pubdate) { %> 
-      <pubDate><%= pubdate %></pubDate>
-  <% } %>
+<description><%= rss_description %></description>
+<language>zh-cn</language>
+<% if(pubdate) { %> 
+  <pubDate><%= pubdate %></pubDate>
+<% } %>
+<generator><%= rss_generator %></generator>
 <% for(var i = 0; i < items.length; ++i) { %>
   <item>
   <title><%= items[i].get('title') %></title>
-  <dc:creator><%= items[i].get('author') %></dc:creator>
+  <link><%= rss_link %>/<%= items[i].get('ID') %></link>
+  <% if (items[i].get('tag_list')) { %> 
+      <category><%= items[i].get('tag_list')[0] %></category>
+  <% } %>
+  <index><%= i+1 %></index>
   <description><%= items[i].get('html') %></description>
   <pubDate><%= items[i].createdAt %></pubDate>
-  <link><%= rss_link %>/<%= items[i].get('ID') %></link>
-  <guid isPermaLink="true"><%= rss_link %>/<%= items[i].get('ID')%></guid>
+  <guid><%= rss_link %>/<%= items[i].get('ID')%></guid>
+  <dc:creator><%= items[i].get('author') %></dc:creator>
   </item>
 <% } %>
 </channel>

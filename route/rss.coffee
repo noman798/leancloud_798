@@ -24,6 +24,8 @@ app.get('/rss/:host', (request, res) ->
                         {
                             rss_title: site.name
                             rss_link: "http://#{host}"
+                            rss_description: site.slogo
+                            rss_generator: site.name_cn
                             pubdate: pubdate
                             items: post_list
                         }
