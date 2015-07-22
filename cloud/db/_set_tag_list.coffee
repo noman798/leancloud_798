@@ -17,7 +17,5 @@ module.exports = (site, post_list, success)->
         for i in site_tag_list
             if i
                 tag_list = i.get('tag_list')
-            else
-                tag_list = []
-            post_dict[i.get('post').id].set('tag_list',tag_list)
+                post_dict[i.get('post').id].set('tag_list',tag_list)
         success post_list
