@@ -15,5 +15,9 @@ module.exports = (site, post_list, success)->
 
     AV.Promise.when(to_fetch).done (site_tag_list...)->
         for i in site_tag_list
-            post_dict[i.get('post').id].set('tag_list',i.get('tag_list'))
+            if i
+                tag_list = i.get('tag_list')
+            else
+                tag_list = []
+            post_dict[i.get('post').id].set('tag_list',tag_list)
         success post_list
