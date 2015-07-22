@@ -19,7 +19,7 @@ DB.Site._site_new(
             [ "weibo" , "http://weibo.com/tech2ipo"],
             [ "weixin" , "//dn-acac.qbox.me/tech2ipoqrcode.jpg"],
         ]
-        tag_list:["系列教程", "招人启事"]
+        tag_list:["招聘" ,"教程", "转载",]
     }
     """
 #BODY .Rbar > .bg { background-image: url(//dn-noman.qbox.me/ewbgss); }
