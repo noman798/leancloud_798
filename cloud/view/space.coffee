@@ -49,6 +49,7 @@ View class Space
                                 site.logo
                                 site.slogo
                                 site.link_list
+                                site.favicon
                                 level
                                 updatedAt
                             ]

@@ -19,5 +19,6 @@ DB.Site._site_new(
             [ "weixin" , "//dn-acac.qbox.me/tech2ipoqrcode.jpg"],
         ]
         tag_list:["每日资讯","深度观点","人物特写","公司行业","产品快报"]
+        favicon:"//dn-css7.qbox.me/tc.ico"
     }
 )

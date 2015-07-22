@@ -194,6 +194,7 @@ DB class PostInbox
         post.set({tag_list, title, brief})
         post.save()
 
+
     @save:(params, options)->
         {site_id} = params
         DB.Post.$.get(params.post_id).done (post)->

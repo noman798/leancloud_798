@@ -39,6 +39,7 @@ DB class Site
         @tag_list
         @name_cn
         @link_list
+        @favicon
     )->
         super
 
@@ -150,6 +151,7 @@ DB class Site
                     logo:options.logo
                     tag_list:options.tag_list
                     name_cn:options.name_cn
+                    favicon:options.favicon
                     link_list:options.link_list
                 }, success:(site)->
                     DB.Site.host_new {
