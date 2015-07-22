@@ -2,7 +2,8 @@ DB = require "cloud/_db"
 require "cloud/db/sync"
 require "cloud/db/post_inbox"
 require "cloud/db/post"
-AV.User.current = -> AV.Object.createWithoutData('User', '556eb0b8e4b0925e000409b9')
+require "test/site/angelcrunch"
+#AV.User.current = -> AV.Object.createWithoutData('User', '556eb0b8e4b0925e000409b9')
 ###
 DB.PostInbox.rm({
     post_id: "55acaec2e4b05881acf30723"
