@@ -171,14 +171,22 @@ DB class PostInbox
         query.equalTo('user', user)
         query.find({
             success: (oauth_list) ->
+                console.log '_submit, success'
                 exist = {}
+                console.log '_submit, success1'
                 for each_oauth in oauth_list
                     site_name = each_oauth.get('site').get('name')
+                    console.log '_submit, success2'
+                    console.log site_tag_list, site_name
                     if site_tag_list.indexOf(site_name.toLowerCase())>=0
+                        console.log '_submit, index'
                         site_id = each_oauth.get('site').id
+                        console.log '_submit, success3'
                         if site_id of exist
+                            console.log '_submit, continue'
                             continue
                         exist[site_id]=1
+                        console.log '_submit, success4'
                         PostInbox._submit(
                             user
                             {
@@ -192,7 +200,9 @@ DB class PostInbox
 
     @_post_set: (post, {tag_list, title, brief})->
         post.set({tag_list, title, brief})
+        console.log 'set'
         post.save()
+
 
     @save:(params, options)->
         {site_id} = params
@@ -221,13 +231,16 @@ DB class PostInbox
 
 
     @_publish:(user, params, options)->
+        console.log '_publish.....'
         {site_id}=params
         data = PostInbox._get params,(o, is_new)->
             DB.SiteUserLevel._level user.id, site_id,(level)->
+                console.log level
                 if level < SITE_USER_LEVEL.WRITER
                     options.success ''
                     return
                 o.get('post').fetch (post)->
+                    console.log '_pub'
                     if (not o.get('publisher')) or o.get('rmer')
                         if not is_new
                             if o.get 'rmer'
@@ -240,6 +253,7 @@ DB class PostInbox
                         if owner
                             redis.hincrby R.USER_PUBLISH_COUNT+site_id, owner.id, 1
                     PostInbox._post_set post, params
+                    console.log 'save'
                     DB.SiteTagPost.$.get_or_create(
                         data
                         success:(site_tag_post)->
@@ -252,26 +266,32 @@ DB class PostInbox
         options.success ''
 
     @publish:(params, options)->
+        console.log 'publishread'
         PostInbox._publish AV.User.current(), params, options
 
     @_submit:(submiter, params, options)->
+        console.log '_____submit'
         DB.SiteUserLevel._level submiter.id, params.site_id,(level)->
             # 如果是管理员/编辑就直接发布，否则是投稿等待审核
             if level >= SITE_USER_LEVEL.WRITER
+                console.log '_____submit1'
                 PostInbox._publish submiter,params, options
             else
                 # 如果已经存在就不重复投稿
                 PostInbox._get params, (o, is_new)->
+                    console.log 'submit'
                     if o.get 'rmer'
                         is_new = 1
                         o.unset 'rmer'
                         o.save success:->
                             redis.hincrby R.POST_INBOX_RM_COUNT, params.site_id, -1
                     if is_new
+                        console.log 'new, submit'
                         redis.hincrby R.POST_INBOX_SUBMIT_COUNT, params.site_id, 1
                     options.success ''
 
     @submit:(params, options)->
+        console.log 'submitreal'
         PostInbox._submit(AV.User.current(),params, options)
 
     @rm:(params, options)->
