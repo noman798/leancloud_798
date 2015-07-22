@@ -3,6 +3,7 @@ require "cloud/db/sync"
 require "cloud/db/post_inbox"
 require "cloud/db/post"
 require "test/site/angelcrunch"
+require "test/site/tech2ipo"
 #AV.User.current = -> AV.Object.createWithoutData('User', '556eb0b8e4b0925e000409b9')
 ###
 DB.PostInbox.rm({
