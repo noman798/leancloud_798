@@ -19,11 +19,21 @@ app.get('/rss/:host', (request, res) ->
                     else
                         pubdate = ''
 
+                    for i in post_list
+                        DB.SiteTagPost.$.get(i.id, {
+                            success: (site_tag_post) ->
+                                i.set('tag_list', site_tag_post.get('tag_list'))
+                        })
+                                
+
+
                     res.render(
                         'rss',
                         {
                             rss_title: site.name
                             rss_link: "http://#{host}"
+                            rss_description: site.slogo
+                            rss_generator: site.name_cn
                             pubdate: pubdate
                             items: post_list
                         }
@@ -33,4 +43,3 @@ app.get('/rss/:host', (request, res) ->
             )
     )
 )
-
