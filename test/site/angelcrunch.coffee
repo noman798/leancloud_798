@@ -20,6 +20,7 @@ DB.Site._site_new(
             [ "weixin" , "//dn-acac.qbox.me/tech2ipohelp-invest-qr.png"],
         ]
         tag_list:["招聘" ,"教程", "转载",]
+        favicon:"//dn-css7.qbox.me/tc.ico"
     }
 """
 #BODY .Rbar > .bg { background-image: url(//dn-noman.qbox.me/ewbgss); }
