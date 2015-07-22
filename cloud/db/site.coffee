@@ -39,6 +39,7 @@ DB class Site
         @tag_list
         @name_cn
         @link_list
+        @favicon
     )->
         super
 
