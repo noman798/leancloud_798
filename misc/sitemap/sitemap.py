@@ -125,7 +125,7 @@ def update(last_id,site_post,limit=500):
 
         last_id = r[-1].get('ID')
 
-        if len(r) >= limit and len(r)<100000:
+        if len(r) >= limit and len(r)<1000000:
             update(last_id, site_post)
             return
         
