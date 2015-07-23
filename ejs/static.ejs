@@ -1,0 +1,46 @@
+<html>
+
+<head>
+<meta charset=utf-8>
+<link rel=stylesheet href=/css/_base/_reset.css>
+<link rel=stylesheet href=//dn-s798.qbox.me/static/css/init.147fb604.css>
+<link rel=stylesheet href=//dn-s798.qbox.me/static/css/minisite/post_read.895c7e59.css>
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<style>
+body{margin:0;padding:0;font-family:Lato,'Hiragino Sans GB','Microsoft
+    YaHei'}.phone{background:#fff;max-width:640px;margin:auto}h1.logo{height:40px;padding:0;margin:0;text-align:left;line-height:40px;margin-right:15px;font-size:22px}h1.logo
+    .name{font-family:'Hammersmith One',Lato,'Hiragino Sans GB','Microsoft
+        YaHei';background:#4285F4;color:#fff;height:40px;float:left;max-width:120px;padding:0
+        15px;margin-left:15px;font-size:21px;z-index:2;position:relative}h1.logo
+        .slogo{position:relative;float:right;font-size:12px;padding:0 6px;z-index:2;margin-top:12px;background:#fff;padding:0}h1.logo:after{border-bottom:2px
+            solid #4285F4;content:"";width:100%;margin-top:31px;position:absolute;left:0;z-index:1}h1.title{text-align:center;margin:10px
+                15px;line-height:24px;font-size:21px;margin-top:12px}p.author{text-align:center;margin-top:5px;height:21px;font-size:12px}p.author
+                span{padding-left:20px}.post_read{margin:0 15px;font-size:18px;line-height:1.5}.post_read
+                img{min-width:180px}.post_read blockquote{margin-bottom:14px}
+</style>
+<script data-single=true src=//dn-s798.qbox.me/static/pkg/map.4ad34e33.js>
+</script>
+
+<body>
+<div class=phone>
+    <h1 class=logo>
+        <div class=name>
+            <%= site_name %>
+        </div>
+        <div class=slogo>
+            <%= site_slogo %>
+        </div>
+    </h1>
+    <h1 class=title>
+        <%= post_title %>
+    </h1>
+    <p class=author>
+        <%= post_author %>
+    <span>
+        <%= post_time %>
+    </span>
+    </p>
+    <div class=post_read>
+        <%- post_html %>
+    </div>
+</div>
