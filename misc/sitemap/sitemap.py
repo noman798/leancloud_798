@@ -29,15 +29,13 @@ def generate_xml(filename, url_list):
 
 def append_xml(filename, url_list):
     with gzip.open(filename, 'r') as f:
-
         for each_line in f:
             d = re.findall('<loc>(http:\/\/.+)<\/loc>', each_line)
             url_list.extend(d)
 
-        url_list.extend(old_url_list)
         generate_xml(filename, set(url_list))
 
-def get_lastmod_time(filename):
+def modify_time(filename):
     time_stamp = os.path.getmtime(filename)
     t = time.localtime(time_stamp)
     return time.strftime('%Y-%m-%dT%H:%M:%S:%SZ', t)
@@ -49,7 +47,7 @@ def new_xml(filename, url_list):
     with open(join(dirname(root), "sitemap.xml"),"w") as f:
         f.write('<?xml version="1.0" encoding="utf-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
         for i in glob.glob(join(root,"*.xml.gz")):
-            lastmod = get_lastmod_time(i)
+            lastmod = modify_time(i)
             i = i[len(CONFIG.SITEMAP_PATH):]
             f.write("<sitemap>\n<loc>http:/%s</loc>\n"%i)
             f.write("<lastmod>%s</lastmod>\n</sitemap>\n"%lastmod)
@@ -67,10 +65,13 @@ def sitemap(path, host, li):
         id = 1
 
     filepath = join(path,"sitemap",str(id)+".xml.gz")
-    if exists(filepath) and getsize(filepath) > 8*5*1024:#*1024*8:
+    if exists(filepath) and getsize(filepath) < 5*1024*1024:
         func = append_xml
     else:
+        id += 1
         func = new_xml 
+
+    filepath = join(path,"sitemap",str(id)+".xml.gz")
 
     func(filepath, ["http://%s/%s"%(host,i) for i in li])
 
@@ -108,7 +109,7 @@ def update(last_id, site_post, limit=100):
 
         last_id = r[-1].get('ID')
         print sum(len(i) for i in site_post.itervalues())
-        if len(r) >= limit and sum(len(i) for i in site_post.itervalues())<1000:
+        if len(r) >= limit and sum(len(i) for i in site_post.itervalues())<10000:
             update(last_id, site_post)
             return
 
@@ -119,6 +120,7 @@ def update(last_id, site_post, limit=100):
 @single_process
 def main():
     #redis.delete(R_SITEMAP_SINCE) #TODO comment
+    #return
 
     last_id = int(redis.get(R_SITEMAP_SINCE) or 0)
     update(
