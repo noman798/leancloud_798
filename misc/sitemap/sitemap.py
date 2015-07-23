@@ -109,7 +109,7 @@ def update(last_id, site_post, limit=100):
 
         last_id = r[-1].get('ID')
         print sum(len(i) for i in site_post.itervalues())
-        if len(r) >= limit and sum(len(i) for i in site_post.itervalues())<10000:
+        if len(r) >= limit and sum(len(i) for i in site_post.itervalues())<1000000:
             update(last_id, site_post)
             return
 
