@@ -6,7 +6,7 @@ redis = Redis(
     port=CONFIG.REDIS.PORT
 )
 
-CLASS = "Post SitePostTag Site SiteHost"
+CLASS = "Post SiteTagPost Site SiteHost"
 
 
 init(

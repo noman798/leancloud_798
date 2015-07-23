@@ -7,7 +7,7 @@ import leancloud
 from lxml import etree
 from collections import defaultdict
 from distutils.dir_util import mkpath
-from os.path import join, abspath, realpath, exist
+from os.path import join, abspath, realpath, exists
 from single_process import single_process
 
 R_SITEMAP_SINCE = "SitemapSince"
@@ -104,31 +104,36 @@ def the_end(site_post):
 
 
 
-def update(last_id,site_post,limit=500):
+def update(last_id,site_post,limit=5):
     query = Q.SiteTagPost
     query.ascending('ID')
     query.greater_than('ID', last_id)
     query.limit(limit)
     r = query.find()
     if r:
+        post_id_set = set()
         for i in r:
-            site_id = i.get('site').id
             post_id = i.get('post').id
-            site_obj = Q.Site.get(site_id)
-            post_obj = Q.Post.get(post_id)
-            site_post[site_id].append(
-                post_obj.get('ID')
-            )
+            post_id_set.add(post_id)
 
-        if len(r) >= limit:
-            update(r[-1].get('ID'), site_post)
+        print post_id_set 
+        post_list = Q.Post.contained_in("id",list(post_id_set)).find()
+        print post_list
+        #    post_obj = Q.Post.get(post_id)
+        #    site_post[site_id].append(
+        #        post_obj.get('ID')
+        #    )
+
+        #if len(r) >= limit:
+        #    print 2
+        #    update(r[-1].get('ID'), site_post)
     else:
         the_end(site_post)
         redis.set(R_SITEMAP_SINCE, last_id)
 
 @single_process
 def main():
-    last_id = redis.get(R_SITEMAP_SINCE)
+    last_id = int(redis.get(R_SITEMAP_SINCE) or 0)
     update(
         last_id, 
         defaultdict(list)
