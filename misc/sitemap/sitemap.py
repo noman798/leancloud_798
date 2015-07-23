@@ -6,7 +6,6 @@ import re
 import redis
 import leancloud
 from lxml import etree
-from leancloud import Object, Query
 from collections import defaultdict
 from distutils.dir_util import mkpath
 from os.path import join, abspath, realpath, exist
