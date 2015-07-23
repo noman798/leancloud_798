@@ -103,8 +103,7 @@ def the_end(site_post):
 
 
 
-
-def update(last_id,site_post,limit=5):
+def update(last_id,site_post,limit=500):
     query = Q.SiteTagPost
     query.ascending('ID')
     query.greater_than('ID', last_id)
@@ -116,23 +115,27 @@ def update(last_id,site_post,limit=5):
             post_id = i.get('post').id
             post_id_set.add(post_id)
 
-        print post_id_set 
-        post_list = Q.Post.contained_in("id",list(post_id_set)).find()
-        print post_list
-        #    post_obj = Q.Post.get(post_id)
-        #    site_post[site_id].append(
-        #        post_obj.get('ID')
-        #    )
+        post_list = Q.Post.contained_in("objectId",list(post_id_set)).select('ID').find()
+        post_dict = dict((i.id,i.get('ID')) for i in post_list)
 
-        #if len(r) >= limit:
-        #    print 2
-        #    update(r[-1].get('ID'), site_post)
-    else:
-        the_end(site_post)
-        redis.set(R_SITEMAP_SINCE, last_id)
+        for i in r:
+            site_post[i.get('site').id].append(
+                post_dict[i.get('post').id]
+            )
+
+        last_id = r[-1].get('ID')
+
+        if len(r) >= limit:
+            update(last_id, site_post)
+            return
+        
+    the_end(site_post)
+    redis.set(R_SITEMAP_SINCE, last_id)
 
 @single_process
 def main():
+    redis.delete(R_SITEMAP_SINCE) #TODO comment
+
     last_id = int(redis.get(R_SITEMAP_SINCE) or 0)
     update(
         last_id, 
