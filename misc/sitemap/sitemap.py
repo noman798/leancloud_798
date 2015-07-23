@@ -1,9 +1,13 @@
 #!/usr/bin/env python
-#coding=utf-8
-from db import Q,DB,redis
+# coding=utf-8
+
+from db import Q, DB, redis
+import io
 import glob
+import os
 import re
 import leancloud
+from config import CONFIG
 from lxml import etree
 from collections import defaultdict
 from distutils.dir_util import mkpath
@@ -13,46 +17,44 @@ from single_process import single_process
 R_SITEMAP_SINCE = "SitemapSince"
 
 
-
-
-def generate_xml(filename, url_list):                                            
+def generate_xml(filename, url_list):
     """Generate sitemap.xml file."""
-    root = etree.Element('urlset',                                               
-                         xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")    
-    for each in url_list:                                                        
-        url = etree.Element('url')                                               
-        loc = etree.Element('loc')                                               
-        loc.text = each                                                          
-        url.append(loc)                                                          
-        root.append(url)                                                         
-                                                                                 
-    header = u'<?xml version="1.0" encoding="UTF-8"?>\n'                         
-    s = etree.tostring(root, encoding='utf-8', pretty_print=True)                
-    with io.open(filename, 'w', encoding='utf-8') as f:                          
-        f.write(unicode(header+s)) 
+    root = etree.Element('urlset',
+                         xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
+    for each in url_list:
+        url = etree.Element('url')
+        loc = etree.Element('loc')
+        loc.text = each
+        url.append(loc)
+        root.append(url)
+
+    header = u'<?xml version="1.0" encoding="UTF-8"?>\n'
+    s = etree.tostring(root, encoding='utf-8', pretty_print=True)
+    with io.open(filename, 'w', encoding='utf-8') as f:
+        f.write(unicode(header+s))
 
 
-def append_xml(filename, url_list):                        
-    """Add new url_list to origin sitemap.xml file."""    
-    f = open(filename, 'r')    
-    lines = [i.strip() for i in f.readlines()]                             
-    f.close()                                                              
-    old_url_list = []                                                      
+def append_xml(filename, url_list):
+    """Add new url_list to origin sitemap.xml file."""
+    f = open(filename, 'r')
+    lines = [i.strip() for i in f.readlines()]
+    f.close()
+    old_url_list = []
 
-    for each_line in lines:    
-        d = re.findall('<loc>(http:\/\/.+)<\/loc>', each_line)             
-        old_url_list += d                                                  
+    for each_line in lines:
+        d = re.findall('<loc>(http:\/\/.+)<\/loc>', each_line)
+        old_url_list += d
+    url_list += old_url_list
 
-    url_list += old_url_list                                               
-    generate_xml(filename, url_list)  
+    generate_xml(filename, url_list)
 
 
 def gen_sitemap(site_name, li):
-    path = join(SITEMAP, "_sitemap", site_name)
+    path = join(CONFIG.SITEMAP_PATH, "_sitemap", site_name)
     filelist = [
-            int(i.rsplit("/", 1)[-1][:-4])
-            for i in glob.glob(path+"/*.xml")
-            ]
+        int(i.rsplit("/", 1)[-1][:-4])
+        for i in glob.glob(path+"/*.xml")
+    ]
     filelist.sort()
     if filelist:
         id = filelist[0]
@@ -102,8 +104,7 @@ def the_end(site_post):
         gen_sitemap(site_name, li)
 
 
-
-def update(last_id,site_post,limit=500):
+def update(last_id, site_post, limit=500):
     query = Q.SiteTagPost
     query.ascending('ID')
     query.greater_than('ID', last_id)
@@ -115,8 +116,9 @@ def update(last_id,site_post,limit=500):
             post_id = i.get('post').id
             post_id_set.add(post_id)
 
-        post_list = Q.Post.contained_in("objectId",list(post_id_set)).select('ID').find()
-        post_dict = dict((i.id,i.get('ID')) for i in post_list)
+        post_list = Q.Post.contained_in("objectId",
+                                        list(post_id_set)).select('ID').find()
+        post_dict = dict((i.id, i.get('ID')) for i in post_list)
 
         for i in r:
             site_post[i.get('site').id].append(
@@ -128,21 +130,20 @@ def update(last_id,site_post,limit=500):
         if len(r) >= limit:
             update(last_id, site_post)
             return
-        
+
     the_end(site_post)
     redis.set(R_SITEMAP_SINCE, last_id)
 
+
 @single_process
 def main():
-    redis.delete(R_SITEMAP_SINCE) #TODO comment
+    #redis.delete(R_SITEMAP_SINCE) #TODO comment
 
     last_id = int(redis.get(R_SITEMAP_SINCE) or 0)
     update(
-        last_id, 
+        last_id,
         defaultdict(list)
-    ) 
+    )
 
 if __name__ == '__main__':
     main()
-
-
