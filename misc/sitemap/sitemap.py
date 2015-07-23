@@ -6,6 +6,7 @@ import io
 import glob
 import os
 import re
+import time
 import gzip
 import leancloud
 from config import CONFIG
@@ -36,6 +37,11 @@ def append_xml(filename, url_list):
         url_list.extend(old_url_list)
         generate_xml(filename, set(url_list))
 
+def get_lastmod_time(filename):
+    time_stamp = os.path.getmtime(filename)
+    t = time.localtime(time_stamp)
+    return time.strftime('%Y-%m-%dT%H:%M:%S:%SZ', t)
+
 def new_xml(filename, url_list):
     generate_xml(filename, url_list)
     root = dirname(filename)
@@ -43,8 +49,10 @@ def new_xml(filename, url_list):
     with open(join(dirname(root), "sitemap.xml"),"w") as f:
         f.write('<?xml version="1.0" encoding="utf-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
         for i in glob.glob(join(root,"*.xml.gz")):
+            lastmod = get_lastmod_time(i)
             i = i[len(CONFIG.SITEMAP_PATH):]
-            f.write("<sitemap><loc>http:/%s</loc></sitemap>\n"%i)
+            f.write("<sitemap>\n<loc>http:/%s</loc>\n"%i)
+            f.write("<lastmod>%s</lastmod>\n</sitemap>\n"%lastmod)
         f.write('</sitemapindex>')
 
 def sitemap(path, host, li):
