@@ -7,23 +7,21 @@ import redis
 import leancloud
 from lxml import etree
 from leancloud import Object, Query
-from config import SITEMAP
 from collections import defaultdict
 from distutils.dir_util import mkpath
 from os.path import join, abspath, realpath, exist
-
+from config import CONFIG
 
 LIMIT = 500
 R_SITEMAP_SINCE = "SitemapSince"
 SITE_POST = defaultdict(list)
 
-redis_client = redis.Redis(host='', port='')    # redis config
+redis_client = redis.Redis(
+    host=CONFIG.REDIS.HOST,
+    port=CONFIG.REDIS.PORT
+)
 LAST_ID = redis_client.get(R_SITEMAP_SINCE)
 
-
-def mkdir_site(site_name):
-    realdir = join(SITEMAP, "_sitemap", site_name)
-    mkpath(realdir)
 
 
 def generate_xml(filename, url_list):                                            
@@ -102,7 +100,9 @@ def generatr_xml_index(filename, sitemap_list, lastmod_list):
 
 def the_end():
     for site_name, li in SITE_POST.iteritems():
-        mkdir_site(site_name)
+        mkpath(
+            join(CONFIG.SITEMAP_PATH, site_name, "sitemap")
+        )
         gen_sitemap(site_name, li)
 
 
