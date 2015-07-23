@@ -16,21 +16,13 @@ from single_process import single_process
 
 R_SITEMAP_SINCE = "SitemapSince"
 
-
 def generate_xml(filename, url_list):
-    root = etree.Element('urlset',
-                         xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
-    for each in url_list:
-        url = etree.Element('url')
-        loc = etree.Element('loc')
-        loc.text = each
-        url.append(loc)
-        root.append(url)
-
-    header = u'<?xml version="1.0" encoding="UTF-8"?>\n'
-    s = etree.tostring(root, encoding='utf-8', pretty_print=True)
-    with io.open(filename, 'w', encoding='utf-8') as f:
-        f.write(unicode(header+s))
+    with open(filename,"w") as f:
+        f.write("""<?xml version="1.0" encoding="utf-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">""")
+        for i in url_list:
+            f.write("""<url><loc>%s</loc></url>"""%i)
+        f.write("""</urlset>""")
 
 
 def append_xml(filename, url_list):
