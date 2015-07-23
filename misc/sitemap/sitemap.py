@@ -6,40 +6,51 @@ import io
 import glob
 import os
 import re
+import gzip
 import leancloud
 from config import CONFIG
 from lxml import etree
 from collections import defaultdict
 from distutils.dir_util import mkpath
-from os.path import join, abspath, realpath, exists, getsize 
+from os.path import join, abspath, realpath, exists, getsize, dirname 
 from single_process import single_process
 
 R_SITEMAP_SINCE = "SitemapSince"
 
 def generate_xml(filename, url_list):
-    with open(filename,"w") as f:
+    with gzip.open(filename,"w") as f:
         f.write("""<?xml version="1.0" encoding="utf-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">""")
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n""")
         for i in url_list:
-            f.write("""<url><loc>%s</loc></url>"""%i)
+            f.write("""<url><loc>%s</loc></url>\n"""%i)
         f.write("""</urlset>""")
 
 
 def append_xml(filename, url_list):
-    with open(filename, 'r') as f:
+    with gzip.open(filename, 'r') as f:
 
         for each_line in f:
             d = re.findall('<loc>(http:\/\/.+)<\/loc>', each_line)
             url_list.extend(d)
 
         url_list.extend(old_url_list)
-        generate_xml(filename, url_list)
+        generate_xml(filename, set(url_list))
 
+def new_xml(filename, url_list):
+    generate_xml(filename, url_list)
+    root = dirname(filename)
+
+    with open(join(dirname(root), "sitemap.xml"),"w") as f:
+        f.write('<?xml version="1.0" encoding="utf-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
+        for i in glob.glob(join(root,"*.xml.gz")):
+            i = i[len(CONFIG.SITEMAP_PATH):]
+            f.write("<sitemap><loc>http:/%s</loc></sitemap>\n"%i)
+        f.write('</sitemapindex>')
 
 def sitemap(path, host, li):
     filelist = [
-        int(i.rsplit("/", 1)[-1][:-4])
-        for i in glob.glob(join(path,"sitemap/*.xml"))
+        int(i.rsplit("/", 1)[-1][:-7])
+        for i in glob.glob(join(path,"sitemap/*.xml.gz"))
     ]
     filelist.sort()
     if filelist:
@@ -47,34 +58,14 @@ def sitemap(path, host, li):
     else:
         id = 1
 
-    filepath = join(path,"sitemap",str(id)+".xml")
+    filepath = join(path,"sitemap",str(id)+".xml.gz")
     if exists(filepath) and getsize(filepath) > 8*5*1024:#*1024*8:
         func = append_xml
     else:
-        func = generate_xml
+        func = new_xml 
 
     func(filepath, ["http://%s/%s"%(host,i) for i in li])
 
-
-
-def generatr_xml_index(filename, sitemap_list, lastmod_list):
-    """Generate sitemap index xml file."""
-    root = etree.Element('sitemapindex',
-                         xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
-    for each_sitemap, each_lastmod in zip(sitemap_list, lastmod_list):
-        sitemap = etree.Element('sitemap')
-        loc = etree.Element('loc')
-        loc.text = each_sitemap
-        lastmod = etree.Element('lastmod')
-        lastmod.text = each_lastmod
-        sitemap.append(loc)
-        sitemap.append(lastmod)
-        root.append(sitemap)
-
-    header = u'<?xml version="1.0" encoding="UTF-8"?>\n'
-    s = etree.tostring(root, encoding='utf-8', pretty_print=True)
-    with io.open(filename, 'w', encoding='utf-8') as f:
-        f.write(unicode(header+s))
 
 
 def the_end(site_post):
