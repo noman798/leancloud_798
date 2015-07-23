@@ -118,7 +118,7 @@ def update(last_id, site_post, limit=100):
 
 @single_process
 def main():
-    redis.delete(R_SITEMAP_SINCE) #TODO comment
+    #redis.delete(R_SITEMAP_SINCE) #TODO comment
 
     last_id = int(redis.get(R_SITEMAP_SINCE) or 0)
     update(
