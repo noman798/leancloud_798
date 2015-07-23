@@ -11,14 +11,13 @@ from config import CONFIG
 from lxml import etree
 from collections import defaultdict
 from distutils.dir_util import mkpath
-from os.path import join, abspath, realpath, exists
+from os.path import join, abspath, realpath, exists, getsize 
 from single_process import single_process
 
 R_SITEMAP_SINCE = "SitemapSince"
 
 
 def generate_xml(filename, url_list):
-    """Generate sitemap.xml file."""
     root = etree.Element('urlset',
                          xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
     for each in url_list:
@@ -35,40 +34,35 @@ def generate_xml(filename, url_list):
 
 
 def append_xml(filename, url_list):
-    """Add new url_list to origin sitemap.xml file."""
-    f = open(filename, 'r')
-    lines = [i.strip() for i in f.readlines()]
-    f.close()
-    old_url_list = []
+    with open(filename, 'r') as f:
 
-    for each_line in lines:
-        d = re.findall('<loc>(http:\/\/.+)<\/loc>', each_line)
-        old_url_list += d
-    url_list += old_url_list
+        for each_line in f:
+            d = re.findall('<loc>(http:\/\/.+)<\/loc>', each_line)
+            url_list.extend(d)
 
-    generate_xml(filename, url_list)
+        url_list.extend(old_url_list)
+        generate_xml(filename, url_list)
 
 
-def gen_sitemap(site_name, li):
-    path = join(CONFIG.SITEMAP_PATH, "_sitemap", site_name)
+def sitemap(path, host, li):
     filelist = [
         int(i.rsplit("/", 1)[-1][:-4])
-        for i in glob.glob(path+"/*.xml")
+        for i in glob.glob(join(path,"sitemap/*.xml"))
     ]
     filelist.sort()
     if filelist:
         id = filelist[0]
-        if os.path.getsize(path) > 500*1024*8:
-            filename = id+1
-        else:
-            filename = id
     else:
-        filename = 1
+        id = 1
 
-    if filename in filelist:
-        append_xml(filename, li)
+    filepath = join(path,"sitemap",str(id)+".xml")
+    if exists(filepath) and getsize(filepath) > 8*5*1024:#*1024*8:
+        func = append_xml
     else:
-        generate_xml(filename, li)
+        func = generate_xml
+
+    func(filepath, ["http://%s/%s"%(host,i) for i in li])
+
 
 
 def generatr_xml_index(filename, sitemap_list, lastmod_list):
@@ -93,15 +87,11 @@ def generatr_xml_index(filename, sitemap_list, lastmod_list):
 
 def the_end(site_post):
     for site_id, li in site_post.iteritems():
-        print site_id
-        for i in li:
-            print i
-
-        continue
-        mkpath(
-            join(CONFIG.SITEMAP_PATH, site_name, "sitemap")
-        )
-        gen_sitemap(site_name, li)
+        for i in Q.SiteHost.equal_to("site", DB.Site.create_without_data(site_id)).find():
+            host = i.get('host')
+            path = join(CONFIG.SITEMAP_PATH, host) 
+            mkpath(join(path, "sitemap"))
+            sitemap(path, host, li)
 
 
 def update(last_id, site_post, limit=500):
@@ -114,6 +104,7 @@ def update(last_id, site_post, limit=500):
         post_id_set = set()
         for i in r:
             post_id = i.get('post').id
+            print post_id
             post_id_set.add(post_id)
 
         post_list = Q.Post.contained_in("objectId",
@@ -137,7 +128,7 @@ def update(last_id, site_post, limit=500):
 
 @single_process
 def main():
-    #redis.delete(R_SITEMAP_SINCE) #TODO comment
+    redis.delete(R_SITEMAP_SINCE) #TODO comment
 
     last_id = int(redis.get(R_SITEMAP_SINCE) or 0)
     update(
