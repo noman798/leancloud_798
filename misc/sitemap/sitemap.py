@@ -77,7 +77,7 @@ def the_end(site_post):
             sitemap(path, host, li)
 
 
-def update(last_id, site_post, limit=500):
+def update(last_id, site_post, limit=100):
     query = Q.SiteTagPost
     query.ascending('ID')
     query.greater_than('ID', last_id)
@@ -87,7 +87,6 @@ def update(last_id, site_post, limit=500):
         post_id_set = set()
         for i in r:
             post_id = i.get('post').id
-            print post_id
             post_id_set.add(post_id)
 
         post_list = Q.Post.contained_in("objectId",
@@ -100,8 +99,8 @@ def update(last_id, site_post, limit=500):
             )
 
         last_id = r[-1].get('ID')
-
-        if len(r) >= limit and len(r)<1000000:
+        print sum(len(i) for i in site_post.itervalues())
+        if len(r) >= limit and sum(len(i) for i in site_post.itervalues())<1000:
             update(last_id, site_post)
             return
 
