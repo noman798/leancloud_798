@@ -1,26 +1,17 @@
 #!/usr/bin/env python
 #coding=utf-8
-
+from db import Q,DB,redis
 import glob
 import re
-import redis
 import leancloud
 from lxml import etree
 from collections import defaultdict
 from distutils.dir_util import mkpath
 from os.path import join, abspath, realpath, exist
 from single_process import single_process
-from config import CONFIG
 
-LIMIT = 500
 R_SITEMAP_SINCE = "SitemapSince"
-SITE_POST = defaultdict(list)
 
-redis_client = redis.Redis(
-    host=CONFIG.REDIS.HOST,
-    port=CONFIG.REDIS.PORT
-)
-LAST_ID = redis_client.get(R_SITEMAP_SINCE)
 
 
 
@@ -98,8 +89,13 @@ def generatr_xml_index(filename, sitemap_list, lastmod_list):
         f.write(unicode(header+s))
 
 
-def the_end():
-    for site_name, li in SITE_POST.iteritems():
+def the_end(site_post):
+    for site_id, li in site_post.iteritems():
+        print site_id
+        for i in li:
+            print i
+
+        continue
         mkpath(
             join(CONFIG.SITEMAP_PATH, site_name, "sitemap")
         )
@@ -108,32 +104,37 @@ def the_end():
 
 
 
-def update():
-    global LAST_ID, SITE_POST
-    query = Query(SiteTagPost)
+def update(last_id,site_post,limit=500):
+    query = Q.SiteTagPost
     query.ascending('ID')
-    query.greater_than('ID', LAST_ID)
-    query.limit(LIMIT)
+    query.greater_than('ID', last_id)
+    query.limit(limit)
     r = query.find()
     if r:
         for i in r:
             site_id = i.get('site').id
             post_id = i.get('post').id
-            site_obj = site_query.get(site_id)
-            post_obj = post_query.get(post_id)
-            SITE_POST[site_obj.get('name')].append(post_obj.get('ID'))
-        LAST_ID = r[-1].get('ID')
+            site_obj = Q.Site.get(site_id)
+            post_obj = Q.Post.get(post_id)
+            site_post[site_id].append(
+                post_obj.get('ID')
+            )
 
-    if len(r) >= LIMIT:
-        update()
-
+        if len(r) >= limit:
+            update(r[-1].get('ID'), site_post)
     else:
-        the_end()
-        redis_client.set('R_SITEMAP_SINCE', LAST_ID)
+        the_end(site_post)
+        redis.set(R_SITEMAP_SINCE, last_id)
 
 @single_process
 def main():
-    return
+    last_id = redis.get(R_SITEMAP_SINCE)
+    update(
+        last_id, 
+        defaultdict(list)
+    ) 
 
 if __name__ == '__main__':
     main()
+
+

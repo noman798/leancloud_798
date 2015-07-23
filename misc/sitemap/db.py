@@ -1,7 +1,12 @@
 from config import CONFIG
 from leancloud import Object, Query , init
+from redis import Redis 
+redis = Redis(
+    host=CONFIG.REDIS.HOST,
+    port=CONFIG.REDIS.PORT
+)
 
-CLASS = "Post SitePostTag Site"
+CLASS = "Post SitePostTag Site SiteHost"
 
 
 init(
@@ -22,7 +27,6 @@ def _query_property(cls):
     return property(lambda self:Query(cls))
 
 for name in CLASS.split():
-    print name
     cls = Object.extend(name)
     setattr(DB, name, cls)
     setattr(_Q,name, _query_property(cls))
@@ -30,5 +34,6 @@ for name in CLASS.split():
 
 
 if __name__ == "__main__":
-    print DB.Post
-    print Q.Post.find()
+    for i in Q.Site.find():
+        print Q.Site.get(i.id)
+    
