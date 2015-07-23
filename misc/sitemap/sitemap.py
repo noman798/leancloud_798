@@ -10,6 +10,7 @@ from leancloud import Object, Query
 from collections import defaultdict
 from distutils.dir_util import mkpath
 from os.path import join, abspath, realpath, exist
+from single_process import single_process
 from config import CONFIG
 
 LIMIT = 500
@@ -106,12 +107,6 @@ def the_end():
         gen_sitemap(site_name, li)
 
 
-leancloud.init(ID, MASTER_KEY)    # leancloud config
-Post = Object.extend('Post')
-SiteTagPost = Object.extend('SiteTagPost')
-Site = Object.extend('Site')
-post_query = Query(Post)
-site_query = Query(Site)
 
 
 def update():
@@ -137,7 +132,7 @@ def update():
         the_end()
         redis_client.set('R_SITEMAP_SINCE', LAST_ID)
 
-
+@single_process
 def main():
     return
 
