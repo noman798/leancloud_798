@@ -17,19 +17,29 @@ app.get('/post/:host/:post_ID', (request, res) ->
                 host:host
             }, success:(post)->
                 if post
-                    
-                    d = post.updatedAt
-                    res.render(
-                        'static',
-                        {
-                            site_name: site.name
-                            site_slogo: site.slogo
-                            post_title: post.get('title')
-                            post_author: post.get('author')
-                            post_time: d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()
-                            post_html: post.get('html')
-                        }
-                    )
+                    DB.PostTxt.by_post({
+                        post_id: post.id
+                        site_id: site.id
+                    }, success: (post_txt_list) ->
+                            d = post.updatedAt
+                            res.render(
+                                'static',
+                                {
+                                    site_name: site.name
+                                    site_slogo: site.slogo
+                                    site_favicon: site.favicon
+                                    site_host: host
+
+                                    post_ID: post_ID
+                                    post_title: post.get('title')
+                                    post_author: post.get('author')
+                                    post_time: d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()
+                                    post_html: post.get('html')
+                                    post_txt: post_txt_list
+                                }
+                            )
+                            
+                )
                 else
                     res.send ''
             )
