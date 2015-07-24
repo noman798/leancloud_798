@@ -123,6 +123,7 @@ def main():
     #return
 
     last_id = int(redis.get(R_SITEMAP_SINCE) or 0)
+    print "last_id",last_id
     update(
         last_id,
         defaultdict(list)
