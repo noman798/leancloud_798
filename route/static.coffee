@@ -16,7 +16,8 @@ app.get('/post/:host/:post_ID', (request, res) ->
         {host}
         success:(_site) ->
             if not _site
-                res.success ''
+                res.send '404'
+                return
             site = DB.Site(_site)
 
             DB.Post.by_id({
@@ -50,7 +51,7 @@ app.get('/post/:host/:post_ID', (request, res) ->
                             
                 )
                 else
-                    res.send ''
+                    res.send '404'
             )
     )
 )

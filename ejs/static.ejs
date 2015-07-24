@@ -8,8 +8,6 @@
 <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <link rel="shortcut icon" type=image/x-icon href=<%= site_favicon %> >
 <link rel=canonical href=http://<%= site_host %>/<%= post_ID %>>
-<script data-single=true src=//dn-s798.qbox.me/static/pkg/map.4ad34e33.js>
-</script>
 
 <body>
 <div class=phone>
@@ -34,18 +32,20 @@
     </div>
     <div class=post_read>
         <%- post_html %>
-        <div class=replyLi>
-            <div class=bar>
-                <%= post_txt.length %> 评论
-            </div>
-            <% for (var i = 0; i < post_txt.length; ++i) { %>
-                <div class=C>
-                    <%- post_txt[i].txt %>
-                    <p class=author>
-                    <%= post_txt[i].owner[1] %>
-                    </p>
+        <% if (post_txt.length) { %>
+            <div class=replyLi>
+                <div class=bar>
+                    <%= post_txt.length %> 评论
                 </div>
-            <% } %>
-        </div>
+                <% for (var i = 0; i < post_txt.length; ++i) { %>
+                    <div class=C>
+                        <%- post_txt[i].txt %>
+                        <p class=author>
+                        <%= post_txt[i].owner[1] %>
+                        </p>
+                    </div>
+                <% } %>
+            </div>
+        <% } %>
     </div>
 </div>
