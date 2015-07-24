@@ -1,6 +1,13 @@
 app = require("app")
 require "cloud/db/post"
+marked = require('marked')
 DB = require "cloud/_db"
+
+marked.setOptions({
+    renderer: new marked.Renderer()
+    breaks: true
+    sanitize: true
+})
 
 app.get('/post/:host/:post_ID', (request, res) ->
     host = request.params.host.toLowerCase()
@@ -21,6 +28,8 @@ app.get('/post/:host/:post_ID', (request, res) ->
                         post_id: post.id
                         site_id: site.id
                     }, success: (post_txt_list) ->
+                            for i in post_txt_list
+                                i.txt = marked(i.txt)
                             d = post.updatedAt
                             res.render(
                                 'static',
