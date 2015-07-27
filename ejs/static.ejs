@@ -1,0 +1,52 @@
+<html>
+
+<head>
+<title><%= post_title %></title>
+<meta charset=utf-8>
+<link rel=stylesheet href=//dn-s798.qbox.me/static/css/init.147fb604.css>
+<link rel=stylesheet href=//dn-s798.qbox.me/static/css/minisite/post_read.895c7e59.css>
+<link rel=stylesheet href=//dn-s798.qbox.me/static/css/minisite/html.ba7fe361.css>
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<link rel="shortcut icon" type=image/x-icon href=<%= site_favicon %> >
+<link rel=canonical href=http://<%= site_host %>/<%= post_ID %>>
+
+<body>
+<div class=phone>
+    <div class=head>
+        <h1 class=logo>
+            <a href="/" class=name>
+                <%= site_name %>
+            </a>
+            <div class=slogo>
+                <%= site_slogo %>
+            </div>
+        </h1>
+        <h1 class=title>
+            <%= post_title %>
+        </h1>
+        <p class=author>
+            <%= post_author %>
+        <span>
+            <%= post_time %>
+        </span>
+        </p>
+    </div>
+    <div class=post_read>
+        <%- post_html %>
+        <% if (post_txt.length) { %>
+            <div class=replyLi>
+                <div class=bar>
+                    <%= post_txt.length %> 评论
+                </div>
+                <% for (var i = 0; i < post_txt.length; ++i) { %>
+                    <div class=C>
+                        <%- post_txt[i].txt %>
+                        <p class=author>
+                        <%= post_txt[i].owner[1] %>
+                        </p>
+                    </div>
+                <% } %>
+            </div>
+        <% } %>
+    </div>
+</div>

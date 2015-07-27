@@ -26,6 +26,3 @@ module.exports = (html) ->
         brief = ''
         body = html
     return [brief , body]
-
-
-
