@@ -10,6 +10,15 @@
 <link rel="shortcut icon" type=image/x-icon href=<%= site_favicon %> >
 <link rel=canonical href=http://<%= site_host %>/<%= post_ID %>>
 
+
+<% if (query_site) { %>
+<style>
+.replyLi{display:none}
+.post_read a{pointer-events:none;color:#000}
+.post_read p{font-size:16px;text-indent:2em;}
+</style>
+<% } %>
+
 <body>
 <div class=phone>
     <div class=head>

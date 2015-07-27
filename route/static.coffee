@@ -12,6 +12,7 @@ marked.setOptions({
 app.get('/post/:host/:post_ID', (request, res) ->
     host = request.params.host.toLowerCase()
     post_ID = request.params.post_ID
+    query_site = request.query.site
     DB.Site.by_host(
         {host}
         success:(_site) ->
@@ -35,6 +36,7 @@ app.get('/post/:host/:post_ID', (request, res) ->
                             res.render(
                                 'static',
                                 {
+                                    query_site: query_site
                                     site_name: site.name
                                     site_slogo: site.slogo
                                     site_favicon: site.favicon

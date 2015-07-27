@@ -3,6 +3,8 @@ DB = require "cloud/_db"
 
 app.get('/rss/:host', (request, res) ->
     host = request.params.host.toLowerCase()
+    query_site = request.query.site
+    query_site = ".html?site=" + query_site
     DB.Site.by_host(
         {host}
         success:(_site) ->
@@ -36,6 +38,7 @@ app.get('/rss/:host', (request, res) ->
                             rss_generator: site.name_cn
                             pubdate: pubdate
                             items: post_list
+                            query_site: query_site
                         }
                     )
                 else

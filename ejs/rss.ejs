@@ -12,14 +12,14 @@
 <% for(var i = 0; i < items.length; ++i) { %>
   <item>
   <title><%= items[i].get('title') %></title>
-  <link><%= rss_link %>/<%= items[i].get('ID') %></link>
+  <link><%= rss_link %>/<%= items[i].get('ID') %><%= query_site %></link>
   <% if (items[i].get('tag_list')) { %> 
       <category><%= items[i].get('tag_list')[0] %></category>
   <% } %>
   <index><%= i+1 %></index>
   <description><%= items[i].get('html') %></description>
   <pubDate><%= items[i].createdAt %></pubDate>
-  <guid><%= rss_link %>/<%= items[i].get('ID')%></guid>
+  <guid><%= rss_link %>/<%= items[i].get('ID') %></guid>
   <% if (items[i].get('owner')) { %> 
       <author><%= items[i].get('owner').get('username') %></author>
   <% } else { %>
