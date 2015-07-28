@@ -9,7 +9,7 @@ app.get('/index/:host/:since', (request, res) ->
         {host}
         success: (_site) ->
             if not _site
-                res.send '404'
+                res.status(404).send '404'
                 return
             site = DB.Site(_site)
 
