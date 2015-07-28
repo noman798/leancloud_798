@@ -3,7 +3,8 @@ from leancloud import Object, Query , init
 from redis import Redis 
 redis = Redis(
     host=CONFIG.REDIS.HOST,
-    port=CONFIG.REDIS.PORT
+    port=CONFIG.REDIS.PORT,
+    password=CONFIG.REDIS.PASSWORD
 )
 
 CLASS = "Post SiteTagPost Site SiteHost"
