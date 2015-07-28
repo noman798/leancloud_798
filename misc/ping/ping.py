@@ -31,6 +31,7 @@ def main():
     client = redis.pubsub()
     client.subscribe(['ping'])
     while True:
+        print "."
         for item in client.listen():
             if item['type'] == 'message':
                 msg = item['data']
