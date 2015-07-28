@@ -2,6 +2,9 @@ $ = require "underscore"
 require "cloud/db/site"
 DB = require "cloud/_db"
 
+redis = require "cloud/_redis"
+{R} = redis
+
 DB class SiteTagPostCount
     constructor : (
         @site
@@ -29,6 +32,7 @@ DB class SiteTagPostCount
 
 _after = (value)->
     (request)->
+        _pub(request)
         tag_post = request.object
         site = tag_post.get('site')
         site.fetch().done ->
@@ -40,5 +44,32 @@ _after = (value)->
                 site.save()
 
 
+_pub = (request) ->
+    site_tag_post = request.object
+    post = site_tag_post.get('post')
+    post.fetch().done ->
+        site = site_tag_post.get('site')
+        site.fetch().done ->
+
+
+            site_name = site.get('name')
+            site_host = site.get('default_host')
+
+            post_ID = post.get('ID')
+            post_url = 'http://' + site_host + '/' + post_ID
+            rss_url = 'http://' + site_host + '/rss/' + site_host
+
+            msg = JSON.stringify(
+                {
+                    site_name
+                    site_host
+                    post_url
+                    rss_url
+                }
+            )
+            redis.publish 'ping', msg
+
+
 AV.Cloud.afterSave 'SiteTagPost', _after(1)
+#AV.Cloud.afterSave 'SiteTagPost', _pub
 AV.Cloud.afterDelete 'SiteTagPost', _after(-1)
