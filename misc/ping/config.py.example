@@ -1,0 +1,12 @@
+class CONFIG:
+    class REDIS:
+        HOST = "127.0.0.1"
+        PORT = 6379
+        PASSWORD = ""
+    
+    SITEMAP_PATH = "/mnt/sitemap"
+
+    class LEANCLOUD:
+        ID = 'ky522fknrn8mu6gxalshtr6amh7uun96lw4i9io5weti8067'
+        KEY = ''
+        MASTER_KEY = ''

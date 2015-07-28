@@ -8,11 +8,11 @@ from single_process import single_process
 
 
 def ping(ping_url, site_name, site_host, post_url, rss_url):
+    print ping_url, site_name, site_host, post_url, rss_url
     rpc_server = xmlrpclib.ServerProxy(ping_url)
     result = rpc_server.weblogUpdates.extendedPing(
         site_name, site_host, "http://"+post_url, "http://"+rss_url
     )
-
     print result
 
 
@@ -31,6 +31,7 @@ def main():
     client = redis.pubsub()
     client.subscribe(['ping'])
     while True:
+        print "."
         for item in client.listen():
             if item['type'] == 'message':
                 msg = item['data']
