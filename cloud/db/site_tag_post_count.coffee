@@ -72,5 +72,4 @@ _pub = (request) ->
 
 
 AV.Cloud.afterSave 'SiteTagPost', _after(1)
-#AV.Cloud.afterSave 'SiteTagPost', _pub
 AV.Cloud.afterDelete 'SiteTagPost', _after(-1)
