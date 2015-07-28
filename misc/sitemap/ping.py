@@ -4,6 +4,7 @@
 import json
 import xmlrpclib
 from db import redis
+from single_process import single_process
 
 
 def ping(ping_url, *args, **kwds):
@@ -23,6 +24,7 @@ def ping_all(*args, **kwds):
         ping(url, *args, **kwds)
 
 
+@single_process
 def main():
     client = redis.pubsub()
     client.subscribe(['ping'])
