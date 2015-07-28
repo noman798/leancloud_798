@@ -7,10 +7,12 @@ from db import redis
 from single_process import single_process
 
 
-def ping(ping_url, *args, **kwds):
-    """args: site_name, site_host, post_url, rss_url."""
+def ping(ping_url, site_name, site_host, post_url, rss_url):
     rpc_server = xmlrpclib.ServerProxy(ping_url)
-    result = rpc_server.weblogUpdates.extendedPing(*args)
+    result = rpc_server.weblogUpdates.extendedPing(
+        site_name, site_host, "http://"+post_url, "http://"+rss_url
+    )
+
     print result
 
 
@@ -33,10 +35,7 @@ def main():
             if item['type'] == 'message':
                 msg = item['data']
                 if msg:
-                    post = json.loads(msg)
-                    print post
-                    ping_all(post.get('site_name'), post.get('site_host'),
-                             post.get('post_url'), post.get('rss_url'))
+                    ping_all( * tuple( json.loads(msg) ) )
 
 
 def test():

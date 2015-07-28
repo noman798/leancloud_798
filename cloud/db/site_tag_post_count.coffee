@@ -1,6 +1,7 @@
 $ = require "underscore"
 require "cloud/db/site"
 DB = require "cloud/_db"
+CONFIG = require('cloud/config')
 
 redis = require "cloud/_redis"
 {R} = redis
@@ -56,16 +57,16 @@ _pub = (request) ->
             site_host = site.get('default_host')
 
             post_ID = post.get('ID')
-            post_url = 'http://' + site_host + '/' + post_ID
-            rss_url = 'http://' + site_host + '/rss/' + site_host
+            post_url = site_host + '/' + post_ID
+            rss_url = CONFIG.LEANCLOUD.HOST+'/rss/'+site_host
 
             msg = JSON.stringify(
-                {
+                [
                     site_name
                     site_host
                     post_url
                     rss_url
-                }
+                ]
             )
             redis.publish 'ping', msg
 

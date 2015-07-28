@@ -16,3 +16,6 @@ module.exports =
     EVERNOTE :
         KEY : "noman"
         SECRET : "db29f833ffd9937b"
+    
+    LEANCLOUD:
+        HOST : "host.avosapps.com"
