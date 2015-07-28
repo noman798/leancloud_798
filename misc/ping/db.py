@@ -5,5 +5,3 @@ redis = Redis(
     port=CONFIG.REDIS.PORT,
     password=CONFIG.REDIS.PASSWORD
 )
-
-

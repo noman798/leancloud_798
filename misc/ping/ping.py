@@ -20,7 +20,7 @@ def ping_all(*args, **kwds):
     ping_url_list = [
         'http://ping.baidu.com/ping/RPC2',
         'http://rpc.pingomatic.com/',
-        'http://blogsearch.google.com/ping/RPC2',
+#        'http://blogsearch.google.com/ping/RPC2',
     ]
     for url in ping_url_list:
         ping(url, *args, **kwds)
@@ -35,6 +35,7 @@ def main():
             if item['type'] == 'message':
                 msg = item['data']
                 if msg:
+                    print msg
                     ping_all( * tuple( json.loads(msg) ) )
 
 

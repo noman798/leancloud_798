@@ -46,6 +46,7 @@ _after = (value)->
 
 
 _pub = (request) ->
+    console.log 'pub'
     site_tag_post = request.object
     post = site_tag_post.get('post')
     post.fetch().done ->
@@ -56,9 +57,13 @@ _pub = (request) ->
             site_name = site.get('name')
             site_host = site.get('default_host')
 
+            console.log 'site_name', site_name
             post_ID = post.get('ID')
+            console.log 'post_ID', post_ID
             post_url = site_host + '/' + post_ID
+            console.log 'post_url', post_url
             rss_url = CONFIG.LEANCLOUD.HOST+'/rss/'+site_host
+            console.log 'rss_url', rss_url
 
             msg = JSON.stringify(
                 [
@@ -68,6 +73,7 @@ _pub = (request) ->
                     rss_url
                 ]
             )
+            console.log 'msg', msg
             redis.publish 'ping', msg
 
 
