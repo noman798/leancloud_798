@@ -1,4 +1,5 @@
 
+require("route/index")
 require("route/rss")
 require("route/static")
 require("route/css")

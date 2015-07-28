@@ -15,12 +15,12 @@
 <div>
 <% for (var i = 0; i < li.length; ++i) { %>
     <div>
-        <a href=""></a> 
+        <a href="http://<%= default_host %>/<%= li[i].get('ID') %>"</a> 
     </div> 
 <% } %>
 </div>
 <div>
-    <a href="/next/{post.ID}">下一页</a>
+    <a href="/next/<%= last_id %>">下一页</a>
 </div>
 </body>
 
