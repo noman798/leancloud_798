@@ -33,7 +33,6 @@ DB class SiteTagPostCount
 _after = (value)->
     (request)->
         _pub(request)
-        console.log 'sitetagpost, save'
         tag_post = request.object
         site = tag_post.get('site')
         site.fetch().done ->
@@ -42,27 +41,21 @@ _after = (value)->
                 todo.push SiteTagPostCount.incr(site, tag,value)
             AV.Promise.when(todo).done ->
                 site.increment('count', value)
-                console.log 'site count save'
                 site.save()
 
 
 _pub = (request) ->
-    console.log 'pub'
     site_tag_post = request.object
     post = site_tag_post.get('post')
     post.fetch().done ->
         site = site_tag_post.get('site')
         site.fetch().done ->
 
-            console.log 'site', site.id
 
             site_name = site.get('name')
-            console.log 'site_name', site_name
             site_host = site.get('default_host')
-            console.log site_host
 
             post_ID = post.get('ID')
-            console.log 'post_ID', post_ID
             post_url = 'http://' + site_host + '/' + post_ID
             rss_url = 'http://' + site_host + '/rss/' + site_host
 
@@ -74,7 +67,6 @@ _pub = (request) ->
                     rss_url
                 }
             )
-            console.log 'msg', msg
             redis.publish 'ping', msg
 
 
