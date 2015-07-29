@@ -22,6 +22,7 @@ app.get('/:host/index/:since', (request, res) ->
                             title
                             description: _site.get('description')
                             default_host: _site.get('default_host')
+                            site_favicon: _site.get('site_favicon')
                             li: result[0]
                             last_id: result[1]
                         }
