@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-
 <head>
-<meta charset=utf-8>
+<% include _head %>
 <title><%= title %></title>
 <meta name="description" content="<%= description %>">
 <link rel=canonical href="http://<%= default_host %>">
@@ -15,12 +14,13 @@
 <div>
 <% for (var i = 0; i < li.length; ++i) { %>
     <div>
-        <a href="http://<%= default_host %>/<%= li[i].get('ID') %>"</a> 
+        <a href="http://<%= default_host %>/<%= li[i].get('ID') %>"><%= li[i].get('title') %></a> 
     </div> 
 <% } %>
 </div>
 <div>
-    <a href="/next/<%= last_id %>">下一页</a>
+    <a href="/index/<%= last_id %>">下一页</a>
 </div>
+<% include _foot %>
 </body>
 
