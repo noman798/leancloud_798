@@ -9,15 +9,6 @@ R "RoomMemberMessageReadCount",":"
 APP_ID = process.env.LC_APP_ID
 SITE_USER_LEVEL = require("cloud/db/site_user_level")
 
-###
-每个网站可以自定义创建一个或多个公众聊天室
--公众频道
-   谈天说地 -> 公众聊天室
-
-记录每个站点默认有的公众频道
-
-###
-
 DB class SiteChannel
     constructor: (
         @site_id
