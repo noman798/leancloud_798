@@ -1,15 +1,9 @@
 <!DOCTYPE html>
-<head>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<link rel=stylesheet href=//dn-s798.qbox.me/static/css/init.147fb604.css>
-<link rel="shortcut icon" type=image/x-icon href="<%= site_favicon %>">
-
+<% include _head %>
 <title><%= post_title %></title>
 
 <link rel=stylesheet href=//dn-s798.qbox.me/static/css/minisite/post_read.895c7e59.css>
 <link rel=stylesheet href=//dn-s798.qbox.me/static/css/minisite/html.ba7fe361.css>
-
 <link rel=canonical href="http://<%= default_host %>/<%= post_ID %>">
 
 <% if (query_site == 'xiaozhi') { %>
@@ -20,7 +14,6 @@
 </style>
 <% } %>
 
-<body>
 <div class=phone>
     <div class=head>
         <h1 class=logo>
@@ -60,3 +53,4 @@
         <% } %>
     </div>
 </div>
+<% include _foot %>
