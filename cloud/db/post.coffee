@@ -29,6 +29,7 @@ DB class SiteTagPost
         query = SiteTagPost.$
         if params.since
             query.lessThan('ID', params.since)
+        if 'since' of params
             delete params.since
         query.equalTo(params)
         query.descending('ID')
