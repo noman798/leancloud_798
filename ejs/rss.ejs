@@ -19,6 +19,12 @@
   <index><%= i+1 %></index>
   <description><![CDATA[<%- items[i].get('html') %>]]></description>
   <pubDate><%= items[i].createdAt %></pubDate>
+
+  <% if (query_site_name == 'xiaozhi') { %>
+      <source><%= site_name %></source>
+      <tags><%= items[i].get('tag_list') %></tags>
+  <% } %>
+
   <guid><%= rss_link %>/<%= items[i].get('ID') %></guid>
   <% if (items[i].get('owner')) { %> 
       <author><%= items[i].get('owner').get('username') %></author>

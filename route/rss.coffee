@@ -36,6 +36,7 @@ app.get('/rss/:host', (request, res) ->
                     res.render(
                         'rss',
                         {
+                            site_name: site.name
                             rss_title: site.name
                             rss_link: "http://#{host}"
                             rss_description: site.slogo
@@ -43,6 +44,7 @@ app.get('/rss/:host', (request, res) ->
                             pubdate: pubdate
                             items: post_list
                             query_site
+                            query_site_name: request.query.site
                         }
                     )
                 else
