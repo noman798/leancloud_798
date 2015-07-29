@@ -41,6 +41,7 @@ app.get('/post/:host/:post_ID', (request, res) ->
                                     site_slogo: site.slogo
                                     site_favicon: site.favicon
                                     default_host: _site.get('default_host')
+                                    baidu_code: _site.get('baidu_code')
 
                                     post_ID: post_ID
                                     post_title: post.get('title')
