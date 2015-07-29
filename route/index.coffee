@@ -9,10 +9,15 @@ app.get('/:host/index/:since', (request, res) ->
         {host}
         success: (_site) ->
             if not _site
-                res.send '404'
+                res.status(404).send '404'
                 return
             site = DB.Site(_site)
-            title = [site.name , site.name_cn].join(" · ")
+
+            r = [site.name]
+            if site.name_cn
+                r.push site.name_cn
+
+            title = r.join(" · ")
 
             DB.SiteTagPost.by_site_tag(
                 {site_id: site.id, since}, {
