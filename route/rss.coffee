@@ -3,6 +3,7 @@ DB = require "cloud/_db"
 
 app.get('/rss/:host', (request, res) ->
     host = request.params.host.toLowerCase()
+    query_site_name = request.query.site
     
     if request.query.site
         query_site = ".html?site=" + request.query.site
@@ -32,19 +33,23 @@ app.get('/rss/:host', (request, res) ->
                         })
                                 
 
+                    if query_site_name == 'xiaozhi'
+                        for i in post_list
+                            i.createdAt = i.createdAt.toISOString().slice(0, 19).replace('T', ' ')
+
 
                     res.render(
                         'rss',
                         {
                             site_name: site.name
                             rss_title: site.name
-                            rss_link: "http://#{host}"
+                            rss_link: "http://#{site.default_host}"
                             rss_description: site.slogo
                             rss_generator: site.name_cn
                             pubdate: pubdate
                             items: post_list
                             query_site
-                            query_site_name: request.query.site
+                            query_site_name
                         }
                     )
                 else
@@ -52,3 +57,4 @@ app.get('/rss/:host', (request, res) ->
             )
     )
 )
+
