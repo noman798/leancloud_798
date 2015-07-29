@@ -21,22 +21,15 @@ app.get('/rss/:host', (request, res) ->
             }, success:(result)->
                 if result
                     [post_list,_] = result
-                    if post_list.length
-                        pubdate = post_list[0].get('createdAt')
-                    else
-                        pubdate = ''
-
-                    for i in post_list
-                        DB.SiteTagPost.$.get(i.id, {
-                            success: (site_tag_post) ->
-                                i.set('tag_list', site_tag_post.get('tag_list'))
-                        })
                                 
-
                     if query_site_name == 'xiaozhi'
                         for i in post_list
                             i.createdAt = i.createdAt.toISOString().slice(0, 19).replace('T', ' ')
 
+                    if post_list.length
+                        pubdate = post_list[0].createdAt
+                    else
+                        pubdate = ''
 
                     res.render(
                         'rss',

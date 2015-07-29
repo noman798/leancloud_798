@@ -40,6 +40,9 @@ DB class Site
         @name_cn
         @link_list
         @favicon
+        @description
+        @default_host
+        @baidu_code
     )->
         super
 
