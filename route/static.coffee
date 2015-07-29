@@ -39,7 +39,7 @@ app.get('/post/:host/:post_ID', (request, res) ->
                                     query_site: query_site
                                     site_name: site.name
                                     site_slogo: site.slogo
-                                    site_favicon: site.favicon
+                                    site_favicon: _site.get('favicon')
                                     default_host: _site.get('default_host')
                                     baidu_code: _site.get('baidu_code')
 

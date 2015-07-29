@@ -31,7 +31,7 @@ app.get('/:host/index/:since', (request, res) ->
                                 title
                                 description: _site.get('description')
                                 default_host: _site.get('default_host')
-                                site_favicon: site.favicon
+                                site_favicon: _site.get('favicon')
                                 baidu_code: _site.get('baidu_code')
                                 li: result[0]
                                 last_id: result[1]
