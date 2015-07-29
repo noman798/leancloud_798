@@ -40,7 +40,7 @@ app.get('/post/:host/:post_ID', (request, res) ->
                                     site_name: site.name
                                     site_slogo: site.slogo
                                     site_favicon: site.favicon
-                                    site_host: host
+                                    default_host: _site.get('default_host')
 
                                     post_ID: post_ID
                                     post_title: post.get('title')

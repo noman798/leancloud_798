@@ -2,7 +2,7 @@ app = require("app")
 require "cloud/db/post"
 DB = require "cloud/_db"
 
-app.get('/index/:host/:since', (request, res) ->
+app.get('/:host/:since/index', (request, res) ->
     host = request.params.host.toLowerCase()
     since = request.query.since
     DB.Site.by_host(
