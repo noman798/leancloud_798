@@ -56,6 +56,7 @@ _pub = (request) ->
 
             site_name = site.get('name')
             site_host = site.get('default_host')
+            console.log 'site_name'
 
             console.log 'site_name', site_name
             post_ID = post.get('ID')
@@ -67,13 +68,13 @@ _pub = (request) ->
 
             msg = JSON.stringify(
                 [
-                    site_name
-                    site_host
-                    post_url
+                    site_name,
+                    site_host,
+                    post_url,
                     rss_url
                 ]
             )
-            console.log 'msg', msg
+            console.log msg
             redis.publish 'ping', msg
 
 
