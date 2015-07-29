@@ -4,7 +4,7 @@ DB = require "cloud/_db"
 
 app.get('/:host/index/:since', (request, res) ->
     host = request.params.host.toLowerCase()
-    since = request.query.since
+    since = request.query.since-0
     DB.Site.by_host(
         {host}
         success: (_site) ->
@@ -20,19 +20,23 @@ app.get('/:host/index/:since', (request, res) ->
             title = r.join(" · ")
 
             DB.SiteTagPost.by_site_tag(
-                {site_id: site.id, since}, {
-                success: (result) ->
-                    res.render('index',
-                        {
-                            title
-                            description: _site.get('description')
-                            default_host: _site.get('default_host')
-                            site_favicon: _site.get('site_favicon')
-                            baidu_code: _site.get('baidu_code')
-                            li: result[0]
-                            last_id: result[1]
-                        }
-                    )
+                {
+                    site_id: site.id
+                    since
+                },
+                {
+                    success: (result) ->
+                        res.render('index',
+                            {
+                                title
+                                description: _site.get('description')
+                                default_host: _site.get('default_host')
+                                site_favicon: site.favicon
+                                baidu_code: _site.get('baidu_code')
+                                li: result[0]
+                                last_id: result[1]
+                            }
+                        )
                 }
             )
     )
