@@ -4,7 +4,7 @@ DB = require "cloud/_db"
 
 app.get('/:host/index/:since', (request, res) ->
     host = request.params.host.toLowerCase()
-    since = request.query.since-0
+    since =  request.params.since - 0
     DB.Site.by_host(
         {host}
         success: (_site) ->
