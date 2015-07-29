@@ -15,7 +15,7 @@
 <div>
 <% for (var i = 0; i < li.length; ++i) { %>
     <div>
-        <a href="http://<%= default_host %>/<%= li[i].get('ID') %>"</a> 
+        <a href="http://<%= default_host %>/<%= li[i].get('ID') %>"><%= li[i].get('title') %></a> 
     </div> 
 <% } %>
 </div>
