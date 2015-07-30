@@ -19,7 +19,7 @@ module.exports =
         new Buffer(str, 'binary').toString('hex')
 
     uuid : ()->
-        rtrim(new Buffer(uuid.v4().replace(/-/g,''),'hex').toString('base64'),"=").replace(/\//g,'-').replace(/+/g,'_')
+        rtrim(new Buffer(uuid.v4().replace(/-/g,''),'hex').toString('base64'),"=").replace(/\//g,'-').replace(/\\+/g,'_')
 
     num_b62: (num)->
         b62.encode(b10.decode(num+''))
