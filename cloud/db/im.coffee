@@ -28,13 +28,16 @@ DB class IM
                     key
                     params.user_id or 0
                     (err, installation_id) ->
-                        if not installation_id
+                        if installation_id
+                            options.success installation_id
+                        else
                             installation_id = uuid.v4()
-                            redis.hset(
-                                key
-                                user_id
-                                installation_id
-                            )
-                        options.success installation_id
+                            _Installation.save success:->
+                                redis.hset(
+                                    key
+                                    user_id
+                                    installation_id
+                                )
+                                options.success installation_id
                 )
         )
