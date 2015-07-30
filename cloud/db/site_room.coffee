@@ -37,7 +37,7 @@ DB SiteRoom
 
    _by_user:()
 
-   by_current:()
+   by_current:({site_id},{success})
         [
             id
             name
