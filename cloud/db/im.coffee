@@ -1,5 +1,5 @@
 DB = require "cloud/_db"
-uuid = require "node-uuid"
+b64 = require "cloud/_lib/b64"
 redis = require "cloud/_redis"
 {R} = redis
 Q = require "q"
@@ -31,7 +31,7 @@ DB class IM
                         if installation_id
                             options.success installation_id
                         else
-                            installation_id = uuid.v4()
+                            installation_id = b64.uuid()
                             _Installation.save success:->
                                 redis.hset(
                                     key

@@ -1,3 +1,6 @@
+b64 = require "cloud/_lib/b64"
+console.log b64.uuid()
+
 ###
 DB = require "cloud/_db"
 require "cloud/db/sync"
