@@ -21,11 +21,9 @@ DB class IM
         q.get(
             params.site_id
             success:(site)->
-                console.log 'site', site.id
                 if not site
                     return
                 key = R.IM_WEB_ID+site.get('ID')
-                console.log 'key', key
                 redis.hget(
                     key
                     params.user_id or 0
