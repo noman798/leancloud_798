@@ -12,3 +12,4 @@ module.exports =
     RoomMemberRoomId:'e'
     RoomMemberMessageReadCount:'f'
     QINIU_PICTURE_HSET:'w'
+    IM_WEB_ID:'x'
